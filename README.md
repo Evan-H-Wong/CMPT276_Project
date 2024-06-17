@@ -1,5 +1,5 @@
 # CMPT276_Project
-Group Project for CMPT276
+
 SkyWeaver Inventory is an online web application allowing managers, employees, and customers alike to sign up/log into accounts pertaining to an online storefront. Users with manager and employee level access can view and manage shipments, inventory, and customer orders. Users with customer level access can purchase products to be delivered to their home address, purchase memberships for exclusive deals, and much more. This application contains a main feature to provide customers and store owners with convenient use and access to the store and its services and many other subproblems.
 
 The problem that we are trying to solve is to create an inventory management application for an early startup company (A made-up one) to use to keep track of their stock (A general store). In general, this type of problem is solved by other web application development companies which are commissioned by startup companies. However, our goal is to create a general template and layout that can be used for this made-up company.
