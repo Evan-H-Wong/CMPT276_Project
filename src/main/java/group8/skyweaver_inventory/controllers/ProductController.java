@@ -17,6 +17,19 @@ import java.util.Map;
 @Controller
 public class ProductController {
     
-    
+    @Autowired
+    private ProductRepository productRepository;
+
+    @PostMapping("/manager/add")
+    public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response)
+    {
+        String productName = newProduct.get("productName");
+        int productQuantity = Integer.parseInt(newProduct.get("productQuantity"));
+        float productPrice = Float.parseFloat(newProduct.get("productPrice"));
+        String productCategory = newProduct.get("productCategory");
+        productRepository.save(new Product(productName, productQuantity, productPrice, productCategory));
+        response.setStatus(201);
+        return "/productAdded.html";
+    }    
 
 }

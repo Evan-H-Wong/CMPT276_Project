@@ -17,8 +17,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(int pid, String productName, int productQuantity, float productPrice, String productCategory) {
-        this.pid = pid;
+    public Product(String productName, int productQuantity, float productPrice, String productCategory) {
         this.productName = productName;
         this.productQuantity = productQuantity;
         this.productPrice = productPrice;
