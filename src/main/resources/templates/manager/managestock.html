@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver Stock Manager</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+$(function(){
+    $("#header").load("manager/header.html");
+    $("#aside").load("manager/aside.html");
+    $("#footer").load("manager/footer.html");
+});
+</script> 
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <section class="dashboard-overview">
+            <h1>Overview</h1>
+            <div class="stats">
+                <div>Total Products: 100</div>
+                <div>Out of Stock: 5</div>
+                <div>Low Stock: 10</div>
+            </div>
+        </section>
+        <section class="inventory-overview">
+            <h2>Inventory List</h2>
+            <form th:name = "editform" action = "/editproduct" method = "get">
+                <input type = "hidden" name = "toEdit" id = "toEdit" value = "temp"></input>
+            </form>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Level</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="bodies" th:each="product:${p}">
+                        <td th:text="${product.productName}"></td>
+                        <td th:text="${product.productCategory}"></td>
+                        <td>$ <p th:text="${product.productPrice}" style="display:inline"></p></td>
+                        <td th:text="${product.productQuantity}"></td>
+                        <td th:switch="${product.productQuantity}">
+                            <span th:case="0">Out of Stock</span>
+                            <span th:case="*">In Stock</span>
+                        </td>
+                        <td><a th:id="${product.pid}" style="display:inline" href="#" onclick="EditProduct(this)">Edit</a> | 
+                            <a style="display:inline">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+<script>
+    function EditProduct(EditButton)
+    {
+        document.getElementById("toEdit").value = (EditButton.id).toString();
+        document.editform.submit();
+    }
+</script>
+</html>

@@ -22,8 +22,17 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping("/managestock")
-    public String redirect() {
+    public String stockRedirect(Model model) {
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        model.addAttribute("p",products);
         return "manager/managestock.html";
+    }
+
+    @GetMapping("/editproduct")
+    public String editStock(Model model, @RequestParam Map<String, String> ToEdit) {
+        Product product = productRepository.findByPid(Integer.parseInt(ToEdit.get("toEdit")));
+        model.addAttribute("p", product);
+        return "manager/editproduct.html";
     }
 
 }
