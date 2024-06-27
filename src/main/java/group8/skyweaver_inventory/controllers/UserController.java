@@ -23,17 +23,18 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/")
-    public RedirectView redirect() {
-        return new RedirectView("/login.html");
+    public String redirect() {
+        return "/login.html";
     }
 
     @PostMapping("/login")
     public String login(@RequestParam Map<String, String> login, Model model, HttpServletRequest request, HttpSession session) {
         String username = login.get("username");
         String password = login.get("password");
-        String accesslevel = login.get("accesslevel");
+        String accesslevel = login.get("role");
 
         List<User> users = userRepository.findByUsernameAndPasswordAndAccesslevel(username, password, accesslevel);
+        System.out.println(accesslevel);
         // now there is either 1 or 0 users in the list, 1 if there is already a registered user with that username and password
         if(users.isEmpty()) {
             return "login.html";
