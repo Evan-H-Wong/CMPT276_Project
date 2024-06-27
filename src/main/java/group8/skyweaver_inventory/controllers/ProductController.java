@@ -2,7 +2,6 @@ package group8.skyweaver_inventory.controllers;
 
 import group8.skyweaver_inventory.models.Product;
 import group8.skyweaver_inventory.models.ProductRepository;
-import group8.skyweaver_inventory.models.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
