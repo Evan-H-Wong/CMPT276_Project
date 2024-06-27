@@ -31,9 +31,9 @@ public class UserController {
     public String login(@RequestParam Map<String, String> login, Model model, HttpServletRequest request, HttpSession session) {
         String username = login.get("username");
         String password = login.get("password");
-        String Id = login.get("Id");
+        String accesslevel = login.get("accesslevel");
 
-        List<User> users = userRepository.findByUsernameAndPasswordAndId(username, password, Id);
+        List<User> users = userRepository.findByUsernameAndPasswordAndAccesslevel(username, password, accesslevel);
         // now there is either 1 or 0 users in the list, 1 if there is already a registered user with that username and password
         if(users.isEmpty()) {
             return "login.html";
@@ -60,8 +60,8 @@ public class UserController {
     public String register(@RequestParam Map<String, String> register, HttpServletResponse response) {
         String username = register.get("username");
         String password = register.get("password");
-        String Id = register.get("Id");
-        User user = new User(username, password, Id);
+        String accesslevel = register.get("accesslevel");
+        User user = new User(username, password, accesslevel);
         userRepository.save(user);
         response.setStatus(201);
         return "/login.html";

@@ -11,15 +11,20 @@ public class User {
     private int uid;
     private String username;
     private String password;
-    private String Id; // either Manager or Employee
+    private String accesslevel; // either Manager or Employee
 
     public User() {
     }
 
-    public User(String username, String password, String Id) {
+    public User(String username, String password, String accesslevel) {
         this.username = username;
         this.password = password;
-        this.Id = Id;
+        this.accesslevel = accesslevel;
+    }
+    
+
+    public int getUid() {
+        return uid;
     }
 
     public String getUsername() {
@@ -30,8 +35,8 @@ public class User {
         return password;
     }
 
-    public String getId() {
-        return Id;
+    public String getAccesslevel() {
+        return accesslevel;
     }
 
     public void setUsername(String username) {
@@ -42,7 +47,7 @@ public class User {
         this.password = password;
     }
 
-    public void setId(String Id) {
-        this.Id = Id;
+    public void setAccesslevel(String accesslevel) {
+        this.accesslevel = accesslevel;
     }
 }
