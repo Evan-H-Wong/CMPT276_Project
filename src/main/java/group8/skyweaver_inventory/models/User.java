@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int uid;
     private String username;
     private String password;
     private String Id; // either Manager or Employee
