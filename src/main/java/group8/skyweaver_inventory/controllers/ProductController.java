@@ -2,6 +2,7 @@ package group8.skyweaver_inventory.controllers;
 
 import group8.skyweaver_inventory.models.Product;
 import group8.skyweaver_inventory.models.ProductRepository;
+import group8.skyweaver_inventory.models.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -31,5 +32,9 @@ public class ProductController {
         response.setStatus(201);
         return "/productAdded.html";
     }    
+    @GetMapping("/managestock")
+    public String redirect() {
+        return "manager/managestock.html";
+    }
 
 }
