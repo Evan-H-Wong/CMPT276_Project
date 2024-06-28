@@ -29,8 +29,16 @@ public class ProductController {
         String productCategory = newProduct.get("productCategory");
         productRepository.save(new Product(productName, productQuantity, productPrice, productCategory));
         response.setStatus(201);
-        return "/productAdded.html";
+        return "manager/productAdded.html";
     }    
+
+    @PostMapping("/products/delete/{pid}")
+    public String deleteRectangle(@PathVariable ("pid") int id) 
+    {
+        productRepository.deleteById(id);
+        return "redirect:/managestock";
+    }
+    
     @GetMapping("/managestock")
     public String stockRedirect(Model model) {
         List<Product> products = productRepository.findByOrderByProductNameAsc();

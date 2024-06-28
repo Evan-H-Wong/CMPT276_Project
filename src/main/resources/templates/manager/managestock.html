@@ -59,7 +59,9 @@ $(function(){
                             <span th:case="*">In Stock</span>
                         </td>
                         <td><a th:id="${product.pid}" style="display:inline" href="#" onclick="EditProduct(this)">Edit</a> | 
-                            <a style="display:inline">Delete</a>
+                            <form th:action="@{'/products/delete/' + ${product.pid}}" method="post">
+                                <button type = "submit" style= "display:inline; background:none; border:none; padding:0;">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>

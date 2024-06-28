@@ -3,63 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Product</title>
+    <title>Skyweaver Product Editor</title>
     <link rel="stylesheet" href="../css/homepageStyle.css">
 </head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+$(function(){
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
+});
+</script> 
+</head>
 <body>
-    <header>
-        <div class="logo">Skyweaver Inventory System</div>
-        <nav>
-            <ul>
-                <li><a href="homepage.html">Home</a></li>
-                <li><a href="#">Products</a></li>
-                <li><a href="#">Categories</a></li>
-                <li><a href="#">Suppliers</a></li>
-                <li><a href="#">Orders</a></li>
-                <li><a href="#">My Profile</a></li>
-            </ul>
-        </nav>
-        <div class="logout"><a href="#">Log out</a></div>
-    </header>
-    <div class="container">
-        <aside>
-            <ul>
-                <li><a href="homepage.html">Dashboard</a></li>
-                <li><a href="add.html">Add Product</a></li>
-                <li><a href="managestock.html">Manage Stock</a></li>
-                <li><a href="#">Purchase Orders</a></li>
-                <li><a href="#">Sales Orders</a></li>
-            </ul>
-        </aside>
-        <main>
-            <form action="/manager/add" method="post">
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+
+        <form action="/manager/add" method="post">
                     
-                <div>
-                    <input type = "text" id = "productName" name = "productName" placeholder = "Product Name">
-                </div>
-                <div>
-                    <input type = "number" id = "productQuantity" name = "productQuantity" placeholder = "Product Quantity">
-                </div>
+            <div>
+                <input type = "text" id = "productName" name = "productName" placeholder = "Product Name">
+            </div>
+            <div>
+                <input type = "number" id = "productQuantity" name = "productQuantity" placeholder = "Product Quantity">
+            </div>
 
-                <div>
-                    <input type = "number" step="0.01" id = "productPrice" name = "productPrice" placeholder = "Product Price">
-                </div>
+            <div>
+                <input type = "number" step="0.01" id = "productPrice" name = "productPrice" placeholder = "Product Price">
+            </div>
 
+            <div>
+                <label for = "productCategory">Category:</label>
+                <select name = "productCategory" id = "productCategory">
+                <option value = "productCategoryA">Category A</option>
+                <option value = "productCategoryB">Category B</option>
+                </select>
+            </div>
+            <section class = "quick-actions">
                 <div>
-                    <label for = "productCategory">Category:</label>
-                    <select name = "productCategory" id = "productCategory">
-                    <option value = "productCategoryA">Category A</option>
-                    <option value = "productCategoryB">Category B</option>
-                    </select>
-                </div>
-
-                <div>
-                    <input type = "submit" value = "Add New Product"></input>
+                    <button type = "submit">Add New Product</button>
                 </div>        
-            </form>
-        </main>
-    <footer>
-        <p>Contact Us | Privacy Policy | Terms of Service</p>
-    </footer>
+            </section>
+        </form>
+
+    </main>
+</div>
+<div id="footer"></div>
 </body>
 </html>
