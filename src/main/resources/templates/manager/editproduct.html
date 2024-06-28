@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skyweaver Product Editor</title>
+    <title>Skyweaver Stock Manager</title>
     <link rel="stylesheet" href="../css/homepageStyle.css">
+    <link rel="stylesheet" href="../css/managestockStyle.css">
 </head>
 <script
     src="https://code.jquery.com/jquery-3.3.1.js"
@@ -34,6 +35,13 @@ $(function(){
         </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
+            <form th:name = "applyform" action = "/applyproduct" method = "post">
+                <input type = "hidden" name = "name" id = "name" value = ""></input>
+                <input type = "hidden" name = "category" id = "category" value = ""></input>
+                <input type = "hidden" name = "price" id = "price" value = ""></input>
+                <input type = "hidden" name = "quantity" id = "quantity" value = ""></input>
+                <input type = "hidden" name = "pid" id = "pid" value = ""></input>
+            </form>
             <table>
                 <thead>
                     <tr>
@@ -41,22 +49,17 @@ $(function(){
                         <th>Category</th>
                         <th>Price</th>
                         <th>Stock Level</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr id="bodies" th:each="product:${p}">
-                        <td th:text="${product.productName}"></td>
-                        <td th:text="${product.productCategory}"></td>
-                        <td>$ <p th:text="${product.productPrice}" style="display:inline"></p></td>
-                        <td th:text="${product.productQuantity}"></td>
-                        <td th:switch="${product.productQuantity}">
-                            <span th:case="0">Out of Stock</span>
-                            <span th:case="*">In Stock</span>
-                        </td>
-                        <td><p style="display:inline">Edit</p> | <p style="display:inline">Delete</p></td>
-                        <p style="display: none" th:text="${product.pid}"></p>
+                        <td><input type="text" id="nameinput" th:value="${product.productName}"></input></td>
+                        <td><input type="text" id="categoryinput" th:value="${product.productCategory}"></input></td>
+                        <td><input type="number" step="0.01" id="priceinput" th:value="${product.productPrice}"></input></td>
+                        <td><input type="number" id="quantityinput" th:value="${product.productQuantity}"></input></td>
+                        <td><a style="display:inline" href="#" onclick="ApplyProduct()">Confirm Changes</a></td>
+                        <p style="display: none" th:text="${product.pid}" id="pidstore"></p>
                     </tr>
                 </tbody>
             </table>
@@ -65,4 +68,15 @@ $(function(){
 </div>
 <div id="footer"></div>
 </body>
+<script>
+    function ApplyProduct(EditButton)
+    {
+        document.getElementById("name").value = document.getElementById("nameinput").value;
+        document.getElementById("category").value = document.getElementById("categoryinput").value;
+        document.getElementById("price").value = document.getElementById("priceinput").value;
+        document.getElementById("quantity").value = document.getElementById("quantityinput").value;
+        document.getElementById("pid").value = document.getElementById("pidstore").innerHTML;
+        document.applyform.submit();
+    }
+</script>
 </html>

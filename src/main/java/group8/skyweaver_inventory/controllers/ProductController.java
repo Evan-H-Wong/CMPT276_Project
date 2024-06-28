@@ -45,4 +45,16 @@ public class ProductController {
         return "manager/editproduct.html";
     }
 
+    @PostMapping("/applyproduct")
+    public String applyStock(@RequestParam Map<String, String> ToApply) {
+        System.out.println(ToApply.get("name"));
+        Product modProduct = productRepository.findById(Integer.parseInt(ToApply.get("pid"))).get();
+        modProduct.setProductName(ToApply.get("name"));
+        modProduct.setProductCategory(ToApply.get("category"));
+        modProduct.setProductPrice(Float.parseFloat(ToApply.get("price")));
+        modProduct.setProductQuantity(Integer.parseInt(ToApply.get("quantity")));
+        productRepository.save(modProduct);
+        return "redirect:/managestock";
+    }
+
 }
