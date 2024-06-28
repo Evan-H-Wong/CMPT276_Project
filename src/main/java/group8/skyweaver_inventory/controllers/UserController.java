@@ -23,8 +23,13 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/")
-    public String redirect() {
-        return "/login.html";
+    public String redirectToLogin() {
+        return "redirect:/authentication/login.html";
+    }
+
+    @GetMapping("/register")
+    public String getRegister() {
+        return "redirect:/authentication/register.html";
     }
 
     @PostMapping("/login")
@@ -37,12 +42,12 @@ public class UserController {
         System.out.println(accesslevel);
         // now there is either 1 or 0 users in the list, 1 if there is already a registered user with that username and password
         if(users.isEmpty()) {
-            return "login.html";
+            return "/authentication/login.html";
         } else {
             User user = users.get(0);
             request.getSession().setAttribute("sessionUser", user);
             model.addAttribute("user", user);
-            return "protected.html";
+            return "/authentication/protected.html";
         }
     }
 
@@ -50,10 +55,10 @@ public class UserController {
     public String getLogin(Model model, HttpServletRequest request, HttpSession session) {
         User user = (User) session.getAttribute("sessionUser");
         if (user != null) {
-            return "/login.html";
+            return "/authentication/login.html";
         } else {
             model.addAttribute("user", user);
-            return "/protected.html";
+            return "/authentication/protected.html";
         }
     }
 
@@ -62,18 +67,18 @@ public class UserController {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel");
+
         User user = new User(username, password, accesslevel);
         userRepository.save(user);
         response.setStatus(201);
-        return "/login.html";
+
+        return "redirect:/authentication/protected.html";
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         request.getSession().invalidate();
-        return "/login.html";
+        return "/authentication/login.html";
     }
-
-    
 
 }

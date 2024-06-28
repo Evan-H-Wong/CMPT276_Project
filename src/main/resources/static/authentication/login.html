@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver login</title>
+    <link rel="stylesheet" th:href="@{/css/homepageStyle.css}">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e0f2f1;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous">
+    </script>
+    <script>
+        $(function(){
+            $("#header").load("header.html");
+            $("#aside").load("aside.html");
+            $("#footer").load("footer.html");
+        });
+    </script>
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <form action="/login" method="post">
+            <label for="username">Enter Username:</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Enter Password:</label><br>
+            <input type="password" id="password" name="password"><br>
+            <label for="accesslevel">Enter 'Manager' or 'Employee'</label><br>
+            <input type="text" id="accesslevel" name="accesslevel"><br>
+            <input type="submit" value="Login">
+            <button onclick="window.location.href='/register'">Register</button>
+        </form>
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+</html>
