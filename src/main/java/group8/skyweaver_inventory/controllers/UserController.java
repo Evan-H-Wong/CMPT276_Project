@@ -34,20 +34,27 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@RequestParam Map<String, String> login, Model model, HttpServletRequest request, HttpSession session) {
+        int uid = Integer.parseInt(login.get("uid"));
         String username = login.get("username");
         String password = login.get("password");
-        String accesslevel = login.get("role");
+        String accesslevel = login.get("accesslevel");
 
-        List<User> users = userRepository.findByUsernameAndPasswordAndAccesslevel(username, password, accesslevel);
+        User user = UserRepository.findById(uid).orElse(null);
         System.out.println(accesslevel);
-        // now there is either 1 or 0 users in the list, 1 if there is already a registered user with that username and password
-        if(users.isEmpty()) {
-            return "/authentication/login.html";
-        } else {
-            User user = users.get(0);
-            request.getSession().setAttribute("sessionUser", user);
+
+        if (user != null && user.getUsername().equals(username) && user.getPassword().equals(password) && user.getAccesslevel().equals(accesslevel)) {
+            session.setAttribute("sessionUser", user);
             model.addAttribute("user", user);
-            return "/authentication/protected.html";
+            if(user.getAccesslevel().equals("Manager") || user.getAccesslevel().equals("manager")){
+                return "redirect:/manager.html";
+            } else if(user.getAccesslevel().equals("Employee") || user.getAccesslevel().equals("employee")){
+                return "redirect:/employee.html";
+            } else {
+                return "redirect:/authentication/error.html";
+            }
+        } else {
+            model.addAttribute("error", "Invalid credentials");
+            return "/authentication/login.html";
         }
     }
 
@@ -58,7 +65,13 @@ public class UserController {
             return "/authentication/login.html";
         } else {
             model.addAttribute("user", user);
-            return "/authentication/protected.html";
+            if(user.getAccesslevel().equals("Manager") || user.getAccesslevel().equals("manager")){
+                return "redirect:/manager.html";
+            } else if(user.getAccesslevel().equals("Employee") || user.getAccesslevel().equals("employee")){
+                return "redirect:/employee.html";
+            } else {
+                return "redirect:/authentication/error.html";
+            }
         }
     }
 
@@ -72,7 +85,13 @@ public class UserController {
         userRepository.save(user);
         response.setStatus(201);
 
-        return "redirect:/authentication/protected.html";
+        if(accesslevel.equals("Manager") || accesslevel.equals("manager")){
+            return "redirect:/manager.html";
+        } else if(accesslevel.equals("Employee") || accesslevel.equals("employee")){
+            return "redirect:/employee.html";
+        } else {
+            return "redirect:/authentication/error.html";
+        }
     }
 
     @GetMapping("/logout")
