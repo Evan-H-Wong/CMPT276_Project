@@ -23,37 +23,35 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/")
-    public String redirect() {
-        return "/login.html";
+    public String redirectToLogin() {
+        return "redirect:/authentication/login.html";
+    }
+
+    @GetMapping("/register")
+    public String getRegister() {
+        return "redirect:/authentication/register.html";
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam Map<String, String> login, Model model, HttpServletRequest request, HttpSession session) {
+    public String login(@RequestParam Map<String, String> login, Model model) {
+        int uid = Integer.parseInt(login.get("uid"));
         String username = login.get("username");
         String password = login.get("password");
-        String accesslevel = login.get("role");
+        String accesslevel = login.get("accesslevel");
 
-        List<User> users = userRepository.findByUsernameAndPasswordAndAccesslevel(username, password, accesslevel);
-        System.out.println(accesslevel);
-        // now there is either 1 or 0 users in the list, 1 if there is already a registered user with that username and password
-        if(users.isEmpty()) {
-            return "login.html";
-        } else {
-            User user = users.get(0);
-            request.getSession().setAttribute("sessionUser", user);
-            model.addAttribute("user", user);
-            return "protected.html";
-        }
-    }
-
-    @GetMapping("/login")
-    public String getLogin(Model model, HttpServletRequest request, HttpSession session) {
-        User user = (User) session.getAttribute("sessionUser");
+        User user = userRepository.findById(uid).orElse(null);
         if (user != null) {
-            return "/login.html";
-        } else {
             model.addAttribute("user", user);
-            return "/protected.html";
+            if (accesslevel.equalsIgnoreCase("manager")) {
+                return "redirect:/manager.html";
+            } else if (accesslevel.equalsIgnoreCase("employee")) {
+                return "redirect:/employee.html";
+            } else {
+                return "redirect:/authentication/error.html";
+            }
+        } else {
+            model.addAttribute("error", "Invalid credentials");
+            return "/authentication/login.html";
         }
     }
 
@@ -62,18 +60,36 @@ public class UserController {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel");
+
+        // if it is not Manager, manager, Employee, or employee, it will return an error and go back to the register page
+        if (!accesslevel.equalsIgnoreCase("Manager") && !accesslevel.equalsIgnoreCase("Employee")) {
+            response.setStatus(400);
+            return "redirect:/authentication/register.html";
+        }
+
+        // makes sure to make any manager or employee all uppercase characters
+        if (accesslevel.equalsIgnoreCase("manager")) {
+            accesslevel = "MANAGER";
+        } else if (accesslevel.equalsIgnoreCase("employee")) {
+            accesslevel = "EMPLOYEE";
+        }
+
         User user = new User(username, password, accesslevel);
         userRepository.save(user);
         response.setStatus(201);
-        return "/login.html";
+
+        if (accesslevel.equalsIgnoreCase("manager")) {
+            return "redirect:/manager.html";
+        } else if (accesslevel.equalsIgnoreCase("employee")) {
+            return "redirect:/employee.html";
+        } else {
+            return "redirect:/authentication/error.html";
+        }
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         request.getSession().invalidate();
-        return "/login.html";
+        return "/authentication/login.html";
     }
-
-    
-
 }
