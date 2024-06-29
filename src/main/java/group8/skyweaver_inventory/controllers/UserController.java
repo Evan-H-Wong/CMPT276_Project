@@ -33,21 +33,18 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam Map<String, String> login, Model model, HttpServletRequest request, HttpSession session) {
+    public String login(@RequestParam Map<String, String> login, Model model) {
         int uid = Integer.parseInt(login.get("uid"));
         String username = login.get("username");
         String password = login.get("password");
         String accesslevel = login.get("accesslevel");
 
-        User user = UserRepository.findById(uid).orElse(null);
-        System.out.println(accesslevel);
-
-        if (user != null && user.getUsername().equals(username) && user.getPassword().equals(password) && user.getAccesslevel().equals(accesslevel)) {
-            session.setAttribute("sessionUser", user);
+        User user = userRepository.findById(uid).orElse(null);
+        if (user != null) {
             model.addAttribute("user", user);
-            if(user.getAccesslevel().equals("Manager") || user.getAccesslevel().equals("manager")){
+            if (accesslevel.equalsIgnoreCase("manager")) {
                 return "redirect:/manager.html";
-            } else if(user.getAccesslevel().equals("Employee") || user.getAccesslevel().equals("employee")){
+            } else if (accesslevel.equalsIgnoreCase("employee")) {
                 return "redirect:/employee.html";
             } else {
                 return "redirect:/authentication/error.html";
@@ -58,36 +55,32 @@ public class UserController {
         }
     }
 
-    @GetMapping("/login")
-    public String getLogin(Model model, HttpServletRequest request, HttpSession session) {
-        User user = (User) session.getAttribute("sessionUser");
-        if (user != null) {
-            return "/authentication/login.html";
-        } else {
-            model.addAttribute("user", user);
-            if(user.getAccesslevel().equals("Manager") || user.getAccesslevel().equals("manager")){
-                return "redirect:/manager.html";
-            } else if(user.getAccesslevel().equals("Employee") || user.getAccesslevel().equals("employee")){
-                return "redirect:/employee.html";
-            } else {
-                return "redirect:/authentication/error.html";
-            }
-        }
-    }
-
     @PostMapping("/register")
     public String register(@RequestParam Map<String, String> register, HttpServletResponse response) {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel");
 
+        // if it is not Manager, manager, Employee, or employee, it will return an error and go back to the register page
+        if (!accesslevel.equalsIgnoreCase("Manager") && !accesslevel.equalsIgnoreCase("Employee")) {
+            response.setStatus(400);
+            return "redirect:/authentication/register.html";
+        }
+
+        // makes sure to make any manager or employee all uppercase characters
+        if (accesslevel.equalsIgnoreCase("manager")) {
+            accesslevel = "MANAGER";
+        } else if (accesslevel.equalsIgnoreCase("employee")) {
+            accesslevel = "EMPLOYEE";
+        }
+
         User user = new User(username, password, accesslevel);
         userRepository.save(user);
         response.setStatus(201);
 
-        if(accesslevel.equals("Manager") || accesslevel.equals("manager")){
+        if (accesslevel.equalsIgnoreCase("manager")) {
             return "redirect:/manager.html";
-        } else if(accesslevel.equals("Employee") || accesslevel.equals("employee")){
+        } else if (accesslevel.equalsIgnoreCase("employee")) {
             return "redirect:/employee.html";
         } else {
             return "redirect:/authentication/error.html";
@@ -99,5 +92,4 @@ public class UserController {
         request.getSession().invalidate();
         return "/authentication/login.html";
     }
-
 }
