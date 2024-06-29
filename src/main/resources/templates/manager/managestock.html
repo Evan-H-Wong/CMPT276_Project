@@ -60,7 +60,7 @@ $(function(){
                         </td>
                         <td><a th:id="${product.pid}" style="display:inline" href="#" onclick="EditProduct(this)">Edit</a> | 
                             <form th:action="@{'/products/delete/' + ${product.pid}}" method="post">
-                                <button type = "submit" style= "display:inline; background:none; border:none; padding:0;">Delete</button>
+                                <button type = "submit" style = "display:inline; background:none; border:none; padding:0;">Delete</button>
                             </form>
                         </td>
                     </tr>

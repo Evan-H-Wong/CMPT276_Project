@@ -20,8 +20,8 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    @PostMapping("/manager/add")
-    public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response)
+    @PostMapping("/productAdded")
+    public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response, Model model)
     {
         String productName = newProduct.get("productName");
         int productQuantity = Integer.parseInt(newProduct.get("productQuantity"));
@@ -29,8 +29,20 @@ public class ProductController {
         String productCategory = newProduct.get("productCategory");
         productRepository.save(new Product(productName, productQuantity, productPrice, productCategory));
         response.setStatus(201);
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        model.addAttribute("p",products);
+        return "manager/productAdded";
+    }   
+    
+// This page can only be accessed via adding a new product, if you refresh the page,
+// it resubmits the form and duplicates the item you added, and writing manager/productAdded
+// in the url will break the css (the header, aside, footer)
+    @GetMapping("manager/productAdded")
+    public String productAddedRedirect(Model model) {
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        model.addAttribute("p",products);
         return "manager/productAdded.html";
-    }    
+    }
 
     @PostMapping("/products/delete/{pid}")
     public String deleteRectangle(@PathVariable ("pid") int id) 
