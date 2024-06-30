@@ -46,7 +46,7 @@ it resubmits the form and duplicates the item you added -->
                     <tr id="bodies" th:each="product:${p}">
                         <td th:text="${product.productName}"></td>
                         <td th:text="${product.productCategory}"></td>
-                        <td>$ <p th:text="${product.productPrice}" style="display:inline"></p></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" style="display:inline"></p></td>
                         <td th:text="${product.productQuantity}"></td>
                         <td th:switch="${product.productQuantity}">
                             <span th:case="0">Out of Stock</span>
