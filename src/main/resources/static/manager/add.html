@@ -24,27 +24,33 @@ $(function(){
 <div class="container">
     <div id="aside"></div>
     <main>
-
-        <form action="/manager/add" method="post">
-                    
-            <div>
-                <input type = "text" id = "productName" name = "productName" placeholder = "Product Name">
-            </div>
-            <div>
-                <input type = "number" id = "productQuantity" name = "productQuantity" placeholder = "Product Quantity">
-            </div>
-
-            <div>
-                <input type = "number" step="0.01" id = "productPrice" name = "productPrice" placeholder = "Product Price">
-            </div>
-
-            <div>
-                <label for = "productCategory">Category:</label>
-                <select name = "productCategory" id = "productCategory">
-                <option value = "productCategoryA">Category A</option>
-                <option value = "productCategoryB">Category B</option>
-                </select>
-            </div>
+        <form action="/productAdded" method="post">
+            <section class="inventory-overview">
+                <h2>Add New Product</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Product Quantity</th>
+                            <th>Product Price</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type = "text" id = "productName" name = "productName" style = "height: 20px;" placeholder = "Product Name"></td>
+                            <td><input type = "number" id = "productQuantity" name = "productQuantity" style = "height: 20px" placeholder = "Product Quantity"></td>
+                            <td><input type = "number" step="0.01" id = "productPrice" name = "productPrice" style = "height: 20px" placeholder = "Product Price"></td></td>
+                            <td><label for = "productCategory">Category:</label>
+                                <select name = "productCategory" id = "productCategory" style = "height: 20px">
+                                <option value = "productCategoryA">Category A</option>
+                                <option value = "productCategoryB">Category B</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
             <section class = "quick-actions">
                 <div>
                     <button type = "submit">Add New Product</button>

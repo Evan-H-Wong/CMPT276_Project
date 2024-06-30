@@ -13,8 +13,8 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("manager/header.html");
-    $("#aside").load("manager/aside.html");
+    $("#header").load("manager/templateHeader.html");
+    $("#aside").load("manager/templateAside.html");
     $("#footer").load("manager/footer.html");
 });
 </script> 
@@ -27,15 +27,17 @@ $(function(){
         <section class="dashboard-overview">
             <h1>Overview</h1>
             <div class="stats">
-                <div>Total Products: 100</div>
-                <div>Out of Stock: 5</div>
-                <div>Low Stock: 10</div>
+                <div><p style="display:inline">Total Products: </p><p style="display:inline" th:text="${rowCount}"></p></div>
+                <div><p style="display:inline">Out of Stock: </p><p style="display:inline" th:text="${outofstock}"></p></div>
+                <div><p style="display:inline">Low Stock (Less than 12 in Stock): </p><p style="display:inline" th:text="${lowstock}"></p></div>
             </div>
         </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
             <form th:name = "editform" action = "/editproduct" method = "get">
                 <input type = "hidden" name = "toEdit" id = "toEdit" value = "temp"></input>
+            </form>
+            <form id = "toDelete" th:name = "deleteform" action = "/products/delete/" method = "post">
             </form>
             <table>
                 <thead>
@@ -52,16 +54,14 @@ $(function(){
                     <tr id="bodies" th:each="product:${p}">
                         <td th:text="${product.productName}"></td>
                         <td th:text="${product.productCategory}"></td>
-                        <td>$ <p th:text="${product.productPrice}" style="display:inline"></p></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" style="display:inline"></p></td>
                         <td th:text="${product.productQuantity}"></td>
                         <td th:switch="${product.productQuantity}">
                             <span th:case="0">Out of Stock</span>
                             <span th:case="*">In Stock</span>
                         </td>
                         <td><a th:id="${product.pid}" style="display:inline" href="#" onclick="EditProduct(this)">Edit</a> | 
-                            <form th:action="@{'/products/delete/' + ${product.pid}}" method="post">
-                                <button type = "submit" style= "display:inline; background:none; border:none; padding:0;">Delete</button>
-                            </form>
+                            <a th:id="${product.pid}" style="display:inline" href="#" onclick="DeleteProduct(this)">Delete</a>
                         </td>
                     </tr>
                 </tbody>
@@ -76,6 +76,12 @@ $(function(){
     {
         document.getElementById("toEdit").value = (EditButton.id).toString();
         document.editform.submit();
+    }
+
+    function DeleteProduct(DeleteButton)
+    {
+        document.getElementById("toDelete").action = ("/products/delete/" + (DeleteButton.id).toString());
+        document.getElementById("toDelete").submit();
     }
 </script>
 </html>

@@ -13,26 +13,48 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("header.html");
-    $("#aside").load("aside.html");
-    $("#footer").load("footer.html");
+    $("#header").load("manager/templateHeader.html");
+    $("#aside").load("manager/templateAside.html");
+    $("#footer").load("manager/footer.html");
 });
 </script> 
 </head>
+<!-- NOTE: This page can only be accessed via adding a new product, if you refresh the page,
+it resubmits the form and duplicates the item you added -->
 <body>
 <div id="header"></div>
 <div class="container">
     <div id="aside"></div>
     <main>
-
-        Product added Successfully
-            <section class="quick-actions">
-                <h2>Actions</h2>
-                <a href="add.html"><button>Add New Product</button></a>
-                <button>Create New Order</button>
-                <button>Generate Report</button>
-            </section>
-
+        <h2>Product successfully added to inventory</h2> 
+        <section class="quick-actions">
+            <h2>Would you like to:</h2>
+            <a href="manager/add.html"><button>Add Another New Product</button></a>
+            <button>Create New Order</button>
+            <button>Generate Report</button>
+        </section>
+        <section class="inventory-overview">
+            <h2>Inventory List</h2>
+            <table>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Level</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr id="bodies" th:each="product:${p}">
+                        <td th:text="${product.productName}"></td>
+                        <td th:text="${product.productCategory}"></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" style="display:inline"></p></td>
+                        <td th:text="${product.productQuantity}"></td>
+                        <td th:switch="${product.productQuantity}">
+                            <span th:case="0">Out of Stock</span>
+                            <span th:case="*">In Stock</span>
+                        </td>
+                    </tr>
+            </table>
+        </section>
     </main>
 </div>
 <div id="footer"></div>

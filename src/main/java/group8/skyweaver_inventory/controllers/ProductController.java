@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,8 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    @PostMapping("/manager/add")
-    public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response)
+    @PostMapping("/productAdded")
+    public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response, Model model)
     {
         String productName = newProduct.get("productName");
         int productQuantity = Integer.parseInt(newProduct.get("productQuantity"));
@@ -29,8 +30,20 @@ public class ProductController {
         String productCategory = newProduct.get("productCategory");
         productRepository.save(new Product(productName, productQuantity, productPrice, productCategory));
         response.setStatus(201);
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        model.addAttribute("p", products);
+        return "manager/productAdded";
+    }   
+    
+// This page can only be accessed via adding a new product, if you refresh the page,
+// it resubmits the form and duplicates the item you added, and writing manager/productAdded
+// in the url will break the css (the header, aside, footer)
+    @GetMapping("manager/productAdded")
+    public String productAddedRedirect(Model model) {
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        model.addAttribute("p",products);
         return "manager/productAdded.html";
-    }    
+    }
 
     @PostMapping("/products/delete/{pid}")
     public String deleteRectangle(@PathVariable ("pid") int id) 
@@ -42,13 +55,24 @@ public class ProductController {
     @GetMapping("/managestock")
     public String stockRedirect(Model model) {
         List<Product> products = productRepository.findByOrderByProductNameAsc();
-        model.addAttribute("p",products);
+        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        model.addAttribute("p", products);
+        model.addAttribute("rowCount", products.size());
+        model.addAttribute("outofstock", outofstock.size());
+        model.addAttribute("lowstock", lowstock.size());
         return "manager/managestock.html";
     }
 
     @GetMapping("/editproduct")
     public String editStock(Model model, @RequestParam Map<String, String> ToEdit) {
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
         Product product = productRepository.findByPid(Integer.parseInt(ToEdit.get("toEdit")));
+        model.addAttribute("rowCount", products.size());
+        model.addAttribute("outofstock", outofstock.size());
+        model.addAttribute("lowstock", lowstock.size());
         model.addAttribute("p", product);
         return "manager/editproduct.html";
     }
@@ -59,7 +83,8 @@ public class ProductController {
         Product modProduct = productRepository.findById(Integer.parseInt(ToApply.get("pid"))).get();
         modProduct.setProductName(ToApply.get("name"));
         modProduct.setProductCategory(ToApply.get("category"));
-        modProduct.setProductPrice(Float.parseFloat(ToApply.get("price")));
+        String temp = String.format("%.2f", Float.parseFloat(ToApply.get("price")));
+        modProduct.setProductPrice(Float.parseFloat(temp));
         modProduct.setProductQuantity(Integer.parseInt(ToApply.get("quantity")));
         productRepository.save(modProduct);
         return "redirect:/managestock";
