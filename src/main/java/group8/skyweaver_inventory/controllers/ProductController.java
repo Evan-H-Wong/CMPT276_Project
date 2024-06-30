@@ -31,7 +31,7 @@ public class ProductController {
         productRepository.save(new Product(productName, productQuantity, productPrice, productCategory));
         response.setStatus(201);
         List<Product> products = productRepository.findByOrderByProductNameAsc();
-        model.addAttribute("p",products);
+        model.addAttribute("p", products);
         return "manager/productAdded";
     }   
     
