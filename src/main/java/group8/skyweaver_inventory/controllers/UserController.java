@@ -1,5 +1,7 @@
 package group8.skyweaver_inventory.controllers;
 
+import group8.skyweaver_inventory.models.Product;
+import group8.skyweaver_inventory.models.ProductRepository;
 import group8.skyweaver_inventory.models.User;
 import group8.skyweaver_inventory.models.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +11,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @PostMapping("/register")
     public String register(@RequestParam Map<String, String> register) {
@@ -87,8 +97,27 @@ public class UserController {
         return "all";
     }
 
-    @GetMapping("/homepage.html")
-    public String homepage() {
-        return "homepage";
+    @GetMapping("/manager/homepage.html")
+    public String managerHomepage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        lowstock.sort(Comparator.comparingInt(Product::getProductQuantity));
+        model.addAttribute("lowstockproducts", lowstock);
+        model.addAttribute("outofstockproducts", outofstock);
+        model.addAttribute("rowCount", products.size());
+        model.addAttribute("outofstock", outofstock.size());
+        model.addAttribute("lowstock", lowstock.size());
+        model.addAttribute("restock", lowstock);
+        model.addAttribute("username", user.getUsername());
+        return "manager/homepage";
+    }
+
+    @GetMapping("/employee/homepage.html")
+    public String employeeHomepage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("username", user.getUsername());
+        return "employee/homepage";
     }
 }
