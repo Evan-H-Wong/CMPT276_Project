@@ -88,12 +88,16 @@ public class UserController {
     }
 
     @GetMapping("/manager/homepage.html")
-    public String managerHomepage() {
+    public String managerHomepage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("username", user.getUsername());
         return "manager/homepage";
     }
 
     @GetMapping("/employee/homepage.html")
-    public String employeeHomepage() {
+    public String employeeHomepage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        model.addAttribute("username", user.getUsername());
         return "employee/homepage";
     }
 }
