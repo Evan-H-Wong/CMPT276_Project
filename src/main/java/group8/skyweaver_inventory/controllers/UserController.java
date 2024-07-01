@@ -87,8 +87,13 @@ public class UserController {
         return "all";
     }
 
-    @GetMapping("/homepage.html")
-    public String homepage() {
-        return "homepage";
+    @GetMapping("/manager/homepage.html")
+    public String managerHomepage() {
+        return "manager/homepage";
+    }
+
+    @GetMapping("/employee/homepage.html")
+    public String employeeHomepage() {
+        return "employee/homepage";
     }
 }
