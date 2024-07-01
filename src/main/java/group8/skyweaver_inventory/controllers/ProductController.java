@@ -14,6 +14,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 public class ProductController {
@@ -89,5 +92,6 @@ public class ProductController {
         productRepository.save(modProduct);
         return "redirect:/managestock";
     }
+    
 
 }
