@@ -28,12 +28,11 @@ $(function(){
         <section class="dashboard-overview">
             <h1>Dashboard</h1>
             <div class="stats">
-                <div>Total Products: 100</div>
-                <div>Out of Stock: 5</div>
-                <div>Low Stock: 10</div>
-                <div>Recent Orders: 20</div>
-                <div>Total Suppliers: 15</div>
-                <div>Monthly Sales: $5000</div>
+                <div><p style="display:inline">Total Products: </p><p style="display:inline" th:text="${rowCount}"></p></div>
+                <div><p style="display:inline">Out of Stock: </p><p style="display:inline" th:text="${outofstock}"></p></div>
+                <div><p style="display:inline">Low Stock (Less than 12 in Stock): </p><p style="display:inline" th:text="${lowstock}"></p></div>
+                <div>Recent Orders: X</div>
+                <div>Total Suppliers: X</div>
             </div>
         </section>
         <section class="quick-actions">
@@ -43,7 +42,7 @@ $(function(){
             <button>Generate Report</button>
         </section>
         <section class="inventory-overview">
-            <h2>Inventory Overview</h2>
+            <h2>No/Low Stock</h2>
             <table>
                 <thead>
                     <tr>
@@ -52,23 +51,18 @@ $(function(){
                         <th>Price</th>
                         <th>Stock Level</th>
                         <th>Status</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Product 1</td>
-                        <td>Category A</td>
-                        <td>50</td>
-                        <td>In Stock</td>
-                        <td>Edit | Delete</td>
-                    </tr>
-                    <tr>
-                        <td>Product 2</td>
-                        <td>Category B</td>
-                        <td>0</td>
-                        <td>Out of Stock</td>
-                        <td>Edit | Delete</td>
+                    <tr id="bodies" th:each="product:${restock}">
+                        <td th:text="${product.productName}"></td>
+                        <td th:text="${product.productCategory}"></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" style="display:inline"></p></td>
+                        <td th:text="${product.productQuantity}"></td>
+                        <td th:switch="${product.productQuantity}">
+                            <span th:case="0">Out of Stock</span>
+                            <span th:case="*">In Stock</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
