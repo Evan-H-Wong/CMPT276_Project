@@ -24,7 +24,7 @@ $(function(){
 <div class="container">
     <div id="aside"></div>
     <main>
-        <div class="greeting">Hi, Brandon<span id="username"></span>!</div><br>
+        <div class="greeting">Hi, <span th:text="${username}"></span>!</div><br>
         <section class="dashboard-overview">
             <h1>Dashboard</h1>
             <div class="stats">
