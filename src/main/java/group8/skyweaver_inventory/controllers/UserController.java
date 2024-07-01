@@ -1,16 +1,14 @@
 package group8.skyweaver_inventory.controllers;
 
-
 import group8.skyweaver_inventory.models.User;
 import group8.skyweaver_inventory.models.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.Map;
 
 @Controller
@@ -19,54 +17,78 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @PostMapping("/register")
+    public String register(@RequestParam Map<String, String> register) {
+        String username = register.get("username");
+        String password = register.get("password");
+        String accesslevel = register.get("accesslevel").toUpperCase();
 
-    @GetMapping("/")
-    public String redirectToLogin() {
+        // Validate access level
+        if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {
+            return "redirect:/error.html";
+        }
+
+        // Save new user
+        User user = new User(username, password, accesslevel);
+        userRepository.save(user);
+
         return "redirect:/auth/login.html";
     }
 
-    @GetMapping("/register")
-    public String getRegister() {
-        return "redirect:/auth/register.html";
-    }
+    @GetMapping("/login")
+    public String getLogin(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
 
-    @PostMapping("/register")
-    public String register(@RequestParam Map<String, String> register, HttpServletResponse response) {
-        String username = register.get("username");
-        String password = register.get("password");
-        String accesslevel = register.get("accesslevel");
-
-        // makes sure to make any manager or employee all uppercase characters
-        accesslevel = accesslevel.toUpperCase();
-
-        // if it is not Manager, manager, Employee, or employee, it will return an error and go back to the register page
-        if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {
-            response.setStatus(400);
-            return "redirect:/auth/register.html";
+        if (user != null) {
+            if (user.getAccesslevel().equals("MANAGER")) {
+                return "redirect:/personalized/manager.html";
+            } else if (user.getAccesslevel().equals("EMPLOYEE")) {
+                return "redirect:/personalized/employee.html";
+            }
         }
 
-        System.out.println("Username: " + username);
-        // Encode the password before saving
-        String encodedPassword = passwordEncoder.encode(password);
-        User user = new User(username, encodedPassword, accesslevel);
-        userRepository.save(user);
-        response.setStatus(201);
+        return "redirect:/auth/login.html";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam Map<String, String> login, HttpSession session, Model model) {
+        String username = login.get("username");
+        String password = login.get("password");
+        String accesslevel = login.get("accesslevel").toUpperCase();
+
+        User user = userRepository.findByUsernameAndPassword(username, password);
+
+        if (user != null && user.getAccesslevel().equals(accesslevel)) {
+            session.setAttribute("user", user);
+
+            if (accesslevel.equals("MANAGER")) {
+                return "personalized/manager";
+            } else if (accesslevel.equals("EMPLOYEE")) {
+                return "personalized/employee";
+            }
+        }
         return "redirect:/auth/login.html";
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request) {
-        request.getSession().invalidate();
+    public String logout(HttpSession session) {
+        session.invalidate();
         return "redirect:/auth/login.html";
     }
 
-    @GetMapping("/default")
-    public String defaultAfterLogin(HttpServletRequest request) {
-        if (request.isUserInRole("MANAGER")) {
-            return "redirect:/personalized/manager.html";
-        }
-        return "redirect:/personalized/employee.html";
+    @GetMapping("/")
+    public RedirectView redirectToLogin() {
+        return new RedirectView("/auth/login.html");
+    }
+
+    @GetMapping("/auth/all.html")
+    public String allUsers(Model model) {
+        model.addAttribute("users", userRepository.findAll());
+        return "all";
+    }
+
+    @GetMapping("/homepage.html")
+    public String homepage() {
+        return "homepage";
     }
 }
