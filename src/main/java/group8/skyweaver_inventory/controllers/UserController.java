@@ -38,6 +38,9 @@ public class UserController {
             return "redirect:/error.html";
         }
 
+        if (userRepository.findByUsername(username) != null) {
+            return "redirect:/error.html";
+        }
         // Save new user
         User user = new User(username, password, accesslevel);
         userRepository.save(user);
@@ -119,6 +122,16 @@ public class UserController {
     @GetMapping("/employee/homepage.html")
     public String employeeHomepage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        lowstock.sort(Comparator.comparingInt(Product::getProductQuantity));
+        model.addAttribute("lowstockproducts", lowstock);
+        model.addAttribute("outofstockproducts", outofstock);
+        model.addAttribute("rowCount", products.size());
+        model.addAttribute("outofstock", outofstock.size());
+        model.addAttribute("lowstock", lowstock.size());
+        model.addAttribute("restock", lowstock);
         model.addAttribute("username", user.getUsername());
         return "employee/homepage";
     }

@@ -13,9 +13,9 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("header.html");
-    $("#aside").load("aside.html");
-    $("#footer").load("footer.html");
+    $("#header").load("employee/header.html");
+    $("#aside").load("employee/aside.html");
+    $("#footer").load("employee/footer.html");
 });
 </script> 
 </head>
@@ -24,25 +24,16 @@ $(function(){
 <div class="container">
     <div id="aside"></div>
     <main>
-        <div class="greeting">Hi, <span th:text="${username}"></span>!</div><br>
         <section class="dashboard-overview">
-            <h1>Dashboard</h1>
+            <h1>Overview</h1>
             <div class="stats">
                 <div><p style="display:inline">Total Products: </p><p style="display:inline" th:text="${rowCount}"></p></div>
                 <div><p style="display:inline">Out of Stock: </p><p style="display:inline" th:text="${outofstock}"></p></div>
                 <div><p style="display:inline">Low Stock (Less than 12 in Stock): </p><p style="display:inline" th:text="${lowstock}"></p></div>
-                <div>Recent Orders: X</div>
-                <div>Total Suppliers: X</div>
             </div>
         </section>
-        <section class="quick-actions">
-            <h2>Actions</h2>
-            <a href="/manager/add.html"><button>Add New Product</button></a>
-            <button>Create New Order</button>
-            <button>Generate Report</button>
-        </section>
         <section class="inventory-overview">
-            <h2>No/Low Stock</h2>
+            <h2>Inventory List</h2>
             <table>
                 <thead>
                     <tr>
@@ -51,10 +42,11 @@ $(function(){
                         <th>Price</th>
                         <th>Stock Level</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr id="bodies" th:each="product:${restock}">
+                    <tr id="bodies" th:each="product:${p}">
                         <td th:text="${product.productName}"></td>
                         <td th:text="${product.productCategory}"></td>
                         <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" style="display:inline"></p></td>
@@ -63,31 +55,7 @@ $(function(){
                             <span th:case="0">Out of Stock</span>
                             <span th:case="*">In Stock</span>
                         </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-        <section class="recent-orders">
-            <h2>Recent Orders</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>Order Date</th>
-                        <th>Status</th>
-                        <th>Total Amount</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
+                        <td>None</td>
                     </tr>
                 </tbody>
             </table>

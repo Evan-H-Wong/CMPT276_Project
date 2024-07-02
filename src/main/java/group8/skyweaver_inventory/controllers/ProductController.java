@@ -64,6 +64,18 @@ public class ProductController {
         return "manager/managestock.html";
     }
 
+    @GetMapping("/viewstock")
+    public String stockView(Model model) {
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        model.addAttribute("p", products);
+        model.addAttribute("rowCount", products.size());
+        model.addAttribute("outofstock", outofstock.size());
+        model.addAttribute("lowstock", lowstock.size());
+        return "employee/viewstock.html";
+    }
+
     @GetMapping("/editproduct")
     public String editStock(Model model, @RequestParam Map<String, String> ToEdit) {
         List<Product> products = productRepository.findByOrderByProductNameAsc();
