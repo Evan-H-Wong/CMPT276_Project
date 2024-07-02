@@ -47,7 +47,7 @@ public class UserControllerTest {
 
     @Test
     public void testRegisterSuccess() throws Exception {
-        String username = "testUser";
+        String username = "Fred";
         String password = "password";
         String accesslevel = "MANAGER";
 
@@ -76,7 +76,7 @@ public class UserControllerTest {
     @Test
     public void testGetLoginRedirectWithManagerSession() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User managerUser = new User("manager", "password", "MANAGER");
+        User managerUser = new User("Fred", "password", "MANAGER");
         session.setAttribute("user", managerUser);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/login").session(session))
@@ -87,7 +87,7 @@ public class UserControllerTest {
     @Test
     public void testGetLoginRedirectWithEmployeeSession() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        User employeeUser = new User("Bob", "password", "EMPLOYEE");
         session.setAttribute("user", employeeUser);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/login").session(session))
@@ -97,7 +97,7 @@ public class UserControllerTest {
 
     @Test
     public void testPostLoginSuccess() throws Exception {
-        String username = "test";
+        String username = "Fred";
         String password = "password";
         String accesslevel = "MANAGER";
     
@@ -116,7 +116,7 @@ public class UserControllerTest {
 
     @Test
     public void testPostLoginFailure() throws Exception {
-        String username = "test";
+        String username = "Fred";
         String password = "password";
         String accesslevel = "MANAGER";
 
