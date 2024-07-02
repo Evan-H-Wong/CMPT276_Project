@@ -35,11 +35,11 @@ public class UserController {
 
         // Validate access level
         if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {
-            return "redirect:/error.html";
+            return "redirect:/auth/error.html";
         }
 
         if (userRepository.findByUsername(username) != null) {
-            return "redirect:/error.html";
+            return "redirect:/auth/error.html";
         }
         // Save new user
         User user = new User(username, password, accesslevel);
@@ -82,7 +82,8 @@ public class UserController {
                 return "personalized/employee";
             }
         }
-        return "redirect:/auth/login.html";
+
+        return "redirect:/auth/login.html?error=true";
     }
 
     @GetMapping("/logout")
