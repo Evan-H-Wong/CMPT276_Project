@@ -71,6 +71,7 @@ public class UserController {
         if (user != null && user.getAccesslevel().equals(accesslevel)) {
             session.setAttribute("user", user);
             model.addAttribute("user", user);
+            model.addAttribute("username", user.getUsername());
 
             if (accesslevel.equals("MANAGER")) {
                 return "personalized/manager";
