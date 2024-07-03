@@ -114,7 +114,7 @@ public class UserControllerTest {
                 .param("password", password)
                 .param("accesslevel", accesslevel))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/login.html"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/login.html?error=true"));
     }
 
     @Test

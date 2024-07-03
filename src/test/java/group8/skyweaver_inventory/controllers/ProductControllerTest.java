@@ -41,10 +41,10 @@ public class ProductControllerTest {
     //Test successful item addition
     @Test
     public void testProductAddSuccess() throws Exception {
-        String pName = "Unique Corn Flakes Name";
+        String pName = "Bananas";
         Integer pQuantity = 5;
         float pPrice = 3.70f;
-        String pCategory = "Grocery";
+        String pCategory = "Fruits";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/productAdded")
                 .param("productName", pName)
@@ -60,36 +60,39 @@ public class ProductControllerTest {
     //Test duplicate item addition
     @Test
     public void testProductAddFailure() throws Exception {
+        Product existingProduct = new Product("Apples", 10, 3.00f, "Fruits");
+        when(productRepository.findByProductName("Apples")).thenReturn(existingProduct);
+
         String pName = "Apples"; //Name already exists in database
         Integer pQuantity = 5;
         float pPrice = 3.70f;
-        String pCategory = "Grocery";
+        String pCategory = "Fruits";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/productAdded")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
                 .param("productCategory", pCategory))
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
-        verify(productRepository, times(0));
+                .andExpect(MockMvcResultMatchers.status().isFound());
+                verify(productRepository, times(0)).save(any(Product.class));
     }
 
     //Test successful item deletion
     @Test
     public void testProductRemoveSuccess() throws Exception {
-        doNothing().when(productRepository).deleteById(49);
+        doNothing().when(productRepository).deleteById(1);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/products/delete/{pid}", 49))
+        mockMvc.perform(MockMvcRequestBuilders.post("/products/delete/{pid}", 1))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/managestock"));
 
-        verify(productRepository, times(1)).deleteById(49);
+        verify(productRepository, times(1)).deleteById(1);
     }
 
     //Test successful item edit
     @Test
     public void testProductEditSuccess() throws Exception {
-        Product existingProduct = new Product("Apples", 20, 2.99f, "Fruits");
+        Product existingProduct = new Product("Apples", 20, 1.99f, "Fruits");
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(existingProduct));
         when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
 
@@ -97,7 +100,7 @@ public class ProductControllerTest {
                         .param("pid", "49")
                         .param("name", "Apples")
                         .param("category", "Fruits")
-                        .param("price", "200.0")
+                        .param("price", "2.99")
                         .param("quantity", "20"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/managestock"));
