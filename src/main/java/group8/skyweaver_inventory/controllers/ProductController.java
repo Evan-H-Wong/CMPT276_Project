@@ -28,6 +28,11 @@ public class ProductController {
         int productQuantity = Integer.parseInt(newProduct.get("productQuantity"));
         float productPrice = Float.parseFloat(newProduct.get("productPrice"));
         String productCategory = newProduct.get("productCategory");
+
+        if (productRepository.findByProductName(productName) != null) {
+            return "redirect:/auth/productError.html";
+        }
+
         productRepository.save(new Product(productName, productQuantity, productPrice, productCategory));
         response.setStatus(201);
         List<Product> products = productRepository.findByOrderByProductNameAsc();
