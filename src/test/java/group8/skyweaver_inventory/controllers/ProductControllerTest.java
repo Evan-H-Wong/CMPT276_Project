@@ -41,10 +41,10 @@ public class ProductControllerTest {
     //Test successful item addition
     @Test
     public void testProductAddSuccess() throws Exception {
-        String pName = "Unique Corn Flakes Name";
+        String pName = "Bananas";
         Integer pQuantity = 5;
         float pPrice = 3.70f;
-        String pCategory = "Grocery";
+        String pCategory = "Fruits";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/productAdded")
                 .param("productName", pName)
@@ -60,18 +60,21 @@ public class ProductControllerTest {
     //Test duplicate item addition
     @Test
     public void testProductAddFailure() throws Exception {
+        Product existingProduct = new Product("Apples", 10, 3.00f, "Fruits");
+        when(productRepository.findByProductName("Apples")).thenReturn(existingProduct);
+
         String pName = "Apples"; //Name already exists in database
         Integer pQuantity = 5;
         float pPrice = 3.70f;
-        String pCategory = "Grocery";
+        String pCategory = "Fruits";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/productAdded")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
                 .param("productCategory", pCategory))
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
-        verify(productRepository, times(0));
+                .andExpect(MockMvcResultMatchers.status().isFound());
+                verify(productRepository, times(0)).save(any(Product.class));
     }
 
     //Test successful item deletion
