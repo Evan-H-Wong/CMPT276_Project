@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skyweaver Stock Manager</title>
+    <title>Skyweaver Product Orders</title>
     <link rel="stylesheet" href="../css/homepageStyle.css">
 </head>
 <script
@@ -13,9 +13,9 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("manager/header.html");
-    $("#aside").load("manager/aside.html");
-    $("#footer").load("manager/footer.html");
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
 });
 </script> 
 <body>
@@ -33,13 +33,7 @@ $(function(){
         </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
-            <form th:name = "editform" action = "/editproduct" method = "get">
-                <input type = "hidden" name = "toEdit" id = "toEdit" value = "temp"></input>
-            </form>
-            <form id = "toDelete" th:name = "deleteform" action = "/products/delete/" method = "post">
-            </form>
             <table>
-                <thead>
                     <tr>
                         <th>Product Name</th>
                         <th>Category</th>
@@ -48,8 +42,6 @@ $(function(){
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
-                </thead>
-                <tbody>
                     <tr id="bodies" th:each="product:${p}">
                         <td th:text="${product.productName}"></td>
                         <td th:text="${product.productCategory}"></td>
@@ -59,28 +51,14 @@ $(function(){
                             <span th:case="0">Out of Stock</span>
                             <span th:case="*">In Stock</span>
                         </td>
-                        <td><a th:id="${product.pid}" style="display:inline" href="#" onclick="EditProduct(this)">Edit</a> | 
-                            <a th:id="${product.pid}" style="display:inline" href="#" onclick="DeleteProduct(this)">Delete</a>
+                        <td>
+                            <a th:href = "@{'/products/order/' + ${product.pid}}" style="display:inline">Order</a>
                         </td>
                     </tr>
-                </tbody>
             </table>
         </section>
     </main>
 </div>
 <div id="footer"></div>
 </body>
-<script>
-    function EditProduct(EditButton)
-    {
-        document.getElementById("toEdit").value = (EditButton.id).toString();
-        document.editform.submit();
-    }
-
-    function DeleteProduct(DeleteButton)
-    {
-        document.getElementById("toDelete").action = ("/products/delete/" + (DeleteButton.id).toString());
-        document.getElementById("toDelete").submit();
-    }
-</script>
 </html>

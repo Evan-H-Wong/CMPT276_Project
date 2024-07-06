@@ -14,6 +14,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
 public class ProductController {
@@ -51,12 +54,35 @@ public class ProductController {
     }
 
     @PostMapping("/products/delete/{pid}")
-    public String deleteRectangle(@PathVariable ("pid") int id) 
+    public String deleteProduct(@PathVariable ("pid") int id) 
     {
         productRepository.deleteById(id);
         return "redirect:/managestock";
     }
     
+    @GetMapping("/manager/order.html")
+    public String orderRedirect(Model model) {
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        model.addAttribute("p", products);
+        model.addAttribute("rowCount", products.size());
+        model.addAttribute("outofstock", outofstock.size());
+        model.addAttribute("lowstock", lowstock.size());
+        return "manager/order.html";
+    }
+
+    @GetMapping("/products/order/{pid}")
+    public String productOrderRedirect(@PathVariable ("pid") int id, Model model) 
+    {
+        Product product = productRepository.findByPid(id);
+        model.addAttribute("o", product);
+        return "manager/orderProduct.html";
+    }
+
+
+    
+
     @GetMapping("/managestock")
     public String stockRedirect(Model model) {
         List<Product> products = productRepository.findByOrderByProductNameAsc();
