@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Inbox</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #e0f2f1;
+        }
+        .top-bar {
+            background-color: blue;
+            width: 100%;
+            padding: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .left-bar {
+            background-color: lightblue;
+            width: 25%;
+            height: 100%;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        .left-bar .message-item {
+            background-color: grey;
+            padding: 10px;
+            margin-bottom: 10px;
+            color: white;
+            cursor: pointer;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 75%;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <h1>Manager Inbox</h1>
+    <a href="/personalized/manager.html" class="btn btn-light">Back</a>
+</div>
+<div class="main-content">
+    <div class="left-bar">
+        <div th:each="message : ${messages}" class="message-item" th:text="${message.messageName}" th:onclick="'displayMessage(' + ${message.messageName} + ')'">
+        </div>
+    </div>
+    <div class="container">
+        <!-- Message content will be displayed here -->
+    </div>
+</div>
+<script>
+    function displayMessage(messageName) {
+        // Implement the function to display the message content
+    }
+</script>
+</body>
+</html>

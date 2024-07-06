@@ -1,9 +1,6 @@
 package group8.skyweaver_inventory.controllers;
 
-import group8.skyweaver_inventory.models.Product;
-import group8.skyweaver_inventory.models.ProductRepository;
-import group8.skyweaver_inventory.models.User;
-import group8.skyweaver_inventory.models.UserRepository;
+import group8.skyweaver_inventory.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -135,5 +132,30 @@ public class UserController {
         model.addAttribute("restock", lowstock);
         model.addAttribute("username", user.getUsername());
         return "employee/homepage";
+    }
+
+    @GetMapping("/manager/inbox")
+    public String managerInbox(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user != null && "MANAGER".equals(user.getAccesslevel())) {
+            List<Message> messages = user.getMessages();
+            model.addAttribute("messages", messages);
+            return "manager/managerinbox"; // Ensuring correct path to the template
+        }
+        return "redirect:/auth/login.html";
+    }
+
+
+    @GetMapping("/employee/employeeinbox.html")
+    public String employeeInbox(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user != null && "EMPLOYEE".equals(user.getAccesslevel())) {
+            List<Message> messages = user.getMessages();
+            model.addAttribute("messages", messages);
+            return "employee/employeeinbox";
+        }
+        return "redirect:/auth/login.html";
     }
 }

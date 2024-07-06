@@ -3,6 +3,8 @@ package group8.skyweaver_inventory.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -12,6 +14,9 @@ public class User {
     private String username;
     private String password;
     private String accesslevel; // either Manager or Employee
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Message> messages;
 
     public User() {
     }
@@ -39,6 +44,10 @@ public class User {
         return accesslevel;
     }
 
+    public List<Message> getMessages() {
+        return messages;
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -49,5 +58,9 @@ public class User {
 
     public void setAccesslevel(String accesslevel) {
         this.accesslevel = accesslevel;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 }
