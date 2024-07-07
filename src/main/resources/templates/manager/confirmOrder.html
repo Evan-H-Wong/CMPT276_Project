@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../css/homepageStyle.css">
+    <link rel="stylesheet" href="../../css/homepageStyle.css">
 </head>
 <script
     src="https://code.jquery.com/jquery-3.3.1.js"
@@ -13,9 +13,9 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("manager/templateHeader.html");
-    $("#aside").load("manager/templateAside.html");
-    $("#footer").load("manager/footer.html");
+    $("#header").load("../header.html");
+    $("#aside").load("../aside.html");
+    $("#footer").load("../footer.html");
 });
 </script> 
 </head>
@@ -24,15 +24,8 @@ $(function(){
 <div class="container">
     <div id="aside"></div>
     <main>
-        <h2>Product successfully added to inventory</h2> 
-        <section class="quick-actions">
-            <h2>Would you like to:</h2>
-            <a href="manager/add.html"><button>Add Another New Product</button></a>
-            <button>Create New Order</button>
-            <button>Generate Report</button>
-        </section>
         <section class="inventory-overview">
-            <h2>Active Product Orders List</h2>
+            <h2>Product details</h2>
             <table>
                     <tr>
                         <th>Product Name</th>
@@ -40,6 +33,7 @@ $(function(){
                         <th>Price</th>
                         <th>Stock Level</th>
                         <th>Status</th>
+                        <th>Order Quantity</th>
                     </tr>
                     <tr id="bodies" th:each="product:${o}">
                         <td th:text="${product.productName}"></td>
@@ -50,9 +44,21 @@ $(function(){
                             <span th:case="0">Out of Stock</span>
                             <span th:case="*">In Stock</span>
                         </td>
+                        <form action="/orderConfirmed" method = "post">
+                            <td><input type = "number" th:id = "orderQuantity" th:name = "orderQuantity" style = "height: 20px" placeholder = "Order Quantity"></td>
+                            <input type = "hidden" name = "productName" th:value="${product.productName}">
+                            <input type = "hidden" name = "productCategory" th:value="${product.productCategory}">
+                            <input type = "hidden" name = "productPrice" th:value="${product.productPrice}">
+                            <input type = "hidden" name = "productQuantity" th:value="${product.productQuantity}">
                     </tr>
             </table>
         </section>
+        <section class = "quick-actions">
+            <div>
+                <button type = "submit">Confirm Product Order</button>
+            </div>        
+        </section>
+    </form>
     </main>
 </div>
 <div id="footer"></div>

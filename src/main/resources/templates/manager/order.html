@@ -25,11 +25,6 @@ $(function(){
     <main>
         <section class="dashboard-overview">
             <h1>Overview</h1>
-            <div class="stats">
-                <div><p style="display:inline">Total Products: </p><p style="display:inline" th:text="${rowCount}"></p></div>
-                <div><p style="display:inline">Out of Stock: </p><p style="display:inline" th:text="${outofstock}"></p></div>
-                <div><p style="display:inline">Low Stock (Less than 12 in Stock): </p><p style="display:inline" th:text="${lowstock}"></p></div>
-            </div>
         </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
@@ -52,7 +47,37 @@ $(function(){
                             <span th:case="*">In Stock</span>
                         </td>
                         <td>
-                            <a th:href = "@{'/products/order/' + ${product.pid}}" style="display:inline">Order</a>
+                            <a th:href = "@{'/manager/order/' + ${product.pid}}" style="display:inline">Order</a>
+                        </td>
+                    </tr>
+            </table>
+        </section>
+        <section class="inventory-overview">
+            <h2>Active Product Orders List</h2>
+            <!-- <form id = "toDelete" th:name = "deleteform" action = "/order/delete/" method = "post">
+            </form> -->
+            <table>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Level</th>
+                        <th>Status</th>
+                        <th>Ordered Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr id="bodies" th:each="orderedProduct:${o}">
+                        <td th:text="${orderedProduct.productName}"></td>
+                        <td th:text="${orderedProduct.productCategory}"></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(orderedProduct.productPrice, 1, 2)}" style="display:inline"></p></td>
+                        <td th:text="${orderedProduct.productQuantity}"></td>
+                        <td th:switch="${orderedProduct.productQuantity}">
+                            <span th:case="0">Out of Stock</span>
+                            <span th:case="*">In Stock</span>
+                        </td>
+                        <td th:text="${orderedProduct.orderQuantity}"></td>
+                        <td>
+                            <a th:href = "@{'/product/delete/' + ${orderedProduct.pid}}" style="display:inline">Delete</a>
                         </td>
                     </tr>
             </table>

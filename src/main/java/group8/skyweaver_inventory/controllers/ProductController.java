@@ -2,6 +2,8 @@ package group8.skyweaver_inventory.controllers;
 
 import group8.skyweaver_inventory.models.Product;
 import group8.skyweaver_inventory.models.ProductRepository;
+import group8.skyweaver_inventory.models.OrderedProduct;
+import group8.skyweaver_inventory.models.OrderedProductRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -14,8 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @Controller
@@ -24,6 +25,8 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private OrderedProductRepository orderedProductRepository;
     @PostMapping("/productAdded")
     public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response, Model model)
     {
@@ -31,7 +34,6 @@ public class ProductController {
         int productQuantity = Integer.parseInt(newProduct.get("productQuantity"));
         float productPrice = Float.parseFloat(newProduct.get("productPrice"));
         String productCategory = newProduct.get("productCategory");
-
         if (productRepository.findByProductName(productName) != null) {
             return "redirect:/auth/productError.html";
         }
@@ -60,25 +62,44 @@ public class ProductController {
         return "redirect:/managestock";
     }
     
-    @GetMapping("/manager/order.html")
+    @GetMapping("/manager/order")
     public String orderRedirect(Model model) {
         List<Product> products = productRepository.findByOrderByProductNameAsc();
-        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
-        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        List<OrderedProduct> orderedProducts = orderedProductRepository.findByOrderByProductNameAsc();
+        model.addAttribute("o", orderedProducts);
         model.addAttribute("p", products);
-        model.addAttribute("rowCount", products.size());
-        model.addAttribute("outofstock", outofstock.size());
-        model.addAttribute("lowstock", lowstock.size());
+        
         return "manager/order.html";
     }
 
-    @GetMapping("/products/order/{pid}")
+    @GetMapping("/manager/order/{pid}")
     public String productOrderRedirect(@PathVariable ("pid") int id, Model model) 
     {
         Product product = productRepository.findByPid(id);
         model.addAttribute("o", product);
-        return "manager/orderProduct.html";
+        return "manager/confirmOrder.html";
     }
+
+    @PostMapping("/orderConfirmed")
+    public String newOrder(@RequestParam Map<String, String> newOrder, Model model) {
+        int orderQuantity = Integer.parseInt(newOrder.get("orderQuantity"));
+        String productName = newOrder.get("productName");
+        String productCategory = newOrder.get("productCategory");
+        int productQuantity = Integer.parseInt(newOrder.get("productQuantity"));
+        float productPrice = Float.parseFloat(newOrder.get("productPrice"));
+        orderedProductRepository.save(new OrderedProduct(productName, productQuantity, productPrice, productCategory, orderQuantity));
+        List<OrderedProduct> orderedProducts = orderedProductRepository.findByOrderByProductNameAsc();
+        model.addAttribute("o", orderedProducts);
+        return "redirect:/manager/order";
+    }
+    
+    @GetMapping("/product/delete/{pid}")
+    public String deleteOrder(@PathVariable ("pid") int id) 
+    {
+        orderedProductRepository.deleteById(id);
+        return "redirect:/manager/order";
+    }
+
 
 
     
