@@ -136,4 +136,39 @@ public class UserController {
         model.addAttribute("username", user.getUsername());
         return "employee/homepage";
     }
+
+    @GetMapping("/manager/viewMyEmployees.html")
+    public String viewMyEmployees(Model model) {
+        List<User> myEmployees = userRepository.findByAccesslevelAndIsAvailable("EMPLOYEE", false);
+        model.addAttribute("employees", myEmployees);
+        return "manager/viewMyEmployees";
+    }
+
+    @GetMapping("/manager/addMyEmployees.html")
+    public String viewAvailableEmployees(Model model) {
+        List<User> availableEmployees = userRepository.findByAccesslevelAndIsAvailable("EMPLOYEE", true);
+        model.addAttribute("employees", availableEmployees);
+        return "manager/addMyEmployees";
+    }
+
+    @PostMapping("/manager/addEmployee")
+    public String addEmployeeToTeam(@RequestParam String username) {
+        User employee = userRepository.findByUsername(username);
+        if (employee != null) {
+            employee.setIsAvailable(false);
+            userRepository.save(employee);
+        }
+        return "redirect:/manager/addMyEmployees.html";
+    }
+
+    @PostMapping("/manager/removeEmployee")
+    public String removeEmployeeFromTeam(@RequestParam String username) {
+        User employee = userRepository.findByUsername(username);
+        if (employee != null) {
+            employee.setIsAvailable(true);
+            userRepository.save(employee);
+        }
+        return "redirect:/manager/viewMyEmployees.html";
+    }
+
 }

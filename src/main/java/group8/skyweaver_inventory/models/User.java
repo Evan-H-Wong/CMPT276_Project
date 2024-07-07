@@ -1,5 +1,6 @@
 package group8.skyweaver_inventory.models;
 
+import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -12,6 +13,9 @@ public class User {
     private String username;
     private String password;
     private String accesslevel; // either Manager or Employee
+    private Boolean isAvailable;
+    
+    
 
     public User() {
     }
@@ -20,6 +24,8 @@ public class User {
         this.username = username;
         this.password = password;
         this.accesslevel = accesslevel;
+        this.isAvailable = true;
+        
     }
     
 
@@ -49,5 +55,13 @@ public class User {
 
     public void setAccesslevel(String accesslevel) {
         this.accesslevel = accesslevel;
+    }
+
+    public boolean getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(Boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
 }
