@@ -1,5 +1,6 @@
 package group8.skyweaver_inventory.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -12,10 +13,13 @@ public class User {
     private int uid;
     private String username;
     private String password;
-    private String accesslevel; // either Manager or Employee
+    private String accesslevel;
     private Boolean isAvailable;
-    
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id")
+    private User manager; // Manager of this user (for employees)
+
 
     public User() {
     }
@@ -25,7 +29,6 @@ public class User {
         this.password = password;
         this.accesslevel = accesslevel;
         this.isAvailable = true;
-        
     }
     
 
@@ -63,5 +66,13 @@ public class User {
 
     public void setIsAvailable(Boolean isAvailable) {
         this.isAvailable = isAvailable;
+    }
+
+    public User getManager() {
+        return manager;
+    }
+
+    public void setManager(User manager) {
+        this.manager = manager;
     }
 }

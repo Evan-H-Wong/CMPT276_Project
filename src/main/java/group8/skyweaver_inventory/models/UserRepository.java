@@ -8,4 +8,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUsername(String username);
     User findByUsernameAndPassword(String username, String password);
     List<User> findByAccesslevelAndIsAvailable(String accesslevel, boolean isAvailable);
-}
+    List<User> findByManager(User manager);
+} 
