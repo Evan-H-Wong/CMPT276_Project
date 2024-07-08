@@ -134,28 +134,26 @@ public class UserController {
         return "employee/homepage";
     }
 
-    @GetMapping("/manager/inbox")
-    public String managerInbox(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-
-        if (user != null && "MANAGER".equals(user.getAccesslevel())) {
-            List<Message> messages = user.getMessages();
-            model.addAttribute("messages", messages);
-            return "manager/managerinbox"; // Ensuring correct path to the template
-        }
-        return "redirect:/auth/login.html";
+    @GetMapping("/personalized/manager")
+    public String personalizedManager(HttpSession session, Model model) {
+        return "/personalized/manager";
     }
 
+    @GetMapping("/manager/managerinbox")
+    public String managerInbox(HttpSession session, Model model) {
+//        User user = (User) session.getAttribute("user");
+//        List<Message> messages = user.getMessages();
+//        model.addAttribute("messages", messages);
+        return "manager/managerinbox";
 
-    @GetMapping("/employee/employeeinbox.html")
+    }
+
+    @GetMapping("/employee/inbox")
     public String employeeInbox(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
+//        User user = (User) session.getAttribute("user");
+//        List<Message> messages = user.getMessages();
+//        model.addAttribute("messages", messages);
+        return "employee/employeeinbox.html";
 
-        if (user != null && "EMPLOYEE".equals(user.getAccesslevel())) {
-            List<Message> messages = user.getMessages();
-            model.addAttribute("messages", messages);
-            return "employee/employeeinbox";
-        }
-        return "redirect:/auth/login.html";
     }
 }
