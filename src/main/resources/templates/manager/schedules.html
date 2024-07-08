@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver Product Editor</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+    <link rel="stylesheet" href="../css/schedules.css">
+    <script src="../js/schedules.js"></script>
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+// Remove the manager/ if your file is in the static folder
+$(function(){
+    $("#header").load("manager/header.html");
+    $("#aside").load("manager/aside.html");
+    $("#footer").load("manager/footer.html");
+});
+</script> 
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <a href="/authorize">Authorize Google Calendar</a>
+        <form action="/schedules" method="post">
+            <input type="text" name="summary" placeholder="Event Summary" required/>
+            <input type="text" name="location" placeholder="Location" required/>
+            <input type="text" name="description" placeholder="Description" required/>
+            <input type="datetime-local" name="startDateTime" placeholder="Start Date and Time" required/>
+            <input type="datetime-local" name="endDateTime" placeholder="End Date and Time" required/>
+            <button type="submit">Add Event</button>
+        </form>
+        <h1>Schedule</h1>
+        
+        <div id = "Inner">
+            <div class="calendar">
+                <!-- Month and year navigation -->
+                <div class="month-navigation">
+                    <button id="prevMonth">&lt;</button>
+                    <span id="currentMonth">July 2024</span>
+                    <button id="nextMonth">&gt;</button>
+                </div>
+        
+                <!-- Calendar days grid -->
+                <div class="calendar-grid">
+                    <!-- Days of the week header -->
+                    <div class="day-name">Sun</div>
+                    <div class="day-name">Mon</div>
+                    <div class="day-name">Tue</div>
+                    <div class="day-name">Wed</div>
+                    <div class="day-name">Thu</div>
+                    <div class="day-name">Fri</div>
+                    <div class="day-name">Sat</div>
+        
+                    <!-- Days of the month will be dynamically generated here -->
+                </div>
+            </div>
+
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+</html>
