@@ -1,6 +1,8 @@
 package group8.skyweaver_inventory.models;
 
 
+import java.util.Date;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,16 +16,18 @@ public class OrderedProduct {
     private float productPrice;
     private String productCategory;
     private int orderQuantity;
+    private Date arrivalDate;
 
     public OrderedProduct() {
     }
 
-    public OrderedProduct(String productName, int productQuantity, float productPrice, String productCategory, int orderQuantity) {
+    public OrderedProduct(String productName, int productQuantity, float productPrice, String productCategory, int orderQuantity, Date arrivalDate) {
         this.productName = productName;
         this.productQuantity = productQuantity;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
         this.orderQuantity = orderQuantity;
+        this.arrivalDate = arrivalDate;
     }
 
     public int getOrderQuantity() {
@@ -72,6 +76,14 @@ public class OrderedProduct {
 
     public void setProductPrice(float productPrice) {
         this.productPrice = productPrice;
+    }
+
+    public Date getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(Date arrivalDate) {
+        this.arrivalDate = arrivalDate;
     }
 
     

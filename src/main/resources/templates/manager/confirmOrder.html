@@ -17,9 +17,23 @@ $(function(){
     $("#aside").load("../aside.html");
     $("#footer").load("../footer.html");
 });
+</script>
+<script>
+function generateRandomDate()
+{
+    var currentTime = new Date();
+    let year = currentTime.getFullYear();
+    var month = currentTime.getMonth();
+    var day = currentTime.getDay();
+    var hour = currentTime.getHours();
+    var randomDay = Math.floor(Math.random() * (31 - day) + day);
+    var randomHour = Math.floor(Math.random() * (24 - hour) + (hour + 1));
+    var randomDate = new Date(year, month, randomDay, randomHour);
+    document.getElementById("arrivalDate").value = randomDate.toISOString();
+}
 </script> 
 </head>
-<body>
+<body onload = "generateRandomDate()">
 <div id="header"></div>
 <div class="container">
     <div id="aside"></div>
@@ -50,6 +64,7 @@ $(function(){
                             <input type = "hidden" name = "productCategory" th:value="${product.productCategory}">
                             <input type = "hidden" name = "productPrice" th:value="${product.productPrice}">
                             <input type = "hidden" name = "productQuantity" th:value="${product.productQuantity}">
+                            <input type = "hidden" name = "arrivalDate" id = "arrivalDate">
                     </tr>
             </table>
         </section>
@@ -58,7 +73,7 @@ $(function(){
                 <button type = "submit">Confirm Product Order</button>
             </div>        
         </section>
-    </form>
+        </form>
     </main>
 </div>
 <div id="footer"></div>

@@ -9,5 +9,4 @@ public class SkyweaverInventoryApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SkyweaverInventoryApplication.class, args);
 	}
-
 }

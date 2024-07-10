@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.stream.Collectors;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -81,13 +84,19 @@ public class ProductController {
     }
 
     @PostMapping("/orderConfirmed")
-    public String newOrder(@RequestParam Map<String, String> newOrder, Model model) {
+    public String newOrder(@RequestParam Map<String, String> newOrder, Model model) throws ParseException {
         int orderQuantity = Integer.parseInt(newOrder.get("orderQuantity"));
         String productName = newOrder.get("productName");
         String productCategory = newOrder.get("productCategory");
         int productQuantity = Integer.parseInt(newOrder.get("productQuantity"));
         float productPrice = Float.parseFloat(newOrder.get("productPrice"));
-        orderedProductRepository.save(new OrderedProduct(productName, productQuantity, productPrice, productCategory, orderQuantity));
+        
+        String randomDate = newOrder.get("arrivalDate");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Date arrivalDate = sdf.parse(randomDate);
+        
+        
+        orderedProductRepository.save(new OrderedProduct(productName, productQuantity, productPrice, productCategory, orderQuantity, arrivalDate));
         List<OrderedProduct> orderedProducts = orderedProductRepository.findByOrderByProductNameAsc();
         model.addAttribute("o", orderedProducts);
         return "redirect:/manager/order";
