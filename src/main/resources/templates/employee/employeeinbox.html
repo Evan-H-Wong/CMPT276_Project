@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Inbox</title>
+    <title>employeeinbox</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         html, body {
@@ -53,22 +53,10 @@
 </head>
 <body>
 <div class="top-bar">
-    <h1>Manager Inbox</h1>
-    <a href="/personalized/employee.html" class="btn btn-light">Back</a>
+    <h1>Employee Inbox</h1>
+    <button id="createButton" class="btn btn-light">Create</button>
+    <a href="/logout" class="btn btn-danger">Logout</a>
 </div>
-<div class="main-content">
-    <div class="left-bar">
-        <div th:each="message : ${messages}" class="message-item" th:text="${message.messageName}" th:onclick="'displayMessage(' + ${message.messageName} + ')'">
-        </div>
-    </div>
-    <div class="container">
-        <!-- Message content will be displayed here -->
-    </div>
-</div>
-<script>
-    function displayMessage(messageName) {
-        // Implement the function to display the message content
-    }
-</script>
+
 </body>
 </html>

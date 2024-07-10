@@ -54,6 +54,7 @@
 <body>
 <div class="top-bar">
     <h1>Manager Inbox</h1>
+    <a href="/messageform" class="btn btn-light">Create</a>
     <a href="/personalized/manager" class="btn btn-light">Back</a>
 </div>
 <div class="main-content">
@@ -64,13 +65,22 @@
         <div th:each="message : ${messages}" class="message-item" th:text="${message.messageName}" th:onclick="'displayMessage(' + ${message.messageName} + ')'">
         </div>
     </div>
-    <div class="container">
-        <!-- Message content will be displayed here -->
+    <div class="container" id="contentContainer">
+        <!-- Message content or create form will be displayed here -->
     </div>
 </div>
 <script>
     function displayMessage(messageName) {
         // Implement the function to display the message content
+        var container = document.getElementById('contentContainer');
+
+        // Clear the container
+        container.innerHTML = '';
+
+        // Add message content (you would fetch and display the actual message content here)
+        var messageContent = document.createElement('div');
+        messageContent.textContent = 'Message content for ' + messageName;
+        container.appendChild(messageContent);
     }
 </script>
 </body>

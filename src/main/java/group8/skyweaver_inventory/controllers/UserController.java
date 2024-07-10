@@ -2,6 +2,8 @@ package group8.skyweaver_inventory.controllers;
 
 import group8.skyweaver_inventory.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +11,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -121,8 +124,8 @@ public class UserController {
     public String employeeHomepage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         List<Product> products = productRepository.findByOrderByProductNameAsc();
-        List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
-        List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
+        List<Product> outofstock = products.stream().filter(obj -> obj.getProductQuantity() == 0).collect(Collectors.toList());
+        List<Product> lowstock = products.stream().filter(obj -> obj.getProductQuantity() < 12).collect(Collectors.toList());
         lowstock.sort(Comparator.comparingInt(Product::getProductQuantity));
         model.addAttribute("lowstockproducts", lowstock);
         model.addAttribute("outofstockproducts", outofstock);
@@ -141,19 +144,56 @@ public class UserController {
 
     @GetMapping("/manager/managerinbox")
     public String managerInbox(HttpSession session, Model model) {
-//        User user = (User) session.getAttribute("user");
-//        List<Message> messages = user.getMessages();
-//        model.addAttribute("messages", messages);
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("user", user);
+        }
         return "manager/managerinbox";
-
     }
 
     @GetMapping("/employee/inbox")
     public String employeeInbox(HttpSession session, Model model) {
-//        User user = (User) session.getAttribute("user");
-//        List<Message> messages = user.getMessages();
-//        model.addAttribute("messages", messages);
-        return "employee/employeeinbox.html";
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("user", user);
+        }
+        return "employee/employeeinbox";
+    }
 
+    @PostMapping("/sendMessage")
+    @ResponseBody
+    public ResponseEntity<?> sendMessage(@RequestBody Map<String, String> messageInfo, HttpSession session) {
+        String recipientUsername = messageInfo.get("recipient");
+        String messageName = messageInfo.get("messageName");
+        String messageContent = messageInfo.get("messageContent");
+
+        User sender = (User) session.getAttribute("user");
+        if (sender == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        User recipient = userRepository.findByUsername(recipientUsername);
+        if (recipient == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Recipient not found");
+        }
+
+        Message message = new Message();
+        message.setMessageName(messageName);
+        message.setMessageContent(messageContent);
+        message.setTimeSent(LocalDateTime.now().toString());
+        message.setMessageSender(sender.getUsername());
+        message.setUser(recipient);
+
+        recipient.getMessages().add(message);
+        userRepository.save(recipient);
+
+        return ResponseEntity.ok("Message sent successfully");
+    }
+
+    @GetMapping("/messageform")
+    public String showMessageForm(Model model) {
+        List<User> users = userRepository.findAll();
+        model.addAttribute("users", users);
+        return "personalized/messageform";
     }
 }
