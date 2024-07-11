@@ -92,6 +92,21 @@ $(function(){
                 </tbody>
             </table>
         </section>
+        <h2>Track Your Shipment</h2>
+        <form action="/api/ship24/track" method="get" object="${test_model}">
+            <label for="trackingNumber">Enter Tracking Number:</label>
+            <input type="text" id="trackingNumber" name="trackingNumber" required>
+            <button type="submit">Track</button>
+        </form>
+        <div id="results">
+            <h2>Tracking Results:</h2>
+            <!-- <div th:if="${test_model != null && test_model.productName != null}">
+                <pre th:text="${test_model.productName}"></pre>
+                <pre th:text="${test_model.productCategor}"></pre>
+                <pre th:text="${test_model.productPrice}"></pre>
+            </div> -->
+            
+        </div>
     </main>
 </div>
 <div id="footer"></div>
