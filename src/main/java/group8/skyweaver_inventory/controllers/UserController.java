@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+
+
 import jakarta.servlet.http.HttpSession;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Comparator;
 import java.util.stream.Collectors;
+
 
 @Controller
 public class UserController {
@@ -135,5 +138,64 @@ public class UserController {
         model.addAttribute("restock", lowstock);
         model.addAttribute("username", user.getUsername());
         return "employee/homepage";
+    }
+
+    @GetMapping("/manager/viewMyEmployees.html")
+    public String viewMyEmployees(HttpSession session, Model model) {
+        User manager = (User) session.getAttribute("user");
+        List<User> myEmployees = userRepository.findByManager(manager);
+        model.addAttribute("employees", myEmployees);
+        return "manager/viewMyEmployees";
+    }
+
+    @GetMapping("/manager/addMyEmployees.html")
+    public String viewAvailableEmployees(Model model) {
+        List<User> availableEmployees = userRepository.findByAccesslevelAndIsAvailable("EMPLOYEE", true);
+        model.addAttribute("employees", availableEmployees);
+        return "manager/addMyEmployees";
+    }
+
+    @PostMapping("/manager/addEmployee")
+    public String addEmployeeToTeam(@RequestParam String username, HttpSession session) {
+        User manager = (User) session.getAttribute("user");
+        User employee = userRepository.findByUsername(username);
+        if (manager != null && employee != null) {
+            employee.setManager(manager);
+            employee.setIsAvailable(false);
+            userRepository.save(employee);
+        }
+        return "redirect:/manager/addMyEmployees.html";
+    }
+
+    @PostMapping("/manager/removeEmployee")
+    public String removeEmployeeFromTeam(@RequestParam String username) {
+        User employee = userRepository.findByUsername(username);
+        if (employee != null) {
+            employee.setManager(null);
+            employee.setIsAvailable(true);
+            userRepository.save(employee);
+        }
+        return "redirect:/manager/viewMyEmployees.html";
+    }
+
+    @GetMapping("/employee/myManager.html")
+    public String viewMyManager(HttpSession session, Model model) {
+        User employee = (User) session.getAttribute("user");
+        if (employee != null) {
+            User manager = employee.getManager();
+            if (manager != null) {
+                User managerDetails = userRepository.findById(manager.getUid()).orElse(null);
+                if (managerDetails != null) {
+                    model.addAttribute("manager", managerDetails);
+                } else {
+                    model.addAttribute("noManager", true);
+                }
+            } else {
+                model.addAttribute("noManager", true);
+            }
+        } else {
+            model.addAttribute("noManager", true);
+        }
+        return "employee/myManager";
     }
 }
