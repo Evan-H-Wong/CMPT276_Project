@@ -121,35 +121,25 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function validateAndSubmit() {
-    const year = document.getElementById("year").value;
-    const month = document.getElementById("month").value;
-    const day = document.getElementById("day").value;
-    const startTime = document.getElementById("start-time").value;
-    const duration = document.getElementById("duration").value;
+    const year = document.getElementById("year");
+    const month = document.getElementById("month");
+    const day = document.getElementById("day");
+    const startTime = document.getElementById("start-time");
+    const duration = document.getElementById("duration");
 
-    if (!year || !month || !day || !startTime || !duration) {
+    if (!year.value || !month.value || !day.value || !startTime.value || !duration.value) {
         alert("Please fill out all required fields (Year, Month, Day, Start Time, Duration).");
         return false;
     }
     
     // Form data is valid, proceed with submission
-    document.getElementById("scheduleForm").submit();
+    else {
+        document.getElementById("scheduleForm").submit();
+    }
 }
-/*
-function submitFormData() {
-    const form = document.getElementById("scheduleForm");
-    form.action = "/manager/modifyschedule/" + document.getElementById("hiddenuser").textContent.trim();
 
-    const formData = {
-        year: document.getElementById("year").value,
-        month: document.getElementById("month").value,
-        day: document.getElementById("day").value,
-        startTime: document.getElementById("start-time").value,
-        duration: document.getElementById("duration").value,
-        description: document.getElementById("description").value,
-        oneOff: document.getElementById("oneOff").checked
-    };
-    
-    form.submit();
-}
-*/
+function deleteform(DeleteButton)
+    {
+        document.getElementById("deleteform").action = ("/manager/deleteschedule/" + (DeleteButton.id).toString());
+        document.getElementById("deleteform").submit();
+    }

@@ -2,6 +2,30 @@ main {
     margin-bottom: 100px;
 }
 
+aside {
+    height: 100%;
+}
+
+input {
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+}
+
+input[type="checkbox"] {
+    transform: scale(2); /* Increase the scale of the checkbox */
+    -webkit-transform: scale(2); /* For Safari */
+    -moz-transform: scale(2); /* For Firefox */
+    -ms-transform: scale(2); /* For Internet Explorer */
+    -o-transform: scale(2); /* For Opera */
+}
+
+#submitbut {
+    margin: 10px 0px 0px 0px;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
 #Inner {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;

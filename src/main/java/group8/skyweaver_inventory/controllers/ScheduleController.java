@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -85,6 +86,7 @@ public class ScheduleController {
         List<Integer> EndTimeMinute = new ArrayList<>();
         List<String> DayOfWeek = new ArrayList<>();
         List<Boolean> Weekly = new ArrayList<>();
+        List<Long> IDList = new ArrayList<>();
         for (int i = 0; i < Shifts.size(); i++)
         {
             Date.add((Shifts.get(i)).getStartTime().format(formatter));
@@ -94,6 +96,7 @@ public class ScheduleController {
             EndTimeMinute.add((Shifts.get(i)).getEndTime().getMinute());
             DayOfWeek.add((Shifts.get(i)).getStartTime().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
             Weekly.add((Shifts.get(i)).getWeekly());
+            IDList.add(Shifts.get(i).getId());
         }
         model.addAttribute("date", Date);
         model.addAttribute("starthour", StartTimeHour);
@@ -103,6 +106,7 @@ public class ScheduleController {
         model.addAttribute("dayweek", DayOfWeek);
         model.addAttribute("weekly", Weekly);
         model.addAttribute("username", user);
+        model.addAttribute("id", IDList);
         return "manager/manageschedule";
     }
 
@@ -115,7 +119,7 @@ public class ScheduleController {
                              @RequestParam String startTime,
                              @RequestParam double duration,
                              @RequestParam String description) {
-                                
+
         LocalTime localTime = LocalTime.parse(startTime);
 
         // Create LocalDateTime object
@@ -141,6 +145,15 @@ public class ScheduleController {
         scheduleRepository.save(entry);
 
         // TODO: Connect this entry to Google Calendar API with description
+        return "redirect:/manager/schedule?user=" + user;
+    }
+
+    @PostMapping("/manager/deleteschedule/{sid}")
+    public String deleteFromSchedule(@PathVariable("sid") String sid) {
+        Long id = Long.parseLong(sid);
+        String user = scheduleRepository.getById(id).getUser().getUsername();
+        // TODO: Remove entry from Google Calendar API
+        scheduleRepository.deleteById(id);
         return "redirect:/manager/schedule?user=" + user;
     }
 }
