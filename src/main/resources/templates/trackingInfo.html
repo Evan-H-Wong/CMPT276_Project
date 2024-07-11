@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tracking Information</title>
+</head>
+<body>
+    <h2>Tracking Information</h2>
+    
+    <div th:if="${trackingInfo != null}">
+        <p>Tracker ID: <span th:text="${trackingInfo.trackerId}"></span></p>
+        <p>Tracking Number: <span th:text="${trackingInfo.trackingNumber}"></span></p>
+        <p>Shipment ID: <span th:text="${trackingInfo.shipmentId}"></span></p>
+        <p>Status Milestone: <span th:text="${trackingInfo.shipment.statusMilestone}"></span></p>
+        <!-- Add more details as needed -->
+    </div>
+    
+    <div th:if="${trackingInfo == null}">
+        <p>No tracking information available.</p>
+    </div>
+</body>
+</html>

@@ -19,23 +19,25 @@ public class Ship24Controller {
     private Ship24Service ship24Service;
 
     @GetMapping("/track")
-    public Map<String, Object> trackShipment(@RequestParam String trackingNumber) {
+    public String trackShipment(@RequestParam String trackingNumber, Model model) {
     // public String trackShipment(@RequestParam String trackingNumber, Model model) {
 
         // Product test_p = new Product("name", 10, (float) 10.0, "test");
         // model.addAttribute("test_model", test_p);
         
         // return "redirect:/manager/homepage";
-        return ship24Service.createTrackerAndGetResults(trackingNumber);
+        Map<String, Object> results = ship24Service.createTrackerAndGetResults(trackingNumber);
+        model.addAttribute("results", results);
+        return "trackingInfo";
     }
 
-    @GetMapping("/trackers/{trackerId}/results")
-    public Map<String, Object> getTrackerResultsById(@PathVariable String trackerId) {
-        return ship24Service.getTrackerResultsById(trackerId);
-    }
+    // @GetMapping("/trackers/{trackerId}/results")
+    // public Map<String, Object> getTrackerResultsById(@PathVariable String trackerId) {
+    //     return ship24Service.getTrackerResultsById(trackerId);
+    // }
 
-    @GetMapping("/trackers/search/{trackingNumber}/results")
-    public Map<String, Object> getTrackerResultsByTrackingNumber(@PathVariable String trackingNumber) {
-        return ship24Service.getTrackerResultsByTrackingNumber(trackingNumber);
-    }
+    // @GetMapping("/trackers/search/{trackingNumber}/results")
+    // public Map<String, Object> getTrackerResultsByTrackingNumber(@PathVariable String trackingNumber) {
+    //     return ship24Service.getTrackerResultsByTrackingNumber(trackingNumber);
+    // }
 }
