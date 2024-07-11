@@ -198,4 +198,14 @@ public class UserController {
         }
         return "employee/myManager";
     }
+
+    @GetMapping("/session/user")
+    @ResponseBody
+    public String getSessionUser(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return user.getUsername();
+        }
+        return "";
+    }
 }
