@@ -127,7 +127,7 @@ function validateAndSubmit() {
     const startTime = document.getElementById("start-time");
     const duration = document.getElementById("duration");
 
-    if (!year.value || !month.value || !day.value || !startTime.value || !duration.value) {
+    if (!year.value || !month.value || !day.value || !duration.value) {
         alert("Please fill out all required fields (Year, Month, Day, Start Time, Duration).");
         return false;
     }

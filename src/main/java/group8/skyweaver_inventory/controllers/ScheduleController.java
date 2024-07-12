@@ -1,8 +1,11 @@
 package group8.skyweaver_inventory.controllers;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
@@ -19,10 +22,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
+
 import group8.skyweaver_inventory.models.Schedule;
 import group8.skyweaver_inventory.models.ScheduleRepository;
 import group8.skyweaver_inventory.models.User;
 import group8.skyweaver_inventory.models.UserRepository;
+import group8.skyweaver_inventory.services.CalendarService;
 import jakarta.servlet.http.HttpSession;
 
 
@@ -34,6 +41,9 @@ public class ScheduleController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CalendarService calendarService;
 
     @GetMapping("/employee/schedule")
     public String getSchedule(HttpSession session, Model model) throws IOException {
@@ -112,48 +122,117 @@ public class ScheduleController {
 
     @PostMapping("/manager/modifyschedule")
     public String modifySchedule(@RequestParam String user,
-                             @RequestParam(required = false) boolean oneOff,
-                             @RequestParam int year,
-                             @RequestParam int month,
-                             @RequestParam int day,
-                             @RequestParam String startTime,
-                             @RequestParam double duration,
-                             @RequestParam String description) {
+                                @RequestParam(required = false) boolean oneOff,
+                                @RequestParam int year,
+                                @RequestParam int month,
+                                @RequestParam int day,
+                                @RequestParam String startTime,
+                                @RequestParam double duration,
+                                @RequestParam String description) throws GeneralSecurityException {
 
+        // Define the timezone
+        ZoneId zoneId = ZoneId.of("Canada/Pacific");
+
+        // Parse start time
         LocalTime localTime = LocalTime.parse(startTime);
 
-        // Create LocalDateTime object
-        LocalDateTime startDateTime = LocalDateTime.of(year, month, day, localTime.getHour(), localTime.getMinute());
+        // Create ZonedDateTime object
+        ZonedDateTime startDateTime = ZonedDateTime.of(year, month, day, localTime.getHour(), localTime.getMinute(), 0, 0, zoneId);
 
         // Calculate endTime based on startTime and duration
-        LocalDateTime endTime = startDateTime.plusHours((long) duration);
+        ZonedDateTime endDateTime = startDateTime.plusHours((long) duration);
 
         // Determine weekly based on oneOff checkbox
-        boolean weekly = true;
-        if (oneOff) {
-            weekly = false;
-        }
+        boolean weekly = !oneOff;
 
-        User currentuser = userRepository.findByUsername(user);
+        User currentUser = userRepository.findByUsername(user);
+
         // Create a Schedule object
         Schedule entry = new Schedule();
         entry.setWeekly(weekly);
-        entry.setStartTime(startDateTime);
-        entry.setEndTime(endTime);
-        entry.setUser(currentuser);
-        
+        entry.setStartTime(startDateTime.toLocalDateTime());
+        entry.setEndTime(endDateTime.toLocalDateTime());
+        entry.setUser(currentUser);
+
+        // Save the schedule entry to the database
         scheduleRepository.save(entry);
 
-        // TODO: Connect this entry to Google Calendar API with description
+        // Add event to Google Calendar
+        try {
+            // Construct Event object
+            Event event = new Event()
+                    .setSummary("Skyweaver Work Shift") // Use description as event summary
+                    .setLocation("") // Set location if needed
+                    .setDescription(description); // Description of the event
+
+            // Set start and end times
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+            String startStr = startDateTime.format(formatter);
+            String endStr = endDateTime.format(formatter);
+            EventDateTime start = new EventDateTime()
+                    .setDateTime(new com.google.api.client.util.DateTime(startStr))
+                    .setTimeZone("Canada/Pacific");
+            EventDateTime end = new EventDateTime()
+                    .setDateTime(new com.google.api.client.util.DateTime(endStr))
+                    .setTimeZone("Canada/Pacific");
+            event.setStart(start);
+            event.setEnd(end);
+
+            if (weekly) {
+                // Add recurrence rule for weekly events
+                String recurrenceRule = "RRULE:FREQ=WEEKLY";
+                event.setRecurrence(List.of(recurrenceRule));
+            }
+
+            // Call CalendarService to add the event
+            calendarService.addEvent(currentUser.getGmail(), event);
+        } catch (IOException e) {
+            // Handle API call errors
+            e.printStackTrace();
+            System.out.println("failed to add to calendar");
+        }
+
+        // Redirect to manage schedule page
         return "redirect:/manager/schedule?user=" + user;
     }
+
 
     @PostMapping("/manager/deleteschedule/{sid}")
     public String deleteFromSchedule(@PathVariable("sid") String sid) {
         Long id = Long.parseLong(sid);
-        String user = scheduleRepository.getById(id).getUser().getUsername();
-        // TODO: Remove entry from Google Calendar API
+        Schedule schedule = scheduleRepository.getById(id);
+        String user = schedule.getUser().getUsername();
+
+        // Retrieve start time from schedule
+        LocalDateTime startTime = schedule.getStartTime();
+        boolean isWeekly = schedule.getWeekly();
+
+        try {
+            // Get all events from user's Google Calendar
+            List<Event> events = calendarService.getEvents(schedule.getUser().getGmail());
+
+            // Define a DateTimeFormatter for parsing and formatting
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+
+            for (Event event : events) {
+                // Check if the event summary matches
+                if ("Skyweaver Work Shift".equals(event.getSummary())) {
+                    ZonedDateTime eventStartTime = ZonedDateTime.parse(event.getStart().getDateTime().toStringRfc3339(), formatter);
+                    if (eventStartTime.toLocalTime().equals(startTime.toLocalTime()) &&
+                        eventStartTime.getDayOfWeek().equals(startTime.getDayOfWeek())) {
+                        // Delete the entire recurring event series
+                        calendarService.deleteEvent(schedule.getUser().getGmail(), event.getId());
+                        break; // Exit loop after deleting
+                    }
+                }
+            }
+        } catch (IOException | GeneralSecurityException e) {
+            e.printStackTrace(); // Handle exception appropriately
+        }
+
+        // Delete schedule entry from local database
         scheduleRepository.deleteById(id);
+
         return "redirect:/manager/schedule?user=" + user;
     }
 }
