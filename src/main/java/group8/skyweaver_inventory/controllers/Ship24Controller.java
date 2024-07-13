@@ -11,7 +11,7 @@ import group8.skyweaver_inventory.services.Ship24Service;
 
 import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("/api/ship24")
 public class Ship24Controller {
 
@@ -27,6 +27,10 @@ public class Ship24Controller {
         
         // return "redirect:/manager/homepage";
         Map<String, Object> results = ship24Service.createTrackerAndGetResults(trackingNumber);
+        results.forEach((key, value) -> {
+            System.out.println("Key: " + key + "\t Value: " + value);
+        });
+
         model.addAttribute("results", results);
         return "trackingInfo";
     }

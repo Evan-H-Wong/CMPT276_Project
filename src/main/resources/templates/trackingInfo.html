@@ -7,16 +7,19 @@
 <body>
     <h2>Tracking Information</h2>
     
-    <div th:if="${trackingInfo != null}">
-        <p>Tracker ID: <span th:text="${trackingInfo.trackerId}"></span></p>
-        <p>Tracking Number: <span th:text="${trackingInfo.trackingNumber}"></span></p>
-        <p>Shipment ID: <span th:text="${trackingInfo.shipmentId}"></span></p>
-        <p>Status Milestone: <span th:text="${trackingInfo.shipment.statusMilestone}"></span></p>
-        <!-- Add more details as needed -->
+    <div th:if="${results['data'] != null}">
+        <div th:each="tracking : ${results['data']['trackings']}">
+            <p>Tracker ID: <span th:text="${tracking['tracker']['trackerId']}">[trackerId]</span></p>
+            <p>Tracking Number: <span th:text="${tracking['tracker']['trackingNumber']}">[trackingNumber]</span></p>
+            <p>Status Milestone: <span th:text="${tracking['shipment']['statusMilestone']}">[statusMilestone]</span></p>
+            <p>Origin Country Code: <span th:text="${tracking['shipment']['originCountryCode']}">[originCountryCode]</span></p>
+            <p>Destination Country Code: <span th:text="${tracking['shipment']['destinationCountryCode']}">[destinationCountryCode]</span></p>
+            <!-- Add more fields as needed -->
+        </div>
     </div>
-    
-    <div th:if="${trackingInfo == null}">
-        <p>No tracking information available.</p>
+
+    <div th:if="${results['error'] != null}">
+        <p>Error: <span th:text="${results['error']}">[error]</span></p>
     </div>
 </body>
 </html>

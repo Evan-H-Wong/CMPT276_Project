@@ -35,14 +35,17 @@ public class Ship24Service {
         Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
-        // requestBody.forEach((key, value) -> {
-        //     System.out.println("Body Key: " + key + "\t Body Value: " + value);
-        // });
+        requestBody.forEach((key, value) -> {
+            System.out.println("Body Key: " + key + "\t Body Value: " + value);
+        });
 
         String url = BASE_URL + "/search/" + trackingNumber + "/results";
         // System.out.println("URL: \t" + url);
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            response.getBody().forEach((key, value) -> {
+                System.out.println("Key: " + key + "\t Value: " + value);
+            });
             return response.getBody();
             // ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             // Map<String, Object> responseBody = response.getBody();
