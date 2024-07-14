@@ -83,7 +83,7 @@ public class ScheduleControllerTest {
     @Test
     public void testGetSchedule_EmployeeUser() throws Exception {
         User employee = new User();
-        employee.setAccesslevel("Employee");
+        employee.setAccesslevel("EMPLOYEE");
         session.setAttribute("user", employee);
 
         mockMvc.perform(get("/employee/schedule").session(session))
@@ -104,7 +104,7 @@ public class ScheduleControllerTest {
     @Test
     public void testGetScheduleManager_EmployeeUser() throws Exception {
         User employee = new User();
-        employee.setAccesslevel("Employee");
+        employee.setAccesslevel("EMPLOYEE");
         session.setAttribute("user", employee);
 
         mockMvc.perform(get("/manager/schedule").param("user", "user1").session(session))

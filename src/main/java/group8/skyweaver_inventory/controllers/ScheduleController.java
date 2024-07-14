@@ -87,7 +87,7 @@ public class ScheduleController {
     @GetMapping("/manager/schedule")
     public String getScheduleManager(@RequestParam String user, HttpSession session, Model model) throws IOException {
         User usercheck = (User) session.getAttribute("user");
-        if (usercheck == null || usercheck.getAccesslevel() == "Employee") {
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
             return "redirect:/auth/login.html";
         }
         
@@ -140,7 +140,7 @@ public class ScheduleController {
                                 @RequestParam String description) throws GeneralSecurityException {
 
         User usercheck = (User) session.getAttribute("user");
-        if (usercheck == null || usercheck.getAccesslevel() == "Employee") {
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
             return "redirect:/auth/login.html";
         }
 
@@ -213,7 +213,7 @@ public class ScheduleController {
     @PostMapping("/manager/deleteschedule/{sid}")
     public String deleteFromSchedule(HttpSession session, @PathVariable("sid") String sid) {
         User usercheck = (User) session.getAttribute("user");
-        if (usercheck == null || usercheck.getAccesslevel() == "Employee") {
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
             return "redirect:/auth/login.html";
         }
 
