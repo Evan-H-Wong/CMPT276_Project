@@ -49,7 +49,7 @@ public class ScheduleController {
     public String getSchedule(HttpSession session, Model model) throws IOException {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/auth/login.html";
+            return "redirect:/";
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
@@ -88,7 +88,7 @@ public class ScheduleController {
     public String getScheduleManager(@RequestParam String user, HttpSession session, Model model) throws IOException {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
-            return "redirect:/auth/login.html";
+            return "redirect:/";
         }
         
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -141,7 +141,7 @@ public class ScheduleController {
 
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
-            return "redirect:/auth/login.html";
+            return "redirect:/";
         }
 
         // Define the timezone
@@ -214,7 +214,7 @@ public class ScheduleController {
     public String deleteFromSchedule(HttpSession session, @PathVariable("sid") String sid) {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
-            return "redirect:/auth/login.html";
+            return "redirect:/";
         }
 
         Long id = Long.parseLong(sid);

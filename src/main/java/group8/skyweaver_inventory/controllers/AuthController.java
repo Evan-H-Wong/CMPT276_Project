@@ -29,7 +29,7 @@ public class AuthController {
     public String authorize(HttpSession session) throws IOException, GeneralSecurityException {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            return "redirect:/auth/login.html";
+            return "redirect:/";
         }
         String state = user.getGmail(); // Use Gmail as the state
         session.setAttribute("oauth2_state", state);
@@ -39,6 +39,11 @@ public class AuthController {
 
     @GetMapping("/oauth2/callback")
     public String oauth2Callback(@RequestParam String code, @RequestParam String state, HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null) {
+            return "redirect:/";
+        }
+
         String storedState = (String) session.getAttribute("oauth2_state");
         session.removeAttribute("oauth2_state"); // Remove the state after one-time use
 

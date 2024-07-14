@@ -1,7 +1,7 @@
 package group8.skyweaver_inventory.models;
 
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
 
 import jakarta.persistence.*;
 
