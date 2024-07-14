@@ -57,9 +57,11 @@ public class AuthController {
                 }
                 
                 userRepository.save(user);
+                model.addAttribute("message", "Authorization successful!");
+                model.addAttribute("access", user.getAccesslevel());
+            } else {
+                model.addAttribute("message", "Authorization failed: User not found.");
             }
-            model.addAttribute("message", "Authorization successful!");
-            model.addAttribute("access", user.getAccesslevel());
         } catch (Exception e) {
             model.addAttribute("message", "Authorization failed: " + e.getMessage());
             e.printStackTrace();

@@ -5,6 +5,11 @@
 </head>
 <body>
     <h1 th:text="${message}"></h1>
-    <a th:href="${access.contains('Manager') ? '/manager/homepage.html' : '/employee/homepage.html'}">Go to Homepage</a>
+    <div th:if="${message.contains('successful')}">
+        <a th:href="${access.contains('Manager') ? '/manager/homepage.html' : '/employee/homepage.html'}">Go to Homepage</a>
+    </div>
+    <div th:if="${message.contains('failed')}">
+        <a th:href="@{/logout}">Logout</a>
+    </div>
 </body>
 </html>

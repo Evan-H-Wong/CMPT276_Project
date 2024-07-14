@@ -47,8 +47,11 @@ public class ScheduleController {
 
     @GetMapping("/employee/schedule")
     public String getSchedule(HttpSession session, Model model) throws IOException {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/auth/login.html";
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        User user = (User) session.getAttribute("user"); //This line will likely cause issues while testing?*
         
         //Schedule temp = new Schedule((long)1, LocalDateTime.now().plusHours(24), LocalDateTime.now().plusHours(32), true, user);
         //scheduleRepository.save(temp);
@@ -83,6 +86,11 @@ public class ScheduleController {
 
     @GetMapping("/manager/schedule")
     public String getScheduleManager(@RequestParam String user, HttpSession session, Model model) throws IOException {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "Employee") {
+            return "redirect:/auth/login.html";
+        }
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
         //Schedule temp = new Schedule((long)1, LocalDateTime.now().plusHours(24), LocalDateTime.now().plusHours(32), true, user);
@@ -121,7 +129,8 @@ public class ScheduleController {
     }
 
     @PostMapping("/manager/modifyschedule")
-    public String modifySchedule(@RequestParam String user,
+    public String modifySchedule(HttpSession session,
+                                @RequestParam String user,
                                 @RequestParam(required = false) boolean oneOff,
                                 @RequestParam int year,
                                 @RequestParam int month,
@@ -129,6 +138,11 @@ public class ScheduleController {
                                 @RequestParam String startTime,
                                 @RequestParam double duration,
                                 @RequestParam String description) throws GeneralSecurityException {
+
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "Employee") {
+            return "redirect:/auth/login.html";
+        }
 
         // Define the timezone
         ZoneId zoneId = ZoneId.of("Canada/Pacific");
@@ -153,9 +167,6 @@ public class ScheduleController {
         entry.setStartTime(startDateTime.toLocalDateTime());
         entry.setEndTime(endDateTime.toLocalDateTime());
         entry.setUser(currentUser);
-
-        // Save the schedule entry to the database
-        scheduleRepository.save(entry);
 
         // Add event to Google Calendar
         try {
@@ -186,6 +197,8 @@ public class ScheduleController {
 
             // Call CalendarService to add the event
             calendarService.addEvent(currentUser.getGmail(), event);
+            // Save the schedule entry to the database
+            scheduleRepository.save(entry);
         } catch (IOException e) {
             // Handle API call errors
             e.printStackTrace();
@@ -198,14 +211,19 @@ public class ScheduleController {
 
 
     @PostMapping("/manager/deleteschedule/{sid}")
-    public String deleteFromSchedule(@PathVariable("sid") String sid) {
+    public String deleteFromSchedule(HttpSession session, @PathVariable("sid") String sid) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "Employee") {
+            return "redirect:/auth/login.html";
+        }
+
         Long id = Long.parseLong(sid);
         Schedule schedule = scheduleRepository.getById(id);
         String user = schedule.getUser().getUsername();
 
         // Retrieve start time from schedule
         LocalDateTime startTime = schedule.getStartTime();
-        boolean isWeekly = schedule.getWeekly();
+        //boolean isWeekly = schedule.getWeekly();
 
         try {
             // Get all events from user's Google Calendar
@@ -222,16 +240,17 @@ public class ScheduleController {
                         eventStartTime.getDayOfWeek().equals(startTime.getDayOfWeek())) {
                         // Delete the entire recurring event series
                         calendarService.deleteEvent(schedule.getUser().getGmail(), event.getId());
+
+                        // Delete schedule entry from local database
+                        scheduleRepository.deleteById(id);
                         break; // Exit loop after deleting
                     }
                 }
             }
+
         } catch (IOException | GeneralSecurityException e) {
             e.printStackTrace(); // Handle exception appropriately
         }
-
-        // Delete schedule entry from local database
-        scheduleRepository.deleteById(id);
 
         return "redirect:/manager/schedule?user=" + user;
     }
