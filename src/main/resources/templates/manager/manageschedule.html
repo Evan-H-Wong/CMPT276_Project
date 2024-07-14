@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver Schedule Viewer</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+    <link rel="stylesheet" href="../css/schedules.css">
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+// Remove the manager/ if your file is in the static folder
+$(function(){
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
+});
+</script> 
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <form id="deleteform" method="post" action="/manager/deleteschedule/"></form>
+        <div id="ShiftSchedule" style="display:none">
+            <tr th:each="date:${date}">
+                <p class="date" th:text="${date}"></p>
+            </tr>
+            <tr th:each="starthour:${starthour}">
+                <p class="starthour" th:text="${starthour}"></p>
+            </tr>
+            <tr th:each="startminute:${startminute}">
+                <p class="startminute" th:text="${startminute lt 10 ? '0' + startminute : startminute}"></p>
+            </tr>
+            <tr th:each="endhour:${endhour}">
+                <p class="endhour" th:text="${endhour}"></p>
+            </tr>
+            <tr th:each="endminute:${endminute}">
+                <p class="endminute" th:text="${endminute lt 10 ? '0' + endminute : endminute}"></p>
+            </tr>
+            <tr th:each="dayweek:${dayweek}">
+                <p class="dayweek" th:text="${dayweek}"></p>
+            </tr>
+            <tr th:each="weekly:${weekly}">
+                <p class="weekly" th:text="${weekly}"></p>
+            </tr>
+        </div>
+
+        <h1>Add a New Shift</h1>
+        <div class="input-container">
+            <form id="scheduleForm" method="post" action="/manager/modifyschedule">
+                <table>
+                    <thead>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Day</th>
+                        <th>Starting Time</th>
+                        <th>Duration (In Hours)</th>
+                        <th>Short Description</th>
+                        <th>One-Off Shift</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <input id="user" name="user" style="display:none" th:value="${username}"></input>
+                            <td><input type="number" id="year" name="year" min="2024" max="2100"></td>
+                            <td><input type="number" id="month" name="month" min="1" max="12"></td>
+                            <td><input type="number" id="day" name="day" min="1" max="31"></td>
+                            <td><input type="time" id="startTime" name="startTime"></td>
+                            <td><input type="number" id="duration" name="duration" min="0" step="0.25"></td>
+                            <td><input type="text" id="description" name="description"></td>
+                            <td><input type="checkbox" id="oneOff" name="oneOff"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            <button id="submitbut" onclick="validateAndSubmit()">Submit</button>
+        </div>
+
+        <h1>Current Shifts</h1>
+        <div class="ToDelete">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Hours</th>
+                        <th>Date (YYYY-MM-DD) or Day of the Week</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="bodies" th:if="${not #lists.isEmpty(date)}" th:each="i : ${#numbers.sequence(0, date.size() - 1)}">
+                        <td th:switch="${weekly[i]}">
+                            <span th:case="true">Weekly</span>
+                            <span th:case="false">One-Off</span>
+                        </td>
+                        <td th:text="${starthour[i]} + ':' + ${startminute[i] lt 10 ? '0' + startminute[i] : startminute[i]}
+                            + ' - ' + ${endhour[i]} + ':' + ${endminute[i] lt 10 ? '0' + endminute[i] : endminute[i]}">
+                        </td>
+                        <td th:switch="${weekly[i]}">
+                            <span th:case="false" th:text="${date[i]}">
+                            </span>
+                            <span th:case="true" th:text="${dayweek[i]}"></span>
+                        </td>
+                        <td>
+                            <a th:id="${id[i]}" href="#" type="submit" style="color: #FF0000; font-weight: bold;" onclick="deleteform(this)">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h1>Schedule</h1>
+        <div id = "Inner">
+            <div class="calendar">
+                <!-- Month and year navigation -->
+                <div class="month-navigation">
+                    <button id="prevMonth">&lt;</button>
+                    <span id="currentMonth">July 2024</span>
+                    <button id="nextMonth">&gt;</button>
+                </div>
+        
+                <!-- Calendar days grid -->
+                <div class="calendar-grid">
+                    <!-- Days of the week header -->
+                    <div class="day-name">Sun</div>
+                    <div class="day-name">Mon</div>
+                    <div class="day-name">Tue</div>
+                    <div class="day-name">Wed</div>
+                    <div class="day-name">Thu</div>
+                    <div class="day-name">Fri</div>
+                    <div class="day-name">Sat</div>
+        
+                    <!-- Days of the month will be dynamically generated here -->
+                </div>
+            </div>
+
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+<script src="/js/viewandmodschedule.js"></script>
+</html>

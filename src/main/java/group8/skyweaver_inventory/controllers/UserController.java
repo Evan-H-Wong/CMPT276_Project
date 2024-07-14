@@ -35,6 +35,7 @@ public class UserController {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel").toUpperCase();
+        String gmail = register.get("gmail");
 
         // Validate access level
         if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {
@@ -46,6 +47,7 @@ public class UserController {
         }
         // Save new user
         User user = new User(username, password, accesslevel);
+        user.setGmail(gmail);
         userRepository.save(user);
 
         return "redirect:/auth/login.html";
@@ -78,6 +80,10 @@ public class UserController {
             session.setAttribute("user", user);
             model.addAttribute("user", user);
             model.addAttribute("username", user.getUsername());
+
+            if (user.getToken() == null || user.getToken().isEmpty()) {
+                return "redirect:/authorize";
+            }
 
             if (accesslevel.equals("MANAGER")) {
                 return "personalized/manager";
@@ -197,5 +203,15 @@ public class UserController {
             model.addAttribute("noManager", true);
         }
         return "employee/myManager";
+    }
+
+    @GetMapping("/session/user")
+    @ResponseBody
+    public String getSessionUser(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            return user.getUsername();
+        }
+        return "";
     }
 }

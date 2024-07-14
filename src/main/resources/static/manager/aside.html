@@ -7,7 +7,26 @@
             <!--li><a href="#">Purchase Orders</a></li>
             <li><a href="#">Sales Orders</a></li></li-->
             <li><a href="/manager/viewMyEmployees.html">My Employees</a></li>
-            
+            <li><a href="#" onclick="schedulenav()">My Schedule</a></li>
         </ul>
     </div>
+    <script>
+        function schedulenav() {
+            fetch('/session/user')
+                .then(response => response.text())
+                .then(data => {
+                    if (data) {
+                        const encodedUsername = encodeURIComponent(data);
+                        window.location.href = `/manager/schedule?user=${encodedUsername}`;
+                    } else {
+                        console.error('User data is empty');
+                        // Handle the case where the user data is empty or null
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    // Handle the fetch error
+            });
+        }
+    </script>
 </aside>
