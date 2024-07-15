@@ -4,14 +4,17 @@ import group8.skyweaver_inventory.models.Product;
 import group8.skyweaver_inventory.models.ProductRepository;
 import group8.skyweaver_inventory.models.OrderedProduct;
 import group8.skyweaver_inventory.models.OrderedProductRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import group8.skyweaver_inventory.models.User;
+//import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+//import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+//import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.stream.Collectors;
 import java.util.Date;
@@ -31,8 +34,13 @@ public class ProductController {
     @Autowired
     private OrderedProductRepository orderedProductRepository;
     @PostMapping("/productAdded")
-    public String addProduct(@RequestParam Map<String, String> newProduct, HttpServletResponse response, Model model)
+    public String addProduct(@RequestParam Map<String, String> newProduct, HttpSession session, HttpServletResponse response, Model model)
     {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+
         String productName = newProduct.get("productName");
         int productQuantity = Integer.parseInt(newProduct.get("productQuantity"));
         float productPrice = Float.parseFloat(newProduct.get("productPrice"));
@@ -52,15 +60,23 @@ public class ProductController {
 // it resubmits the form and duplicates the item you added, and writing manager/productAdded
 // in the url will break the css (the header, aside, footer)
     @GetMapping("manager/productAdded")
-    public String productAddedRedirect(Model model) {
+    public String productAddedRedirect(HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         List<Product> products = productRepository.findByOrderByProductNameAsc();
         model.addAttribute("p",products);
         return "manager/productAdded.html";
     }
 
     @PostMapping("/products/delete/{pid}")
-    public String deleteProduct(@PathVariable ("pid") int id) 
+    public String deleteRectangle(HttpSession session, @PathVariable ("pid") int id) 
     {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         productRepository.deleteById(id);
         return "redirect:/managestock";
     }
@@ -114,7 +130,11 @@ public class ProductController {
     
 
     @GetMapping("/managestock")
-    public String stockRedirect(Model model) {
+    public String stockRedirect(HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         List<Product> products = productRepository.findByOrderByProductNameAsc();
         List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
         List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
@@ -126,7 +146,11 @@ public class ProductController {
     }
 
     @GetMapping("/viewstock")
-    public String stockView(Model model) {
+    public String stockView(HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null) {
+            return "redirect:/";
+        }
         List<Product> products = productRepository.findByOrderByProductNameAsc();
         List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
         List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
@@ -138,7 +162,11 @@ public class ProductController {
     }
 
     @GetMapping("/editproduct")
-    public String editStock(Model model, @RequestParam Map<String, String> ToEdit) {
+    public String editStock(HttpSession session, Model model, @RequestParam Map<String, String> ToEdit) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         List<Product> products = productRepository.findByOrderByProductNameAsc();
         List<Product> outofstock = products.stream().filter(obj->obj.getProductQuantity() == 0).collect(Collectors.toList());
         List<Product> lowstock = products.stream().filter(obj->obj.getProductQuantity() < 12).collect(Collectors.toList());
@@ -151,7 +179,11 @@ public class ProductController {
     }
 
     @PostMapping("/applyproduct")
-    public String applyStock(@RequestParam Map<String, String> ToApply) {
+    public String applyStock(HttpSession session, @RequestParam Map<String, String> ToApply) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         System.out.println(ToApply.get("name"));
         Product modProduct = productRepository.findById(Integer.parseInt(ToApply.get("pid"))).get();
         modProduct.setProductName(ToApply.get("name"));

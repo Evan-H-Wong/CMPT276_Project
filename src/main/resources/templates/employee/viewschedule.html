@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver Schedule Viewer</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+    <link rel="stylesheet" href="../css/schedules.css">
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+// Remove the manager/ if your file is in the static folder
+$(function(){
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
+});
+</script> 
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <div id="ShiftSchedule" style="display:none">
+            <tr th:each="date:${date}">
+                <p class="date" th:text="${date}"></p>
+            </tr>
+            <tr th:each="starthour:${starthour}">
+                <p class="starthour" th:text="${starthour}"></p>
+            </tr>
+            <tr th:each="startminute:${startminute}">
+                <p class="startminute" th:text="${startminute lt 10 ? '0' + startminute : startminute}"></p>
+            </tr>
+            <tr th:each="endhour:${endhour}">
+                <p class="endhour" th:text="${endhour}"></p>
+            </tr>
+            <tr th:each="endminute:${endminute}">
+                <p class="endminute" th:text="${endminute lt 10 ? '0' + endminute : endminute}"></p>
+            </tr>
+            <tr th:each="dayweek:${dayweek}">
+                <p class="dayweek" th:text="${dayweek}"></p>
+            </tr>
+            <tr th:each="weekly:${weekly}">
+                <p class="weekly" th:text="${weekly}"></p>
+            </tr>
+        </div>
+        <h1>Schedule</h1>
+        <div id = "Inner">
+            <div class="calendar">
+                <!-- Month and year navigation -->
+                <div class="month-navigation">
+                    <button id="prevMonth">&lt;</button>
+                    <span id="currentMonth">July 2024</span>
+                    <button id="nextMonth">&gt;</button>
+                </div>
+        
+                <!-- Calendar days grid -->
+                <div class="calendar-grid">
+                    <!-- Days of the week header -->
+                    <div class="day-name">Sun</div>
+                    <div class="day-name">Mon</div>
+                    <div class="day-name">Tue</div>
+                    <div class="day-name">Wed</div>
+                    <div class="day-name">Thu</div>
+                    <div class="day-name">Fri</div>
+                    <div class="day-name">Sat</div>
+        
+                    <!-- Days of the month will be dynamically generated here -->
+                </div>
+            </div>
+
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+<script src="/js/viewschedule.js"></script>
+</html>

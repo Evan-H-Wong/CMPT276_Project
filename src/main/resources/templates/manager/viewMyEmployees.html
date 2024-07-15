@@ -39,6 +39,11 @@ $(function(){
                             <input type="hidden" name="username" th:value="${employee.username}">
                             <button type="submit" class="btn btn-danger">Remove</button>
                         </form>
+
+                        <form action="/manager/schedule" method="get" style="display:inline-block;"> 
+                            <input type="hidden" name="user" th:value="${employee.username}">
+                            <button type="submit" class="btn btn-danger">Manage Schedule</button>
+                        </form>
                     </td>
                 </tr>
             </tbody>
