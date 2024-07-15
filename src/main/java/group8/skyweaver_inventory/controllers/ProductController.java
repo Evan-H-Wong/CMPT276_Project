@@ -71,7 +71,7 @@ public class ProductController {
     }
 
     @PostMapping("/products/delete/{pid}")
-    public String deleteRectangle(HttpSession session, @PathVariable ("pid") int id) 
+    public String deleteProduct(HttpSession session, @PathVariable ("pid") int id) 
     {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
