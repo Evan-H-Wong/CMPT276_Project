@@ -1,17 +1,24 @@
 package group8.skyweaver_inventory.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "messages")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @JsonProperty("messageName")
     private String messageName;
+    @JsonProperty("messageContent")
     private String messageContent;
+    @JsonProperty("timeSent")
     private String timeSent;
+    @JsonProperty("messageSender")
     private String messageSender;
 
     @ManyToOne

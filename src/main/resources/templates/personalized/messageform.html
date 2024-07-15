@@ -35,31 +35,27 @@
             <label for="messageContent" class="form-label">Message Content</label>
             <textarea class="form-control" id="messageContent" name="messageContent" rows="3"></textarea>
         </div>
-        <button type="button" class="btn btn-primary" onclick="sendMessage()">Send</button>
+        <button type="submit" class="btn btn-primary">Send</button>
     </form>
 </div>
-
 <script>
-    function sendMessage() {
-        const recipient = document.getElementById('recipient').value;
-        const messageName = document.getElementById('messageName').value;
-        const messageContent = document.getElementById('messageContent').value;
-
+    document.getElementById('messageForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+        var formData = new FormData(this);
         fetch('/sendMessage', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ recipient, messageName, messageContent })
-        }).then(response => {
-            if (response.ok) {
-                alert('Message sent successfully');
-                window.location.href = '/manager/managerinbox';
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl; // Redirect to the appropriate inbox
             } else {
-                alert('Error sending message');
+                console.log(data); // Log any non-redirect responses (e.g., errors)
             }
-        });
-    }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 </script>
 </body>
 </html>

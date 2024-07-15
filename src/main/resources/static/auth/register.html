@@ -21,12 +21,16 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
+        .error-message {
+            color: red;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1 class="display-4">Register</h1>
-    <form action="/register" method="post">
+    <div id="errorMessage" class="error-message"></div>
+    <form id="registerForm">
         <div class="mb-3">
             <label for="username" class="form-label">Username:</label>
             <input type="text" id="username" name="username" class="form-control">
@@ -41,7 +45,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
-                <button type="submit" class="btn btn-primary w-100">Register</button>
+                <button type="button" class="btn btn-primary w-100" onclick="submitForm()">Register</button>
             </div>
             <div class="col-md-6 mb-3">
                 <a href="/auth/login.html" class="btn btn-secondary w-100">Back</a>
@@ -49,5 +53,48 @@
         </div>
     </form>
 </div>
+<script>
+    function submitForm() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const accesslevel = document.getElementById('accesslevel').value;
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (!validatePassword(password)) {
+            errorMessage.textContent = 'Password must be 8+ characters, and have at least 1 capital and number';
+            return;
+        }
+
+        fetch('/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+                accesslevel: accesslevel
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/auth/login.html';
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        })
+        .catch(error => {
+            errorMessage.textContent = error.message;
+        });
+    }
+
+    function validatePassword(password) {
+        const minLength = 8;
+        const hasNumber = /\d/;
+        const hasUpperCase = /[A-Z]/;
+
+        return password.length >= minLength && hasNumber.test(password) && hasUpperCase.test(password);
+    }
+</script>
 </body>
 </html>

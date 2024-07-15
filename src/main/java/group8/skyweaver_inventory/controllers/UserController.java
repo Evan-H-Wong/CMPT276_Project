@@ -12,10 +12,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import jakarta.servlet.http.HttpSession;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -25,27 +22,47 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserService userService;
+
     @PostMapping("/register")
-    public String register(@RequestParam Map<String, String> register) {
+    public ResponseEntity<String> register(@RequestBody Map<String, String> register) {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel").toUpperCase();
 
         // Validate access level
         if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {
-            return "redirect:/auth/error.html";
+            return ResponseEntity.badRequest().body("Invalid access level.");
         }
 
         if (userRepository.findByUsername(username) != null) {
-            return "redirect:/auth/error.html";
+            return ResponseEntity.badRequest().body("Username already exists.");
         }
+
+        // Validate password
+        if (!isValidPassword(password)) {
+            return ResponseEntity.badRequest().body("Password must be 8+ characters, and have at least 1 capital and number.");
+        }
+
         // Save new user
         User user = new User(username, password, accesslevel);
         userRepository.save(user);
 
-        return "redirect:/auth/login.html";
+        return ResponseEntity.ok("User registered successfully.");
+    }
+
+    private boolean isValidPassword(String password) {
+        int minLength = 8;
+        boolean hasNumber = password.chars().anyMatch(Character::isDigit);
+        boolean hasUpperCase = password.chars().anyMatch(Character::isUpperCase);
+
+        return password.length() >= minLength && hasNumber && hasUpperCase;
     }
 
     @GetMapping("/login")
@@ -142,11 +159,12 @@ public class UserController {
         return "/personalized/manager";
     }
 
-    @GetMapping("/manager/managerinbox")
+    @GetMapping("/manager/inbox")
     public String managerInbox(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            model.addAttribute("user", user);
+            User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
+            model.addAttribute("messages", fullyLoadedUser.getMessages());
         }
         return "manager/managerinbox";
     }
@@ -155,26 +173,55 @@ public class UserController {
     public String employeeInbox(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            model.addAttribute("user", user);
+            User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
+            model.addAttribute("messages", fullyLoadedUser.getMessages());
         }
         return "employee/employeeinbox";
     }
 
+    @GetMapping("/getNumberMessages")
+    public ResponseEntity<String> getNumberMessages(HttpSession session) {
+        System.out.println("Entered getNumberMessages method");
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
+            System.out.println("User found: " + fullyLoadedUser.getUsername());
+            System.out.println("Number of Messages: " + fullyLoadedUser.numberMessages());
+            return ResponseEntity.ok("Number of Messages: " + fullyLoadedUser.numberMessages());
+        } else {
+            System.out.println("User not found in session");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found in session");
+        }
+    }
+
+    @GetMapping("/messages/{id}")
+    public ResponseEntity<Message> getMessageById(@PathVariable int id) {
+        Optional<Message> message = messageRepository.findById(id);
+        if (message.isPresent()) {
+            return ResponseEntity.ok(message.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @PostMapping("/sendMessage")
-    @ResponseBody
-    public ResponseEntity<?> sendMessage(@RequestBody Map<String, String> messageInfo, HttpSession session) {
-        String recipientUsername = messageInfo.get("recipient");
-        String messageName = messageInfo.get("messageName");
-        String messageContent = messageInfo.get("messageContent");
+    public ResponseEntity<Map<String, String>> sendMessage(
+            @RequestParam("recipient") String recipientUsername,
+            @RequestParam("messageName") String messageName,
+            @RequestParam("messageContent") String messageContent,
+            HttpSession session) {
+        System.out.println("Received sendMessage request");
 
         User sender = (User) session.getAttribute("user");
         if (sender == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            System.out.println("User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
         }
 
         User recipient = userRepository.findByUsername(recipientUsername);
         if (recipient == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Recipient not found");
+            System.out.println("Recipient not found");
+            return ResponseEntity.badRequest().body(Map.of("error", "Recipient not found"));
         }
 
         Message message = new Message();
@@ -187,8 +234,19 @@ public class UserController {
         recipient.getMessages().add(message);
         userRepository.save(recipient);
 
-        return ResponseEntity.ok("Message sent successfully");
+        // Determine redirect URL based on user access level
+        String redirectUrl;
+        if ("Manager".equalsIgnoreCase(sender.getAccesslevel())) {
+            redirectUrl = "/manager/inbox"; // Redirect to the manager inbox
+        } else if ("Employee".equalsIgnoreCase(sender.getAccesslevel())) {
+            redirectUrl = "/employee/inbox"; // Redirect to the employee inbox
+        } else {
+            redirectUrl = "/";
+        }
+
+        return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
     }
+
 
     @GetMapping("/messageform")
     public String showMessageForm(Model model) {
