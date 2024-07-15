@@ -124,10 +124,10 @@ function validateAndSubmit() {
     const year = document.getElementById("year");
     const month = document.getElementById("month");
     const day = document.getElementById("day");
-    const startTime = document.getElementById("start-time");
+    const startTime = document.getElementById("startTime");
     const duration = document.getElementById("duration");
 
-    if (!year.value || !month.value || !day.value || !duration.value) {
+    if (!year.value || !month.value || !day.value || !startTime.value|| !duration.value) {
         alert("Please fill out all required fields (Year, Month, Day, Start Time, Duration).");
         return false;
     }
