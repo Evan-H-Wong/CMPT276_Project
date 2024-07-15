@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.stream.Collectors;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +83,7 @@ public class ProductController {
         return "redirect:/managestock";
     }
     
-    @GetMapping("/manager/order")
+    @GetMapping("manager/order")
     public String orderRedirect(Model model) {
         List<Product> products = productRepository.findByOrderByProductNameAsc();
         List<OrderedProduct> orderedProducts = orderedProductRepository.findByOrderByProductNameAsc();
@@ -100,25 +102,54 @@ public class ProductController {
     }
 
     @PostMapping("/orderConfirmed")
-    public String newOrder(@RequestParam Map<String, String> newOrder, Model model) throws ParseException {
+    public String newOrder(@RequestParam Map<String, String> newOrder, HttpServletResponse response, Model model) throws ParseException {
         int orderQuantity = Integer.parseInt(newOrder.get("orderQuantity"));
         String productName = newOrder.get("productName");
         String productCategory = newOrder.get("productCategory");
         int productQuantity = Integer.parseInt(newOrder.get("productQuantity"));
         float productPrice = Float.parseFloat(newOrder.get("productPrice"));
+        if (orderedProductRepository.findByProductName(productName) != null) {
+            return "redirect:/auth/orderError.html";
+        }
         
-        String randomDate = newOrder.get("arrivalDate");
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        int randomDay = (int) (Math.random() * (31 - day) + day);
+        int randomHour = (int) (Math.random() * (24 - hour) + hour);
+        int randomMinute = (int) (Math.random() * (60 - minute) + minute);
+
+        calendar.set(Calendar.DAY_OF_MONTH, randomDay);
+        calendar.set(Calendar.HOUR_OF_DAY, randomHour);
+        calendar.set(Calendar.MINUTE, randomMinute);
+
+        if (calendar.before(Calendar.getInstance())) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        Date arrivalDate = calendar.getTime();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Date arrivalDate = sdf.parse(randomDate);
+        String formattedDate = sdf.format(arrivalDate);
+        Date randomDate = sdf.parse(formattedDate);
         
-        
-        orderedProductRepository.save(new OrderedProduct(productName, productQuantity, productPrice, productCategory, orderQuantity, arrivalDate));
+        orderedProductRepository.save(new OrderedProduct(productName, productQuantity, productPrice, productCategory, orderQuantity, randomDate));
+        response.setStatus(201);
         List<OrderedProduct> orderedProducts = orderedProductRepository.findByOrderByProductNameAsc();
         model.addAttribute("o", orderedProducts);
-        return "redirect:/manager/order";
+        return "manager/orderAdded";
     }
     
-    @GetMapping("/product/delete/{pid}")
+    @GetMapping("manager/orderAdded")
+    public String orderAddedRedirect(Model model) {
+        List<OrderedProduct> orders = orderedProductRepository.findByOrderByProductNameAsc();
+        model.addAttribute("o", orders);
+        return "manager/orderAdded.html";
+    }
+
+    @PostMapping("/order/delete/{pid}")
     public String deleteOrder(@PathVariable ("pid") int id) 
     {
         orderedProductRepository.deleteById(id);

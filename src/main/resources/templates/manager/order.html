@@ -77,7 +77,7 @@ $(function(){
                         <td th:text="${orderedProduct.orderQuantity}"></td>
                         <td><p id = "timer" class = "timer"></p></td>
                         <td>
-                            <a th:href = "@{'/product/delete/' + ${orderedProduct.pid}}" style="display:inline">Delete</a>
+                            <a th:href = "@{'/order/delete/' + ${orderedProduct.pid}}" style="display:inline">Delete</a>
                         </td>
                         <input type = "hidden" id = "randomDate" class = "randomDate" th:value = "${orderedProduct.arrivalDate}">
                     </tr>

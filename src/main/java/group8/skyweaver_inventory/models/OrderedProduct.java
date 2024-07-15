@@ -21,6 +21,14 @@ public class OrderedProduct {
     public OrderedProduct() {
     }
 
+    public OrderedProduct(String productName, int productQuantity, float productPrice, String productCategory, int orderQuantity) {
+        this.productName = productName;
+        this.productQuantity = productQuantity;
+        this.productPrice = productPrice;
+        this.productCategory = productCategory;
+        this.orderQuantity = orderQuantity;
+    }
+
     public OrderedProduct(String productName, int productQuantity, float productPrice, String productCategory, int orderQuantity, Date arrivalDate) {
         this.productName = productName;
         this.productQuantity = productQuantity;

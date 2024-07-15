@@ -18,22 +18,29 @@ $(function(){
     $("#footer").load("../footer.html");
 });
 </script>
-<script>
+<!-- <script>
 function generateRandomDate()
 {
     var currentTime = new Date();
     let year = currentTime.getFullYear();
+    console.log(year);
     var month = currentTime.getMonth();
-    var day = currentTime.getDay();
+    console.log(month);
+    var day = currentTime.getDate();
+    console.log(day);
     var hour = currentTime.getHours();
+    console.log(hour);
+    console.log(currentTime);
     var randomDay = Math.floor(Math.random() * (31 - day) + day);
     var randomHour = Math.floor(Math.random() * (24 - hour) + (hour + 1));
     var randomDate = new Date(year, month, randomDay, randomHour);
     document.getElementById("arrivalDate").value = randomDate.toISOString();
+    document.getElementById("arrivalDate").value = randomDate.toDateString();
 }
-</script> 
+</script>  
+ onload = "generateRandomDate()"-->
 </head>
-<body onload = "generateRandomDate()">
+<body>
 <div id="header"></div>
 <div class="container">
     <div id="aside"></div>
@@ -64,7 +71,7 @@ function generateRandomDate()
                             <input type = "hidden" name = "productCategory" th:value="${product.productCategory}">
                             <input type = "hidden" name = "productPrice" th:value="${product.productPrice}">
                             <input type = "hidden" name = "productQuantity" th:value="${product.productQuantity}">
-                            <input type = "hidden" name = "arrivalDate" id = "arrivalDate">
+                            <!-- <input type = "hidden" name = "arrivalDate" id = "arrivalDate"> -->
                     </tr>
             </table>
         </section>
