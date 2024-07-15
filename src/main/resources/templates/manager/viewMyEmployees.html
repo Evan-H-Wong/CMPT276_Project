@@ -1,41 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Employees</title>
     <link rel="stylesheet" href="../css/homepageStyle.css">
-</head>
-<script
-    src="https://code.jquery.com/jquery-3.3.1.js"
-    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-    crossorigin="anonymous">
-</script>
-<script> 
-$(function(){
-    $("#header").load("header.html");
-    $("#aside").load("aside.html");
-    $("#footer").load("footer.html");
-});
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script>
+        $(function(){
+            $("#header").load("header.html");
+            $("#aside").load("aside.html");
+            $("#footer").load("footer.html");
+        });
 
-function confirmAdjustSalary(form) {
-    var salary = form.salary.value;
-    if (confirm("Are you sure you want to adjust the salary to $" + salary + "?")) {
-        form.submit();
-    }
-}
-</script> 
+        function confirmAdjustSalary(form) {
+            var salary = form.salary.value;
+            if (confirm("Are you sure you want to adjust the salary to $" + salary + "?")) {
+                form.submit();
+            }
+            // Return false to prevent form submission when cancel is clicked
+            return false;
+        }
+    </script>
+</head>
 <body>
 <div id="header"></div>
 <div class="container">
     <div id="aside"></div>
     <main>
         <h1 class="display-4">My Employees</h1>
-        <div th:if="${errorMessage}">
-            <p class="alert alert-danger" th:text="${errorMessage}"></p>
+        <div th:if="${error}">
+            <p class="alert alert-danger" th:text="${error}"></p>
         </div>
-        <div th:if="${successMessage}">
-            <p class="alert alert-success" th:text="${successMessage}"></p>
+        <div th:if="${success}">
+            <p class="alert alert-success" th:text="${success}"></p>
         </div>
         <table class="table table-striped">
             <thead>
@@ -49,19 +47,19 @@ function confirmAdjustSalary(form) {
                 <tr th:each="employee : ${employees}">
                     <td th:text="${employee.username}"></td>
                     <td>
-                        <form action="@{/manager/adjustSalary}" method="post" style="display:inline-block;" onsubmit="confirmAdjustSalary(this); return false;">
+                        <form th:action="@{/manager/adjustSalary}" method="post" style="display:inline-block;" onsubmit="return confirmAdjustSalary(this);">
                             <input type="hidden" name="username" th:value="${employee.username}">
                             <input type="number" step="0.01" name="salary" th:value="${employee.salary}">
-                            <button type="submit" class="btn btn-primary">Adjust Salary</button>
+                            <button type="submit" class="btn btn-primary">Adjust</button>
                         </form>
                     </td>
                     <td>
-                        <form th:action="@{/manager/removeEmployee}" method="post" style="display:inline-block;"> 
+                        <form th:action="@{/manager/removeEmployee}" method="post" style="display:inline-block;">
                             <input type="hidden" name="username" th:value="${employee.username}">
                             <button type="submit" class="btn btn-danger">Remove</button>
                         </form>
 
-                        <form action="/manager/schedule" method="get" style="display:inline-block;"> 
+                        <form action="/manager/schedule" method="get" style="display:inline-block;">
                             <input type="hidden" name="user" th:value="${employee.username}">
                             <button type="submit" class="btn btn-danger">Manage Schedule</button>
                         </form>

@@ -22,7 +22,7 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private User manager; // Manager of this user (for employees)
+    private User manager; 
 
     public User() {
     }
@@ -32,6 +32,7 @@ public class User {
         this.password = password;
         this.accesslevel = accesslevel;
         this.isAvailable = true;
+        this.salary = 0.0;
     }
     
 

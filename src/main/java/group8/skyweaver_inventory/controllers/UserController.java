@@ -206,6 +206,7 @@ public class UserController {
         if (employee != null) {
             employee.setManager(null);
             employee.setIsAvailable(true);
+            employee.setSalary(0);
             userRepository.save(employee);
         }
         return "redirect:/manager/viewMyEmployees.html";
@@ -235,22 +236,35 @@ public class UserController {
     }
 
     @PostMapping("/manager/adjustSalary")
-    public String adjustSalary(@RequestParam("username") String username, @RequestParam("salary") double salary, RedirectAttributes redirectAttributes) {
+    public String adjustSalary(@RequestParam String username, @RequestParam double salary, RedirectAttributes redirectAttributes) {
         User employee = userRepository.findByUsername(username);
-        if (employee != null) {
-            if (salary < 17.4) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Salary cannot be less than $17.4/h");
-                return "redirect:/manager/viewMyEmployees.html";
-            } else {
-                employee.setSalary(salary);
-                userRepository.save(employee);
-                redirectAttributes.addFlashAttribute("successMessage", "Salary updated successfully");
-            }
+        if (salary < 17.4) {
+            redirectAttributes.addFlashAttribute("error", "Minimum Wage $17.40/h, please input a valid value.");
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "Employee not found");
+            employee.setSalary(salary);
+            userRepository.save(employee);
+            redirectAttributes.addFlashAttribute("success", "Salary adjusted successfully.");
         }
         return "redirect:/manager/viewMyEmployees.html";
     }
+
+    @GetMapping("/employee/mySalary.html")
+    public String viewMySalary(HttpSession session, Model model) {
+        User employee = (User) session.getAttribute("user");
+        if (employee == null || employee.getAccesslevel() == "MANAGER") {
+            return "redirect:/";
+        }
+
+        if (employee.getSalary() == 0.0) {
+            model.addAttribute("noSalary", true);
+        } else {
+            model.addAttribute("salary", "$" + employee.getSalary() + "/h");
+        }
+
+        return "employee/mySalary";
+    }
+
+
 
     @GetMapping("/session/user")
     @ResponseBody
