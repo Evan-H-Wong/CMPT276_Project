@@ -89,6 +89,7 @@ public class UserControllerTest {
         String accesslevel = "MANAGER";
     
         User user = new User(username, password, accesslevel);
+        user.setToken("test_token");
     
         when(userRepository.findByUsernameAndPassword(username, password)).thenReturn(user);
     
