@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +17,14 @@ $(function(){
     $("#aside").load("aside.html");
     $("#footer").load("footer.html");
 });
+
+$('#trackForm').on('submit', function(event) {
+        event.preventDefault();
+        var trackingNumber = $('#trackingNumber').val();
+        $.get('/api/ship24/track', { trackingNumber: trackingNumber }, function(data) {
+            $('#results').html(data);
+        });
+    });
 </script> 
 </head>
 <body>
@@ -94,19 +102,49 @@ $(function(){
             </table>
         </section>
         <h2>Track Your Shipment</h2>
-        <form action="/api/ship24/track" method="get" object="${test_model}">
+        <!-- <form action="/api/ship24/track" method="get" object="${test_model}">
+            <label for="trackingNumber">Enter Tracking Number:</label>
+            <input type="text" id="trackingNumber" name="trackingNumber" required>
+            <button type="submit">Track</button>
+        </form> -->
+        <form id="trackForm" action="/api/ship24/track" method="get">
             <label for="trackingNumber">Enter Tracking Number:</label>
             <input type="text" id="trackingNumber" name="trackingNumber" required>
             <button type="submit">Track</button>
         </form>
-        <div id="results">
+        <div id="results" th:replace="fragments/tracking-results :: results">
+        <!-- <div id="results"> -->
             <h2>Tracking Results:</h2>
-            <!-- <div th:if="${test_model != null && test_model.productName != null}">
-                <pre th:text="${test_model.productName}"></pre>
-                <pre th:text="${test_model.productCategor}"></pre>
-                <pre th:text="${test_model.productPrice}"></pre>
-            </div> -->
-            
+            <div th:if="${results['data'] != null}"> 
+                <div th:each="tracking : ${results['data']['trackings']}">
+                    <h3>Tracking Details</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tracking Number</th>
+                                <th>Status Milestone</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Estimated Delivery Date</th>
+                                <th>Service</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${tracking['tracker']['trackingNumber']}">[trackingNumber]</td>
+                                <td th:text="${tracking['shipment']['statusMilestone']}">[statusMilestone]</td>
+                                <td th:text="${tracking['shipment']['originCountryCode']}">[originCountryCode]</td>
+                                <td th:text="${tracking['shipment']['destinationCountryCode']}">[destinationCountryCode]</td>
+                                <td th:text="${tracking['shipment']['delivery']['estimatedDeliveryDate']}">[estimatedDeliveryDate]</td>
+                                <td th:text="${tracking['shipment']['delivery']['service']}">[service]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:if="${results['data'] == null}">
+                <p>No tracking information found.</p>
+            </div>
         </div>
     </main>
 </div>
