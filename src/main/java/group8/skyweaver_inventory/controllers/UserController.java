@@ -159,6 +159,11 @@ public class UserController {
         return "/personalized/manager";
     }
 
+    @GetMapping("/personalized/employee")
+    public String personalizedEmployee(HttpSession session, Model model) {
+        return "/personalized/employee";
+    }
+
     @GetMapping("/manager/inbox")
     public String managerInbox(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
