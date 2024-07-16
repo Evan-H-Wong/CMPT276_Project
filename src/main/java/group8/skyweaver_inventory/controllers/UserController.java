@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 
@@ -205,6 +206,7 @@ public class UserController {
         if (employee != null) {
             employee.setManager(null);
             employee.setIsAvailable(true);
+            employee.setSalary(0);
             userRepository.save(employee);
         }
         return "redirect:/manager/viewMyEmployees.html";
@@ -232,6 +234,37 @@ public class UserController {
         }
         return "employee/myManager";
     }
+
+    @PostMapping("/manager/adjustSalary")
+    public String adjustSalary(@RequestParam String username, @RequestParam double salary, RedirectAttributes redirectAttributes) {
+        User employee = userRepository.findByUsername(username);
+        if (salary < 17.4) {
+            redirectAttributes.addFlashAttribute("error", "Minimum Wage $17.40/h, please input a valid value.");
+        } else {
+            employee.setSalary(salary);
+            userRepository.save(employee);
+            redirectAttributes.addFlashAttribute("success", "Salary adjusted successfully.");
+        }
+        return "redirect:/manager/viewMyEmployees.html";
+    }
+
+    @GetMapping("/employee/mySalary.html")
+    public String viewMySalary(HttpSession session, Model model) {
+        User employee = (User) session.getAttribute("user");
+        if (employee == null || employee.getAccesslevel() == "MANAGER") {
+            return "redirect:/";
+        }
+
+        if (employee.getSalary() == 0.0) {
+            model.addAttribute("noSalary", true);
+        } else {
+            model.addAttribute("salary", "$" + employee.getSalary() + "/h");
+        }
+
+        return "employee/mySalary";
+    }
+
+
 
     @GetMapping("/session/user")
     @ResponseBody

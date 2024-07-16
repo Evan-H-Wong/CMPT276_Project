@@ -18,10 +18,11 @@ public class User {
     private String gmail;
     private String token;
     private String refreshToken;
+    private double salary;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private User manager; // Manager of this user (for employees)
+    private User manager; 
 
     public User() {
     }
@@ -31,6 +32,7 @@ public class User {
         this.password = password;
         this.accesslevel = accesslevel;
         this.isAvailable = true;
+        this.salary = 0.0;
     }
     
 
@@ -100,5 +102,13 @@ public class User {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 }
