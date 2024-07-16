@@ -1,100 +1,58 @@
-// package group8.skyweaver_inventory.controllers;
+package group8.skyweaver_inventory.controllers;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.http.*;
-// import org.springframework.web.client.RestTemplate;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
-// import group8.skyweaver_inventory.services.Ship24Service;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-// import java.util.HashMap;
-// import java.util.Map;
+import java.util.HashMap;
+import java.util.Map;
 
-// import static org.junit.jupiter.api.Assertions.*;
-// import static org.mockito.ArgumentMatchers.*;
-// import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-// public class Ship24ControllerTest {
+import group8.skyweaver_inventory.services.Ship24Service;
 
-//     @Mock
-//     private RestTemplate restTemplate;
+@WebMvcTest(Ship24Controller.class)
+public class Ship24ControllerTest {
 
-//     @InjectMocks
-//     private Ship24Service ship24Service;
+    @InjectMocks
+    private Ship24Controller ship24Controller;
 
-//     @Value("${ship24.api.key}")
-//     private String apiKey;
+    @MockBean
+    private Ship24Service ship24Service;
 
-//     @BeforeEach
-//     void setUp() {
-//         MockitoAnnotations.openMocks(this);
-//         ship24Service = new Ship24Service();
-//         ship24Service.apiKey = "apiKey";
-//         ship24Service.restTemplate = restTemplate;
-//     }
+    private MockMvc mockMvc;
 
-//     @Test
-//     public void testCreateTrackerAndGetResults_Success() {
-//         String trackingNumber = "S24DEMO456393";
-//         String url = "https://api.ship24.com/public/v1/trackers/search/" + trackingNumber + "/results";
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(ship24Controller).build();
+    }
 
-//         HttpHeaders headers = new HttpHeaders();
-//         headers.setContentType(MediaType.APPLICATION_JSON);
-//         headers.set("Authorization", "Bearer " + apiKey);
+    @Test
+    public void testTrackShipment() throws Exception {
+        String trackingNumber = "1234567890";
+        Map<String, Object> mockResult = new HashMap<>();
+        mockResult.put("status", "delivered");
 
-//         Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
-//         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+        given(ship24Service.getTrackerResultsByTrackingNumber(anyString())).willReturn(mockResult);
 
-//         Map<String, Object> mockShipment = new HashMap<>();
-//         mockShipment.put("statusMilestone", "mockStatusMilestone");
-//         mockShipment.put("originCountryCode", "mockOriginCountryCode");
-//         mockShipment.put("destinationCountryCode", "mockDestinationCountryCode");
+        mockMvc.perform(get("/api/ship24/track")
+                .param("trackingNumber", trackingNumber))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("results"))
+                .andExpect(view().name("trackingInfo"));
+    }
+}
 
-//         Map<String, Object> mockResponseBody = new HashMap<>();
-//         mockResponseBody.put("trackerId", "mockTrackerId");
-//         mockResponseBody.put("trackingNumber", trackingNumber);
-//         mockResponseBody.put("shipmentId", "mockShipmentId");
-//         mockResponseBody.put("shipment", mockShipment);
-
-//         ResponseEntity<Map> mockResponse = new ResponseEntity<>(mockResponseBody, HttpStatus.OK);
-
-//         when(restTemplate.exchange(eq(url), eq(HttpMethod.GET), eq(entity), eq(Map.class))).thenReturn(mockResponse);
-
-//         Map<String, Object> results = ship24Service.createTrackerAndGetResults(trackingNumber);
-
-//         assertNotNull(results);
-//         //assertEquals("mockTrackerId", results.get("trackerId"));
-//         //assertEquals(trackingNumber, results.get("trackingNumber"));
-//         //assertEquals("mockShipmentId", results.get("shipmentId"));
-
-//         Map<String, Object> shipment = (Map<String, Object>) results.get("shipment");
-//         //assertNotNull(shipment);
-//         //assertEquals("mockStatusMilestone", shipment.get("statusMilestone"));
-//         //assertEquals("mockOriginCountryCode", shipment.get("originCountryCode"));
-//         //assertEquals("mockDestinationCountryCode", shipment.get("destinationCountryCode"));
-//     }
-
-//     @Test
-//     public void testCreateTrackerAndGetResults_Failure() {
-//         String trackingNumber = "INVALID_TRACKING_NUMBER";
-//         String url = "https://api.ship24.com/public/v1/trackers/search/" + trackingNumber + "/results";
-
-//         HttpHeaders headers = new HttpHeaders();
-//         headers.setContentType(MediaType.APPLICATION_JSON);
-//         headers.set("Authorization", "Bearer " + apiKey);
-
-//         Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
-//         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
-
-//         when(restTemplate.exchange(eq(url), eq(HttpMethod.GET), eq(entity), eq(Map.class))).thenThrow(new RuntimeException("API call failed"));
-
-//         Map<String, Object> results = ship24Service.createTrackerAndGetResults(trackingNumber);
-
-//         assertNotNull(results);
-//         assertEquals("An error occurred while fetching tracking information.", results.get("error"));
-//     }
-// }
