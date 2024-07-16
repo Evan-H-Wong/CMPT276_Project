@@ -54,6 +54,8 @@ $(function(){
         </section>
         <section class="inventory-overview">
             <h2>Active Product Orders List</h2>
+            <form id = "deleteOrder" th:name = "deleteOrder" action = "/order/delete/" method = "post">
+            </form>
             <table>
                     <tr>
                         <th>Product Name</th>
@@ -77,7 +79,7 @@ $(function(){
                         <td th:text="${orderedProduct.orderQuantity}"></td>
                         <td><p id = "timer" class = "timer"></p></td>
                         <td>
-                            <a th:href = "@{'/order/delete/' + ${orderedProduct.pid}}" style="display:inline">Delete</a>
+                            <a th:id="${orderedProduct.pid}" style="display:inline" href="#" onclick="DeleteOrder(this)">Delete</a>
                         </td>
                         <input type = "hidden" id = "randomDate" class = "randomDate" th:value = "${orderedProduct.arrivalDate}">
                     </tr>
@@ -114,4 +116,11 @@ $(function(){
 </div>
 <div id="footer"></div>
 </body>
+<script>
+    function DeleteOrder(DeleteButton)
+    {
+        document.getElementById("deleteOrder").action = ("/order/delete/" + (DeleteButton.id).toString());
+        document.getElementById("deleteOrder").submit();
+    }
+</script>
 </html>

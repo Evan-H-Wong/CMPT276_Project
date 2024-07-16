@@ -150,8 +150,12 @@ public class ProductController {
     }
 
     @PostMapping("/order/delete/{pid}")
-    public String deleteOrder(@PathVariable ("pid") int id) 
+    public String deleteOrder(HttpSession session, @PathVariable ("pid") int id) 
     {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         orderedProductRepository.deleteById(id);
         return "redirect:/manager/order";
     }

@@ -156,13 +156,6 @@ public class ProductControllerTest {
         String pCategory = "Fruits";
         Integer oQuantity = 10;
 
-        // Calendar currentTime = Calendar.getInstance();
-        // Date currentDate = currentTime.getTime();
-
-        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-        // String ISOTime = sdf.format(currentDate);
-
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
