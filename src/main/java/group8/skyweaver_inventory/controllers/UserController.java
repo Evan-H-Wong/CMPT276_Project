@@ -36,7 +36,7 @@ public class UserController {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel").toUpperCase();
-        String gmail = register.get("gmail");
+        String gmail = username;
 
         // Validate access level
         if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {

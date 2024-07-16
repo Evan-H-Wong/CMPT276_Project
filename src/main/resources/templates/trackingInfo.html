@@ -1,0 +1,75 @@
+<!-- <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tracking Information</title>
+</head>
+<body>
+    
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver BlankPage</title>
+    <link rel="stylesheet" href="../../css/homepageStyle.css">
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+$(function(){
+    $("#header").load("../../manager/header.html");
+    $("#aside").load("../../manager/aside.html");
+    $("#footer").load("../../manager/footer.html");
+});
+</script> 
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+
+        <h2>Tracking Results:</h2>
+        <div th:if="${results['data'] != null}"> 
+            <div th:each="tracking : ${results['data']['trackings']}">
+                <h3>Tracking Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tracking Number</th>
+                            <th>Status Milestone</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Estimated Delivery Date</th>
+                            <th>Service</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td th:text="${tracking['tracker']['trackingNumber']}">[trackingNumber]</td>
+                            <td th:text="${tracking['shipment']['statusMilestone']}">[statusMilestone]</td>
+                            <td th:text="${tracking['shipment']['originCountryCode']}">[originCountryCode]</td>
+                            <td th:text="${tracking['shipment']['destinationCountryCode']}">[destinationCountryCode]</td>
+                            <td th:text="${tracking['shipment']['delivery']['estimatedDeliveryDate']}">[estimatedDeliveryDate]</td>
+                            <td th:text="${tracking['shipment']['delivery']['service']}">[service]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div th:if="${results['data'] == null}">
+            <p>No tracking information found.</p>
+        </div>
+
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+</html>
