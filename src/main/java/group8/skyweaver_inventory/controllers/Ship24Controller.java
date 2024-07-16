@@ -11,6 +11,7 @@ import group8.skyweaver_inventory.services.Ship24Service;
 
 import java.util.Map;
 
+
 @Controller
 @RequestMapping("/api/ship24")
 public class Ship24Controller {
@@ -20,20 +21,23 @@ public class Ship24Controller {
 
     @GetMapping("/track")
     public String trackShipment(@RequestParam String trackingNumber, Model model) {
-    // public String trackShipment(@RequestParam String trackingNumber, Model model) {
 
-        // Product test_p = new Product("name", 10, (float) 10.0, "test");
-        // model.addAttribute("test_model", test_p);
-        
-        // return "redirect:/manager/homepage";
-        Map<String, Object> results = ship24Service.createTrackerAndGetResults(trackingNumber);
-        results.forEach((key, value) -> {
-            System.out.println("Key: " + key + "\t Value: " + value);
-        });
+        Map<String, Object> results = ship24Service.getTrackerResultsByTrackingNumber(trackingNumber);
+        // results.forEach((key, value) -> {
+        //     System.out.println("Key: " + key + "\t Value: " + value);
+        // });
 
         model.addAttribute("results", results);
         return "trackingInfo";
     }
+
+    // @PostMapping("/track/PerCall")
+    // public String getTrackingResult(@RequestBody String entity) {
+    //     //TODO: process POST request
+        
+    //     return entity;
+    // }
+    
 
     // @GetMapping("/trackers/{trackerId}/results")
     // public Map<String, Object> getTrackerResultsById(@PathVariable String trackerId) {

@@ -6,6 +6,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.*;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Service
@@ -14,9 +15,9 @@ public class Ship24Service {
     @Value("${ship24.api.key}")
     private String apiKey;
 
-    private static final String BASE_URL = "https://api.ship24.com/public/v1/trackers";
+    private static final String BASE_URL = "https://api.ship24.com/public/v1";
 
-    public Map<String, Object> createTrackerAndGetResults(String trackingNumber) {
+    public Map<String, Object> getTrackerResultsByTrackingNumber(String trackingNumber) {
 
 
 
@@ -35,41 +36,62 @@ public class Ship24Service {
         Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
-        requestBody.forEach((key, value) -> {
-            System.out.println("Body Key: " + key + "\t Body Value: " + value);
-        });
+        // requestBody.forEach((key, value) -> {
+        //     System.out.println("Body Key: " + key + "\t Body Value: " + value);
+        // });
 
-        String url = BASE_URL + "/search/" + trackingNumber + "/results";
+        String url = BASE_URL + "/trackers/search/" + trackingNumber + "/results";
         // System.out.println("URL: \t" + url);
         try {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-            response.getBody().forEach((key, value) -> {
-                System.out.println("Key: " + key + "\t Value: " + value);
-            });
+            // response.getBody().forEach((key, value) -> {
+            //     System.out.println("Key: " + key + "\t Value: " + value);
+            // });
             return response.getBody();
-            // ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-            // Map<String, Object> responseBody = response.getBody();
-
-            // ModelAndView modelAndView = new ModelAndView("trackingInfo");
-            // modelAndView.addObject("trackerId", responseBody.get("trackerId"));
-            // modelAndView.addObject("trackingNumber", responseBody.get("trackingNumber"));
-            // modelAndView.addObject("shipmentId", responseBody.get("shipmentId"));
-            // modelAndView.addObject("statusMilestone", ((Map<String, Object>) responseBody.get("shipment")).get("statusMilestone"));
-            // modelAndView.addObject("originCountryCode", ((Map<String, Object>) responseBody.get("shipment")).get("originCountryCode"));
-            // modelAndView.addObject("destinationCountryCode", ((Map<String, Object>) responseBody.get("shipment")).get("destinationCountryCode"));
-
-            // return modelAndView;
         } catch (Exception e) {
             e.printStackTrace();
             return Map.of("error", "An error occurred while fetching tracking information.");
-            // catch (Exception e) {
-            //     e.printStackTrace();
-            //     ModelAndView errorModelAndView = new ModelAndView("error");
-            //     errorModelAndView.addObject("errorMessage", "An error occurred while fetching tracking information.");
-            //     return errorModelAndView;
-            // }
         }
     }
+
+    //     public Map<String, Object> getTrackingResultByTrackingNumber(Map<String, String> requestBody) {
+
+    
+    //         RestTemplate restTemplate = new RestTemplate();
+    
+    //         HttpHeaders headers = new HttpHeaders();
+    //         headers.setContentType(MediaType.APPLICATION_JSON);
+    //         headers.set("Authorization", "Bearer " + apiKey);
+    //         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    
+    //         // Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
+    //         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+    
+    //         // requestBody.forEach((key, value) -> {
+    //         //     System.out.println("Body Key: " + key + "\t Body Value: " + value);
+    //         // });
+    
+    //         String url = BASE_URL + "/search/";
+    //         // System.out.println("URL: \t" + url);
+    //         try {
+    //             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+    //             response.getBody().forEach((key, value) -> {
+    //                 System.out.println("Key: " + key + "\t Value: " + value);
+    //             });
+    //             return response.getBody();
+    //         } catch (Exception e) {
+    //             e.printStackTrace();
+    //             return Map.of("error", "An error occurred while fetching tracking information.");
+    //             // catch (Exception e) {
+    //             //     e.printStackTrace();
+    //             //     ModelAndView errorModelAndView = new ModelAndView("error");
+    //             //     errorModelAndView.addObject("errorMessage", "An error occurred while fetching tracking information.");
+    //             //     return errorModelAndView;
+    //             // }
+    //         }
+    // }
+
+
 
     // public Map<String, Object> getTrackerResultsById(String trackerId) {
     //     RestTemplate restTemplate = new RestTemplate();
