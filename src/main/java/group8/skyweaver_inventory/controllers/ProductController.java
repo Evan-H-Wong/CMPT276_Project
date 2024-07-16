@@ -110,7 +110,7 @@ public class ProductController {
         return "manager/confirmOrder.html";
     }
 
-    @PostMapping("/orderConfirmed")
+    @PostMapping("manager/orderConfirmed")
     public String newOrder(HttpSession session, @RequestParam Map<String, String> newOrder, HttpServletResponse response, Model model) throws ParseException {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
