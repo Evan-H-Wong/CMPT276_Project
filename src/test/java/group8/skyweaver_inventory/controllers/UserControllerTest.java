@@ -125,4 +125,86 @@ public class UserControllerTest {
                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/login.html"));
     }
+
+    @Test
+    public void testAdjustSalarySuccess() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User managerUser = new User("manager", "password", "MANAGER");
+        session.setAttribute("user", managerUser);
+
+        String username = "employee";
+        double salary = 20.0;
+        User employee = new User(username, "password", "EMPLOYEE");
+        when(userRepository.findByUsername(username)).thenReturn(employee);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/adjustSalary")
+                .session(session)
+                .param("username", username)
+                .param("salary", String.valueOf(salary)))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attribute("success", "Salary adjusted successfully."))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/viewMyEmployees.html"));
+    }
+
+    @Test
+    public void testAdjustSalaryFailureDueToLowSalary() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User managerUser = new User("manager", "password", "MANAGER");
+        session.setAttribute("user", managerUser);
+
+        String username = "employee";
+        double salary = 15.0;
+        User employee = new User(username, "password", "EMPLOYEE");
+        when(userRepository.findByUsername(username)).thenReturn(employee);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/adjustSalary")
+                .session(session)
+                .param("username", username)
+                .param("salary", String.valueOf(salary)))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.flash().attribute("error", "Minimum Wage $17.40/h, please input a valid value."))
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/viewMyEmployees.html"));
+    }
+
+    @Test
+    public void testAdjustSalaryRedirectForEmployee() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        session.setAttribute("user", employeeUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/adjustSalary")
+                .session(session)
+                .param("username", "employee")
+                .param("salary", "20.0"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/"));
+    }
+
+    @Test
+    public void testViewMySalaryWithSalary() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        employeeUser.setSalary(20.0);
+        session.setAttribute("user", employeeUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/employee/mySalary.html")
+                .session(session))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attribute("salary", "$20.0/h"))
+                .andExpect(MockMvcResultMatchers.view().name("employee/mySalary"));
+    }
+
+    @Test
+    public void testViewMySalaryWithNoSalary() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        employeeUser.setSalary(0.0);
+        session.setAttribute("user", employeeUser);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/employee/mySalary.html")
+                .session(session))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attribute("noSalary", true))
+                .andExpect(MockMvcResultMatchers.view().name("employee/mySalary"));
+    }
 }
