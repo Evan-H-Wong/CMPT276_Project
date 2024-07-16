@@ -218,7 +218,7 @@ public class ProductControllerTest {
         System.out.println("oQuantity: " + oQuantity);
         
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/orderConfirmed")
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/orderConfirmed")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
@@ -244,7 +244,7 @@ public class ProductControllerTest {
         String pCategory = "Fruits";
         Integer oQuantity = 11;
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/orderConfirmed")
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/orderConfirmed")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))

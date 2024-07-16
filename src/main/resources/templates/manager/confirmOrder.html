@@ -15,7 +15,7 @@
 $(function(){
     $("#header").load("../header.html");
     $("#aside").load("../aside.html");
-    $("#footer").load("../footer.html");
+    $("#footer").load("footer.html");
 });
 </script>
 </head>
@@ -44,7 +44,7 @@ $(function(){
                             <span th:case="0">Out of Stock</span>
                             <span th:case="*">In Stock</span>
                         </td>
-                        <form action="/orderConfirmed" method = "post">
+                        <form action="../orderConfirmed" method = "post">
                             <td><input type = "number" th:id = "orderQuantity" th:name = "orderQuantity" style = "height: 20px" placeholder = "Order Quantity"></td>
                             <input type = "hidden" name = "productName" th:value="${product.productName}">
                             <input type = "hidden" name = "productCategory" th:value="${product.productCategory}">
