@@ -129,10 +129,10 @@ public class UserControllerTest {
     @Test
     public void testAdjustSalarySuccess() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User managerUser = new User("manager", "password", "MANAGER");
+        User managerUser = new User("fred", "password", "MANAGER");
         session.setAttribute("user", managerUser);
 
-        String username = "employee";
+        String username = "sam";
         double salary = 20.0;
         User employee = new User(username, "password", "EMPLOYEE");
         when(userRepository.findByUsername(username)).thenReturn(employee);
@@ -149,10 +149,10 @@ public class UserControllerTest {
     @Test
     public void testAdjustSalaryFailureDueToLowSalary() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User managerUser = new User("manager", "password", "MANAGER");
+        User managerUser = new User("fred", "password", "MANAGER");
         session.setAttribute("user", managerUser);
 
-        String username = "employee";
+        String username = "sam";
         double salary = 15.0;
         User employee = new User(username, "password", "EMPLOYEE");
         when(userRepository.findByUsername(username)).thenReturn(employee);
@@ -169,12 +169,12 @@ public class UserControllerTest {
     @Test
     public void testAdjustSalaryRedirectForEmployee() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        User employeeUser = new User("sam", "password", "EMPLOYEE");
         session.setAttribute("user", employeeUser);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/manager/adjustSalary")
                 .session(session)
-                .param("username", "employee")
+                .param("username", "sam")
                 .param("salary", "20.0"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/"));
@@ -183,7 +183,7 @@ public class UserControllerTest {
     @Test
     public void testViewMySalaryWithSalary() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        User employeeUser = new User("sam", "password", "EMPLOYEE");
         employeeUser.setSalary(20.0);
         session.setAttribute("user", employeeUser);
 
@@ -197,7 +197,7 @@ public class UserControllerTest {
     @Test
     public void testViewMySalaryWithNoSalary() throws Exception {
         MockHttpSession session = new MockHttpSession();
-        User employeeUser = new User("employee", "password", "EMPLOYEE");
+        User employeeUser = new User("sam", "password", "EMPLOYEE");
         employeeUser.setSalary(0.0);
         session.setAttribute("user", employeeUser);
 
