@@ -1,7 +1,7 @@
 package group8.skyweaver_inventory.models;
 
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -15,11 +15,14 @@ public class User {
     private String password;
     private String accesslevel;
     private Boolean isAvailable;
+    private String gmail;
+    private String token;
+    private String refreshToken;
+    private double salary;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private User manager; // Manager of this user (for employees)
-
+    private User manager; 
 
     public User() {
     }
@@ -29,6 +32,7 @@ public class User {
         this.password = password;
         this.accesslevel = accesslevel;
         this.isAvailable = true;
+        this.salary = 0.0;
     }
     
 
@@ -74,5 +78,37 @@ public class User {
 
     public void setManager(User manager) {
         this.manager = manager;
+    }
+
+    public String getGmail() {
+        return gmail;
+    }
+
+    public void setGmail(String gmail) {
+        this.gmail = gmail;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 }

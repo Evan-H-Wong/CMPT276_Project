@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>OAuth2 Callback</title>
+</head>
+<body>
+    <h1 th:text="${message}"></h1>
+    <div th:if="${message.contains('successful')}">
+        <a th:href="${access.contains('MANAGER') ? '/manager/homepage.html' : '/employee/homepage.html'}">Go to Homepage</a>
+    </div>
+    <div th:if="${message.contains('failed')}">
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+</body>
+</html>
