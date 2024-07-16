@@ -14,9 +14,9 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("manager/templateHeader.html");
-    $("#aside").load("manager/templateAside.html");
-    $("#footer").load("manager/footer.html");
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
 });
 </script> 
 </head>
@@ -35,7 +35,7 @@ $(function(){
         </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
-            <form th:name = "applyform" action = "/applyproduct" method = "post">
+            <form th:name = "applyform" action = "applyproduct" method = "post">
                 <input type = "hidden" name = "name" id = "name" value = ""></input>
                 <input type = "hidden" name = "category" id = "category" value = ""></input>
                 <input type = "hidden" name = "price" id = "price" value = ""></input>

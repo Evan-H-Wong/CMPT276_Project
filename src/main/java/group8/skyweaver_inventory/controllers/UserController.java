@@ -43,9 +43,10 @@ public class UserController {
             return "redirect:/auth/error.html";
         }
 
-        if (userRepository.findByUsername(username) != null) {
+        if (userRepository.findByUsername(username) != null || userRepository.findByGmail(gmail) != null) {
             return "redirect:/auth/error.html";
         }
+
         // Save new user
         User user = new User(username, password, accesslevel);
         user.setGmail(gmail);

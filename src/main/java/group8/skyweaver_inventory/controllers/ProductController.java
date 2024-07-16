@@ -35,7 +35,7 @@ public class ProductController {
 
     @Autowired
     private OrderedProductRepository orderedProductRepository;
-    @PostMapping("/productAdded")
+    @PostMapping("manager/productAdded")
     public String addProduct(@RequestParam Map<String, String> newProduct, HttpSession session, HttpServletResponse response, Model model)
     {
         User usercheck = (User) session.getAttribute("user");
@@ -72,7 +72,7 @@ public class ProductController {
         return "manager/productAdded.html";
     }
 
-    @PostMapping("/products/delete/{pid}")
+    @PostMapping("manager/products/delete/{pid}")
     public String deleteProduct(HttpSession session, @PathVariable ("pid") int id) 
     {
         User usercheck = (User) session.getAttribute("user");
@@ -80,7 +80,7 @@ public class ProductController {
             return "redirect:/";
         }
         productRepository.deleteById(id);
-        return "redirect:/managestock";
+        return "redirect:/manager/managestock";
     }
     
     @GetMapping("manager/order")
@@ -164,7 +164,7 @@ public class ProductController {
 
     
 
-    @GetMapping("/managestock")
+    @GetMapping("manager/managestock")
     public String stockRedirect(HttpSession session, Model model) {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
@@ -196,7 +196,7 @@ public class ProductController {
         return "employee/viewstock.html";
     }
 
-    @GetMapping("/editproduct")
+    @GetMapping("manager/editproduct")
     public String editStock(HttpSession session, Model model, @RequestParam Map<String, String> ToEdit) {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
@@ -213,7 +213,7 @@ public class ProductController {
         return "manager/editproduct.html";
     }
 
-    @PostMapping("/applyproduct")
+    @PostMapping("manager/applyproduct")
     public String applyStock(HttpSession session, @RequestParam Map<String, String> ToApply) {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
@@ -227,7 +227,7 @@ public class ProductController {
         modProduct.setProductPrice(Float.parseFloat(temp));
         modProduct.setProductQuantity(Integer.parseInt(ToApply.get("quantity")));
         productRepository.save(modProduct);
-        return "redirect:/managestock";
+        return "redirect:/manager/managestock";
     }
 
 }
