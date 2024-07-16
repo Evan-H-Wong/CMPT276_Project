@@ -93,6 +93,12 @@ $(function(){
                 </tbody>
             </table>
         </section>
+        <h2>Track Your Shipment</h2>
+        <form action="/api/ship24/track" method="get">
+            <label for="trackingNumber">Enter Tracking Number:</label>
+            <input type="text" id="trackingNumber" name="trackingNumber" required>
+            <button type="submit">Track</button>
+        </form>
     </main>
 </div>
 <div id="footer"></div>
