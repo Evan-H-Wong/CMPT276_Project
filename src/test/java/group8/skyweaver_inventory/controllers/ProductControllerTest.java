@@ -180,6 +180,9 @@ public class ProductControllerTest {
     //Testing creating new orders
     @Test
     public void testOrderAddSuccess() throws Exception {
+        User user = new User();
+        user.setAccesslevel("MANAGER");
+        session.setAttribute("user", user);
         String pName = "Watermelons";
         Integer pQuantity = 5;
         float pPrice = 3.70f;
@@ -221,7 +224,7 @@ public class ProductControllerTest {
                 .param("productPrice", Float.toString(pPrice))
                 .param("productCategory", pCategory)
                 .param("orderQuantity", Integer.toString(oQuantity))
-                .param("arrivalDate", formattedDate))
+                .param("arrivalDate", formattedDate).session(session))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.view().name("manager/orderAdded"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("o"));

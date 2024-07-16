@@ -84,7 +84,12 @@ public class ProductController {
     }
     
     @GetMapping("manager/order")
-    public String orderRedirect(Model model) {
+    public String orderRedirect(HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+
         List<Product> products = productRepository.findByOrderByProductNameAsc();
         List<OrderedProduct> orderedProducts = orderedProductRepository.findByOrderByProductNameAsc();
         model.addAttribute("o", orderedProducts);
@@ -94,15 +99,23 @@ public class ProductController {
     }
 
     @GetMapping("/manager/order/{pid}")
-    public String productOrderRedirect(@PathVariable ("pid") int id, Model model) 
+    public String productOrderRedirect(HttpSession session, @PathVariable ("pid") int id, Model model) 
     {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         Product product = productRepository.findByPid(id);
         model.addAttribute("o", product);
         return "manager/confirmOrder.html";
     }
 
     @PostMapping("/orderConfirmed")
-    public String newOrder(@RequestParam Map<String, String> newOrder, HttpServletResponse response, Model model) throws ParseException {
+    public String newOrder(HttpSession session, @RequestParam Map<String, String> newOrder, HttpServletResponse response, Model model) throws ParseException {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         int orderQuantity = Integer.parseInt(newOrder.get("orderQuantity"));
         String productName = newOrder.get("productName");
         String productCategory = newOrder.get("productCategory");
@@ -143,7 +156,11 @@ public class ProductController {
     }
     
     @GetMapping("manager/orderAdded")
-    public String orderAddedRedirect(Model model) {
+    public String orderAddedRedirect(HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
         List<OrderedProduct> orders = orderedProductRepository.findByOrderByProductNameAsc();
         model.addAttribute("o", orders);
         return "manager/orderAdded.html";

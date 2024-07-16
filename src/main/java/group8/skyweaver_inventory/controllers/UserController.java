@@ -237,7 +237,12 @@ public class UserController {
     }
 
     @PostMapping("/manager/adjustSalary")
-    public String adjustSalary(@RequestParam String username, @RequestParam double salary, RedirectAttributes redirectAttributes) {
+    public String adjustSalary(HttpSession session, @RequestParam String username, @RequestParam double salary, RedirectAttributes redirectAttributes) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+        
         User employee = userRepository.findByUsername(username);
         if (salary < 17.4) {
             redirectAttributes.addFlashAttribute("error", "Minimum Wage $17.40/h, please input a valid value.");
@@ -264,8 +269,6 @@ public class UserController {
 
         return "employee/mySalary";
     }
-
-
 
     @GetMapping("/session/user")
     @ResponseBody
