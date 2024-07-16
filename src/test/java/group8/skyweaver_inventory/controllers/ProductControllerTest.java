@@ -60,7 +60,7 @@ public class ProductControllerTest {
         float pPrice = 3.70f;
         String pCategory = "Fruits";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/productAdded")
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/productAdded")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
@@ -85,7 +85,7 @@ public class ProductControllerTest {
         float pPrice = 3.70f;
         String pCategory = "Fruits";
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/productAdded")
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/productAdded")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
@@ -102,10 +102,10 @@ public class ProductControllerTest {
         session.setAttribute("user", user);
         doNothing().when(productRepository).deleteById(1);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/products/delete/{pid}", 1)
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/products/delete/{pid}", 1)
                         .session(session))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/managestock"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/managestock"));
 
         verify(productRepository, times(1)).deleteById(1);
     }
@@ -120,14 +120,14 @@ public class ProductControllerTest {
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(existingProduct));
         when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/applyproduct")
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/applyproduct")
                         .param("pid", "49")
                         .param("name", "Apples")
                         .param("category", "Fruits")
                         .param("price", "2.99")
                         .param("quantity", "20").session(session))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/managestock"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/managestock"));
 
         verify(productRepository, times(1)).findById(49);
         verify(productRepository, times(1)).save(any(Product.class));
@@ -145,7 +145,7 @@ public class ProductControllerTest {
 
         when(productRepository.findByOrderByProductNameAsc()).thenReturn(products);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/managestock").session(session))
+        mockMvc.perform(MockMvcRequestBuilders.get("/manager/managestock").session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("manager/managestock.html"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("p", "rowCount", "outofstock", "lowstock"));
@@ -163,7 +163,7 @@ public class ProductControllerTest {
 
         when(productRepository.findByOrderByProductNameAsc()).thenReturn(products);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/viewstock").session(session))
+        mockMvc.perform(MockMvcRequestBuilders.get("/employee/viewstock").session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("employee/viewstock.html"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("p", "rowCount", "outofstock", "lowstock"));

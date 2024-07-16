@@ -13,9 +13,9 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("manager/header.html");
-    $("#aside").load("manager/aside.html");
-    $("#footer").load("manager/footer.html");
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
 });
 </script> 
 </head>
@@ -34,10 +34,10 @@ $(function(){
         </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
-            <form th:name = "editform" action = "/editproduct" method = "get">
+            <form th:name = "editform" action = "editproduct" method = "get">
                 <input type = "hidden" name = "toEdit" id = "toEdit" value = "temp"></input>
             </form>
-            <form id = "toDelete" th:name = "deleteform" action = "/products/delete/" method = "post">
+            <form id = "toDelete" th:name = "deleteform" action = "products/delete/" method = "post">
             </form>
             <table>
                 <thead>
@@ -80,7 +80,7 @@ $(function(){
 
     function DeleteProduct(DeleteButton)
     {
-        document.getElementById("toDelete").action = ("/products/delete/" + (DeleteButton.id).toString());
+        document.getElementById("toDelete").action = ("products/delete/" + (DeleteButton.id).toString());
         document.getElementById("toDelete").submit();
     }
 </script>
