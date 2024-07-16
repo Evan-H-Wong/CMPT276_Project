@@ -4,14 +4,17 @@ import group8.skyweaver_inventory.models.Product;
 import group8.skyweaver_inventory.models.ProductRepository;
 import group8.skyweaver_inventory.models.OrderedProduct;
 import group8.skyweaver_inventory.models.OrderedProductRepository;
+import group8.skyweaver_inventory.models.User;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -46,9 +49,20 @@ public class ProductControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private MockHttpSession session;
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        session = new MockHttpSession();
+    }
+
     //Test successful item addition
     @Test
     public void testProductAddSuccess() throws Exception {
+        User user = new User();
+        user.setAccesslevel("MANAGER");
+        session.setAttribute("user", user);
         String pName = "Bananas";
         Integer pQuantity = 5;
         float pPrice = 3.70f;
@@ -58,7 +72,7 @@ public class ProductControllerTest {
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
-                .param("productCategory", pCategory))
+                .param("productCategory", pCategory).session(session))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.view().name("manager/productAdded"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("p"));
@@ -68,6 +82,9 @@ public class ProductControllerTest {
     //Test duplicate item addition
     @Test
     public void testProductAddFailure() throws Exception {
+        User user = new User();
+        user.setAccesslevel("MANAGER");
+        session.setAttribute("user", user);
         Product existingProduct = new Product("Apples", 10, 3.00f, "Fruits");
         when(productRepository.findByProductName("Apples")).thenReturn(existingProduct);
 
@@ -80,7 +97,7 @@ public class ProductControllerTest {
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
-                .param("productCategory", pCategory))
+                .param("productCategory", pCategory).session(session))
                 .andExpect(MockMvcResultMatchers.status().isFound());
                 verify(productRepository, times(0)).save(any(Product.class));
     }
@@ -88,9 +105,13 @@ public class ProductControllerTest {
     //Test successful item deletion
     @Test
     public void testProductRemoveSuccess() throws Exception {
+        User user = new User();
+        user.setAccesslevel("MANAGER");
+        session.setAttribute("user", user);
         doNothing().when(productRepository).deleteById(1);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/products/delete/{pid}", 1))
+        mockMvc.perform(MockMvcRequestBuilders.post("/products/delete/{pid}", 1)
+                        .session(session))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/managestock"));
 
@@ -100,6 +121,9 @@ public class ProductControllerTest {
     //Test successful item edit
     @Test
     public void testProductEditSuccess() throws Exception {
+        User user = new User();
+        user.setAccesslevel("MANAGER");
+        session.setAttribute("user", user);
         Product existingProduct = new Product("Apples", 20, 1.99f, "Fruits");
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(existingProduct));
         when(productRepository.save(any(Product.class))).thenReturn(existingProduct);
@@ -109,7 +133,7 @@ public class ProductControllerTest {
                         .param("name", "Apples")
                         .param("category", "Fruits")
                         .param("price", "2.99")
-                        .param("quantity", "20"))
+                        .param("quantity", "20").session(session))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/managestock"));
 
@@ -120,13 +144,16 @@ public class ProductControllerTest {
     //Test redirect to managestock page
     @Test
     public void testManageStockRedirect() throws Exception {
+        User user = new User();
+        user.setAccesslevel("MANAGER");
+        session.setAttribute("user", user);
         List<Product> products = new ArrayList<>();
         products.add(new Product("Apples", 20, 2.99f, "Fruits"));
         products.add(new Product("Bananas", 30, 3.99f, "Fruits"));
 
         when(productRepository.findByOrderByProductNameAsc()).thenReturn(products);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/managestock"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/managestock").session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("manager/managestock.html"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("p", "rowCount", "outofstock", "lowstock"));
@@ -135,13 +162,16 @@ public class ProductControllerTest {
     //Test redirect to viewstock page
     @Test
     public void testStockView() throws Exception {
+        User user = new User();
+        user.setAccesslevel("EMPLOYEE");
+        session.setAttribute("user", user);
         List<Product> products = new ArrayList<>();
         products.add(new Product("Apples", 20, 2.99f, "Fruits"));
         products.add(new Product("Bananas", 30, 3.99f, "Fruits"));
 
         when(productRepository.findByOrderByProductNameAsc()).thenReturn(products);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/viewstock"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/viewstock").session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("employee/viewstock.html"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("p", "rowCount", "outofstock", "lowstock"));

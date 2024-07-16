@@ -180,7 +180,7 @@ public class ProductController {
         return "manager/managestock.html";
     }
 
-    @GetMapping("/viewstock")
+    @GetMapping("/employee/viewstock")
     public String stockView(HttpSession session, Model model) {
         User usercheck = (User) session.getAttribute("user");
         if (usercheck == null) {
