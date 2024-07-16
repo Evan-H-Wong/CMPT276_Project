@@ -16,9 +16,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -124,6 +131,107 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/logout").session(session))
                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/login.html"));
+    }
+
+     @Test
+    public void testViewMyEmployees() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User manager = new User("fred", "password", "MANAGER");
+        session.setAttribute("user", manager);
+
+        List<User> myEmployees = new ArrayList<>();
+        myEmployees.add(new User("sam", "password", "EMPLOYEE"));
+
+        when(userRepository.findByManager(manager)).thenReturn(myEmployees);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/manager/viewMyEmployees.html")
+                .session(session))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attribute("employees", myEmployees))
+                .andExpect(MockMvcResultMatchers.view().name("manager/viewMyEmployees"));
+    }
+
+    @Test
+    public void testViewAvailableEmployees() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User manager = new User("fred", "password", "MANAGER");
+        session.setAttribute("user", manager);
+
+        List<User> availableEmployees = new ArrayList<>();
+        availableEmployees.add(new User("sam", "password", "EMPLOYEE"));
+
+        when(userRepository.findByAccesslevelAndIsAvailable("EMPLOYEE", true)).thenReturn(availableEmployees);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/manager/addMyEmployees.html")
+                .session(session))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attribute("employees", availableEmployees))
+                .andExpect(MockMvcResultMatchers.view().name("manager/addMyEmployees"));
+    }
+
+    @Test
+    public void testAddEmployeeToTeam() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User manager = new User("fred", "password", "MANAGER");
+        session.setAttribute("user", manager);
+
+        User employee = new User("sam", "password", "EMPLOYEE");
+        employee.setIsAvailable(true);
+
+        when(userRepository.findByUsername("sam")).thenReturn(employee);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/addEmployee")
+                .session(session)
+                .param("username", "sam"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/addMyEmployees.html"));
+    }
+
+    @Test
+    public void testRemoveEmployeeFromTeam() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User manager = new User("fred", "password", "MANAGER");
+        session.setAttribute("user", manager);
+
+        User employee = new User("sam", "password", "EMPLOYEE");
+
+        when(userRepository.findByUsername("sam")).thenReturn(employee);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/manager/removeEmployee")
+                .session(session)
+                .param("username", "sam"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/viewMyEmployees.html"));
+    }
+
+    @Test
+    public void testViewMyManagerWithManager() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User employee = new User("sam", "password", "EMPLOYEE");
+        User manager = new User("fred", "password", "MANAGER");
+        employee.setManager(manager);
+        session.setAttribute("user", employee);
+
+        when(userRepository.findById(manager.getUid())).thenReturn(Optional.of(manager));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/employee/myManager.html")
+                .session(session))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attribute("manager", manager))
+                .andExpect(MockMvcResultMatchers.view().name("employee/myManager"));
+    }
+
+    @Test
+    public void testViewMyManagerWithoutManager() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User employee = new User("sam", "password", "EMPLOYEE");
+        session.setAttribute("user", employee);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/employee/myManager.html")
+                .session(session))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.model().attribute("noManager", true))
+                .andExpect(MockMvcResultMatchers.view().name("employee/myManager"));
     }
 
     @Test
