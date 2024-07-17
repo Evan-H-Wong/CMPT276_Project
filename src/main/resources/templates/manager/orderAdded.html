@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver Product Editor</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+$(function(){
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
+});
+</script> 
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <h1>Order successfully processed.</h1> 
+        <section class="quick-actions">
+            <h2>Would you like to:</h2>
+            <a href="manager/add.html"><button>Add New Product</button></a>
+            <a href="/manager/order"><button>Create New Order</button></a>
+            <button>Generate Report</button>
+        </section>
+        <section class="inventory-overview">
+            <h2>Active Product Orders List</h2>
+            <form id = "deleteOrder" th:name = "deleteOrder" action = "/order/delete/" method = "post">
+            </form>
+            <table>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Level</th>
+                        <th>Status</th>
+                        <th>Ordered Quantity</th>
+                        <th>Estimated Arrival time</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr id="bodies" th:each="orderedProduct:${o}">
+                        <td th:text="${orderedProduct.productName}"></td>
+                        <td th:text="${orderedProduct.productCategory}"></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(orderedProduct.productPrice, 1, 2)}" style="display:inline"></p></td>
+                        <td th:text="${orderedProduct.productQuantity}"></td>
+                        <td th:switch="${orderedProduct.productQuantity}">
+                            <span th:case="0">Out of Stock</span>
+                            <span th:case="*">In Stock</span>
+                        </td>
+                        <td th:text="${orderedProduct.orderQuantity}"></td>
+                        <td><p id = "timer" class = "timer"></p></td>
+                        <td>
+                            <a th:id="${orderedProduct.pid}" style="display:inline" href="#" onclick="DeleteOrder(this)">Delete</a>
+                        </td>
+                        <input type = "hidden" id = "randomDate" class = "randomDate" th:value = "${orderedProduct.arrivalDate}">
+                    </tr>
+            </table>
+        </section>
+        <script>
+            var temp = document.getElementsByClassName("randomDate");
+            var numberOfOrders = temp.length;
+            var x = setInterval(function() {
+        
+                var now = new Date().getTime();
+                for (let i = 0; i < numberOfOrders; i++)
+                {
+                    var arrivalDate = new Date(document.getElementsByClassName("randomDate")[i].value).getTime();
+                        
+                    var distance = arrivalDate - now;
+        
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    
+                    document.getElementsByClassName("timer")[i].innerHTML = days + "d " + hours + "h "
+                    + minutes + "m " + seconds + "s ";
+        
+                    if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementsByClassName("timer")[i].innerHTML = "Order has arrived";
+                    }
+                }
+        }, 1000);
+        </script>
+    </main>
+</div>
+<div id="footer"></div>
+</body>
+<script>
+    function DeleteOrder(DeleteButton)
+    {
+        document.getElementById("deleteOrder").action = ("/order/delete/" + (DeleteButton.id).toString());
+        document.getElementById("deleteOrder").submit();
+    }
+</script>
+</html>
