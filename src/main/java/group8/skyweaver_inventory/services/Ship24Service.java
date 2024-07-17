@@ -43,6 +43,7 @@ public class Ship24Service {
         String url = BASE_URL + "/trackers/search/" + trackingNumber + "/results";
         // System.out.println("URL: \t" + url);
         try {
+            @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             // response.getBody().forEach((key, value) -> {
             //     System.out.println("Key: " + key + "\t Value: " + value);
