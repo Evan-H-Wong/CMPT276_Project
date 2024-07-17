@@ -236,6 +236,7 @@ public class UserController {
         }
     }
 
+
     @PostMapping("/sendMessage")
     public ResponseEntity<Map<String, String>> sendMessage(
             @RequestParam("recipient") String recipientUsername,
