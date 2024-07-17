@@ -183,12 +183,12 @@ public class UserController {
 
     @GetMapping("/personalized/manager")
     public String personalizedManager(HttpSession session, Model model) {
-        return "/personalized/manager";
+        return "/personalized/manager.html";
     }
 
     @GetMapping("/personalized/employee")
     public String personalizedEmployee(HttpSession session, Model model) {
-        return "/personalized/employee";
+        return "/personalized/employee.html";
     }
 
     @GetMapping("/manager/inbox")
