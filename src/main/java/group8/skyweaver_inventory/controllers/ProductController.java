@@ -247,4 +247,5 @@ public class ProductController {
         return "redirect:/manager/managestock";
     }
 
+
 }
