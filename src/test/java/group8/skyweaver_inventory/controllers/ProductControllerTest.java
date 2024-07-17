@@ -180,8 +180,10 @@ public class ProductControllerTest {
     //Testing creating new orders
     @Test
     public void testOrderAddSuccess() throws Exception {
-        User user = new User();
-        user.setAccesslevel("MANAGER");
+        String username = "Fred";
+        String password = "password";
+        String accesslevel = "MANAGER";
+        User user = new User(username, password, accesslevel);
         session.setAttribute("user", user);
         String pName = "Watermelons";
         Integer pQuantity = 5;
@@ -235,10 +237,14 @@ public class ProductControllerTest {
     //Testing duplicate orders
     @Test
     public void testOrderAddFailure() throws Exception {
-        OrderedProduct existingOrder = new OrderedProduct("Watermelons", 10, 3.00f, "Fruits", 20);
-        when(orderedProductRepository.findByProductName("Watermelons")).thenReturn(existingOrder);
- 
-        String pName = "Watermelons";
+        OrderedProduct existingOrder = new OrderedProduct("Apples", 10, 3.00f, "Fruits", 20);
+        when(orderedProductRepository.findByProductName("Apples")).thenReturn(existingOrder);
+        String username = "Jack";
+        String password = "password";
+        String accesslevel = "MANAGER";
+        User user = new User(username, password, accesslevel);
+        session.setAttribute("user", user);
+        String pName = "Apples";
         Integer pQuantity = 20;
         float pPrice = 2.99f;
         String pCategory = "Fruits";
@@ -249,7 +255,7 @@ public class ProductControllerTest {
                 .param("productQuantity", Integer.toString(pQuantity))
                 .param("productPrice", Float.toString(pPrice))
                 .param("productCategory", pCategory)
-                .param("orderQuantity", Integer.toString(oQuantity)))
+                .param("orderQuantity", Integer.toString(oQuantity)).session(session))
                 .andExpect(MockMvcResultMatchers.status().isFound());
                 verify(orderedProductRepository, times(0)).save(any(OrderedProduct.class));
     }
@@ -257,8 +263,13 @@ public class ProductControllerTest {
     @Test
     public void testOrderSuccessfulDeletion() throws Exception {
         doNothing().when(orderedProductRepository).deleteById(1);
+        String username = "Huey";
+        String password = "password";
+        String accesslevel = "MANAGER";
+        User user = new User(username, password, accesslevel);
+        session.setAttribute("user", user);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/order/delete/{pid}", 1))
+        mockMvc.perform(MockMvcRequestBuilders.post("/order/delete/{pid}", 1).session(session))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/order"));
 
