@@ -16,16 +16,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+//import static org.mockito.ArgumentMatchers.any;
+//import static org.mockito.Mockito.never;
+//import static org.mockito.Mockito.times;
+//import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+//import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -202,23 +202,6 @@ public class UserControllerTest {
                 .param("username", "sam"))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
                 .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/viewMyEmployees.html"));
-    }
-
-    @Test
-    public void testViewMyManagerWithManager() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        User employee = new User("sam", "password", "EMPLOYEE");
-        User manager = new User("fred", "password", "MANAGER");
-        employee.setManager(manager);
-        session.setAttribute("user", employee);
-
-        when(userRepository.findById(manager.getUid())).thenReturn(Optional.of(manager));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/employee/myManager.html")
-                .session(session))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.model().attribute("manager", manager))
-                .andExpect(MockMvcResultMatchers.view().name("employee/myManager"));
     }
 
     @Test

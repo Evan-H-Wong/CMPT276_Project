@@ -351,7 +351,7 @@ public class UserController {
         else if (employee != null) {
             User manager = employee.getManager();
             if (manager != null) {
-                User managerDetails = userRepository.findById(manager.getUid()).orElse(null);
+                User managerDetails = userRepository.findById(manager.getUid());
                 if (managerDetails != null) {
                     model.addAttribute("manager", managerDetails);
                 } else {

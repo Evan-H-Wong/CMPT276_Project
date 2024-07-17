@@ -3,10 +3,10 @@ package group8.skyweaver_inventory.services;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.ModelAndView;
+//import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.*;
 
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.Map;
 
 @Service
