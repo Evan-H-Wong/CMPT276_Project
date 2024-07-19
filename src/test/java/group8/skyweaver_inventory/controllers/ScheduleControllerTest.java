@@ -141,8 +141,8 @@ public class ScheduleControllerTest {
                 .param("month", "7")
                 .param("day", "13")
                 .param("startTime", "10:00")
-                .param("duration", "2")
-                .param("description", "Meeting"))
+                .param("duration", "8")
+                .param("description", "Work Shift"))
                 .andExpect(redirectedUrl("/manager/schedule?user=user1"));
 
         verify(scheduleRepository, times(1)).save(any(Schedule.class));
@@ -156,11 +156,11 @@ public class ScheduleControllerTest {
         manager.setAccesslevel("Manager");
         session.setAttribute("user", manager);
 
-        // Create a schedule with valid details
+        // Create a schedule
         Schedule schedule = new Schedule();
         schedule.setId(1L);
         schedule.setUser(manager);
-        LocalDateTime startTime = LocalDateTime.of(2024, 7, 13, 10, 0); // Example valid start time
+        LocalDateTime startTime = LocalDateTime.of(2024, 7, 13, 10, 0);
         schedule.setStartTime(startTime);
         when(scheduleRepository.getById(1L)).thenReturn(schedule);
 

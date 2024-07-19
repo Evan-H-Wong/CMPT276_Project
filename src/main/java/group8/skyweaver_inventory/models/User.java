@@ -4,6 +4,9 @@ package group8.skyweaver_inventory.models;
 //import java.util.List;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,7 +25,10 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
-    private User manager; 
+    private User manager;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Message> messages;
 
     public User() {
     }
@@ -33,6 +39,8 @@ public class User {
         this.accesslevel = accesslevel;
         this.isAvailable = true;
         this.salary = 0.0;
+        this.messages = new ArrayList<>();
+        addWelcomeMessage();
     }
     
 
@@ -52,6 +60,18 @@ public class User {
         return accesslevel;
     }
 
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public int numberMessages() {
+        return this.messages.size();
+    }
+
+    public void addMessage(Message message) {
+        this.messages.add(message);
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -62,6 +82,16 @@ public class User {
 
     public void setAccesslevel(String accesslevel) {
         this.accesslevel = accesslevel;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    private void addWelcomeMessage() {
+        Message welcomeMessage = new Message("Welcome", "Welcome to the Company",
+                LocalDateTime.now().toString(), "Management", this);
+        this.messages.add(welcomeMessage);
     }
 
     public boolean getIsAvailable() {

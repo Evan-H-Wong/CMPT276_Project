@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import group8.skyweaver_inventory.models.Product;
+//import group8.skyweaver_inventory.models.Product;
 import group8.skyweaver_inventory.services.Ship24Service;
 
 

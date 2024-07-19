@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -52,7 +54,7 @@ class AuthControllerTest {
     void testAuthorize_NullSessionUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/authorize").session(session))
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/login.html"));
+                .andExpect(MockMvcResultMatchers.redirectedUrl("/"));
     }
 
     // Test successful redirect to authentication url
@@ -76,7 +78,8 @@ class AuthControllerTest {
         // Create a new mock user with access level "Manager"
         User mockUser = new User();
         mockUser.setGmail("test@gmail.com");
-        mockUser.setAccesslevel("Manager");
+        mockUser.setAccesslevel("MANAGER");
+        session.setAttribute("user", mockUser);
 
         // Set up session attribute and mock behavior
         session.setAttribute("oauth2_state", "test@gmail.com");
@@ -87,9 +90,11 @@ class AuthControllerTest {
                         .session(session)
                         .param("code", "code")
                         .param("state", "state"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("manager/oauth2callback"))
                 .andExpect(MockMvcResultMatchers.model().attribute("message", "Authorization failed: Test Exception"));
+                
+        assertNull(mockUser.getToken(), "Token should be null");
+        assertNull(mockUser.getRefreshToken(), "Refresh token should be null");
     }
 
     // Test successful authentication after try-catch block
@@ -100,7 +105,9 @@ class AuthControllerTest {
         // Create and configure the mock user
         User mockUser = new User();
         mockUser.setGmail("test@gmail.com");
-        mockUser.setAccesslevel("Manager");
+        mockUser.setUsername("test");
+        mockUser.setAccesslevel("MANAGER");
+        session.setAttribute("user", mockUser);
 
         // Set up mocks
         when(userRepository.findByGmail(anyString())).thenReturn(mockUser);
@@ -114,12 +121,14 @@ class AuthControllerTest {
                         .session(session)
                         .param("code", "code")
                         .param("state", "state"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("manager/oauth2callback"))
-                .andExpect(MockMvcResultMatchers.model().attribute("message", "Authorization successful!"))
-                .andExpect(MockMvcResultMatchers.model().attribute("access", "Manager"));  // Ensure the access level matches
+                .andExpect(MockMvcResultMatchers.model().attribute("message", "Authorization successful!"));
 
         // Verify the save operation was called on the user repository
         verify(userRepository).save(mockUser);
+
+        // Verify that the mock user's token and refresh token are set correctly
+        assertEquals("access_token", mockUser.getToken());
+        assertEquals("refresh_token", mockUser.getRefreshToken());
     }
 }

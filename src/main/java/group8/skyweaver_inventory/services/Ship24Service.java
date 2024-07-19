@@ -3,10 +3,10 @@ package group8.skyweaver_inventory.services;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.ModelAndView;
+//import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.*;
 
-import java.util.Collections;
+//import java.util.Collections;
 import java.util.Map;
 
 @Service
@@ -43,6 +43,7 @@ public class Ship24Service {
         String url = BASE_URL + "/trackers/search/" + trackingNumber + "/results";
         // System.out.println("URL: \t" + url);
         try {
+            @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             // response.getBody().forEach((key, value) -> {
             //     System.out.println("Key: " + key + "\t Value: " + value);
