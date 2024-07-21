@@ -3,6 +3,7 @@ package group8.skyweaver_inventory.controllers;
 import group8.skyweaver_inventory.models.User;
 import group8.skyweaver_inventory.models.UserRepository;
 import group8.skyweaver_inventory.services.CalendarService;
+import group8.skyweaver_inventory.services.GmailService;
 import group8.skyweaver_inventory.CalendarConfig;
 import com.google.api.client.auth.oauth2.Credential;
 import java.io.IOException;
@@ -17,11 +18,13 @@ import jakarta.servlet.http.HttpSession;
 public class AuthController {
     private final CalendarConfig calendarConfig;
     private final CalendarService calendarService;
+    private final GmailService gmailService;
     private final UserRepository userRepository;
 
-    public AuthController(CalendarConfig calendarConfig, CalendarService calendarService, UserRepository userRepository) {
+    public AuthController(CalendarConfig calendarConfig, CalendarService calendarService, GmailService gmailService, UserRepository userRepository) {
         this.calendarConfig = calendarConfig;
         this.calendarService = calendarService;
+        this.gmailService = gmailService;
         this.userRepository = userRepository;
     }
 
@@ -50,6 +53,7 @@ public class AuthController {
         try {
             Credential credential = calendarConfig.exchangeCode(code, storedState);
             calendarService.setCredential(storedState, credential); // Use user's email (Gmail) as the key
+            gmailService.setCredential(storedState, credential); // Set Gmail credentials
 
             User user = userRepository.findByGmail(storedState); // Use findByGmail to fetch user
             if (user != null) {
@@ -60,7 +64,7 @@ public class AuthController {
                 if (refreshToken != null) {
                     user.setRefreshToken(refreshToken);
                 }
-                
+
                 userRepository.save(user);
                 model.addAttribute("message", "Authorization successful!");
                 model.addAttribute("access", user.getAccesslevel());
