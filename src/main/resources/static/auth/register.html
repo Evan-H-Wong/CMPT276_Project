@@ -43,6 +43,10 @@
             <label for="accesslevel" class="form-label">Manager or Employee:</label>
             <input type="text" id="accesslevel" name="accesslevel" class="form-control">
         </div>
+        <div class="mb-3">
+            <label for="gmail" class="form-label">Gmail:</label>
+            <input type="text" id="gmail" name="gmail" class="form-control">
+        </div>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <button type="button" class="btn btn-primary w-100" onclick="submitForm()">Register</button>
@@ -58,6 +62,7 @@
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const accesslevel = document.getElementById('accesslevel').value;
+        const gmail = document.getElementById('gmail').value;
         const errorMessage = document.getElementById('errorMessage');
 
         if (!validatePassword(password)) {
@@ -73,7 +78,8 @@
             body: JSON.stringify({
                 username: username,
                 password: password,
-                accesslevel: accesslevel
+                accesslevel: accesslevel,
+                gmail: gmail
             })
         })
         .then(response => {
