@@ -19,17 +19,13 @@ body {
 }
 
 header {
-    color: #fff;
-    display: flex;
-    align-items: center;
-    position: relative;
+    position: absolute;
+    top: 5px; 
+    left: 2px;
 }
 
-header .logo {
-    position: absolute;
-    top: 8px;
-    left: 220px;
-    z-index: 1;
+header .logo img {
+    height: 150px; 
 }
 
 header .logo img {
@@ -48,6 +44,7 @@ header .logo img {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 1000px;
     width: 100%;
+    position: relative;
 }
 
 .welcome_info {
