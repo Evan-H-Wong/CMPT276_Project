@@ -28,7 +28,7 @@ public class CalendarConfig {
     private static final String APPLICATION_NAME = "CMPT276-Project";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     // Use only the GMAIL_SEND scope for Gmail API access
-    private static final List<String> SCOPES = Arrays.asList(CalendarScopes.CALENDAR, GmailScopes.GMAIL_SEND);
+    private static final List<String> SCOPES = Arrays.asList(CalendarScopes.CALENDAR, GmailScopes.GMAIL_SEND, GmailScopes.GMAIL_READONLY);
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
     private String clientId = System.getenv("GOOGLE_CLIENT_ID");

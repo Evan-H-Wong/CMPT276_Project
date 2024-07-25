@@ -6,6 +6,11 @@ import group8.skyweaver_inventory.services.CalendarService;
 import group8.skyweaver_inventory.services.GmailService;
 import group8.skyweaver_inventory.CalendarConfig;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Profile;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import org.springframework.stereotype.Controller;
@@ -52,10 +57,29 @@ public class AuthController {
 
         try {
             Credential credential = calendarConfig.exchangeCode(code, storedState);
-            calendarService.setCredential(storedState, credential); // Use user's email (Gmail) as the key
-            gmailService.setCredential(storedState, credential); // Set Gmail credentials
+            
+            // Use the credential to get the Gmail service
+            Gmail gmailServiceInstance = new Gmail.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    GsonFactory.getDefaultInstance(),
+                    credential)
+                    .setApplicationName("CMPT276-Project")
+                    .build();
+            
+            // Get the user's profile from Gmail
+            Profile profile = gmailServiceInstance.users().getProfile("me").execute();
+            String authenticatedEmail = profile.getEmailAddress();
 
-            User user = userRepository.findByGmail(storedState); // Use findByGmail to fetch user
+            // Verify the email matches
+            if (!authenticatedEmail.equals(usercheck.getGmail())) {
+                model.addAttribute("message", "Authorization failed: Email mismatch.");
+                return "manager/oauth2callback";
+            }
+
+            calendarService.setCredential(authenticatedEmail, credential); // Use user's email (Gmail) as the key
+            gmailService.setCredential(authenticatedEmail, credential); // Set Gmail credentials
+
+            User user = userRepository.findByGmail(authenticatedEmail); // Use findByGmail to fetch user
             if (user != null) {
                 user.setToken(credential.getAccessToken());
 
