@@ -1,6 +1,7 @@
 package group8.skyweaver_inventory.controllers;
 
 import group8.skyweaver_inventory.models.*;
+import group8.skyweaver_inventory.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,16 +12,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 
-
 import jakarta.servlet.http.HttpSession;
 
 //import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Comparator;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.mail.MessagingException;
 
 
 @Controller
@@ -38,12 +42,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private GmailService gmailService;
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Map<String, String> register) {
         String username = register.get("username");
         String password = register.get("password");
         String accesslevel = register.get("accesslevel").toUpperCase();
-        String gmail = username;
+        String gmail = register.get("gmail");
 
         // Validate access level
         if (!accesslevel.equals("MANAGER") && !accesslevel.equals("EMPLOYEE")) {
@@ -53,7 +60,6 @@ public class UserController {
         if (userRepository.findByUsername(username) != null) {
             return ResponseEntity.badRequest().body("Username already exists.");
         }
-
 
         // Validate password
         if (!isValidPassword(password)) {
@@ -242,7 +248,7 @@ public class UserController {
             @RequestParam("recipient") String recipientUsername,
             @RequestParam("messageName") String messageName,
             @RequestParam("messageContent") String messageContent,
-            HttpSession session) {
+            HttpSession session) throws MessagingException, IOException, GeneralSecurityException {
         System.out.println("Received sendMessage request");
 
         User sender = (User) session.getAttribute("user");
@@ -266,6 +272,9 @@ public class UserController {
 
         recipient.getMessages().add(message);
         userRepository.save(recipient);
+
+        // Send email through Gmail API
+        gmailService.sendEmail(sender.getGmail(), recipient.getGmail(),messageName, messageContent);
 
         // Determine redirect URL based on user access level
         String redirectUrl;

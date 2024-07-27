@@ -31,7 +31,11 @@
                 <input type="text" id="accesslevel" name="accesslevel" class="form-control">
             </div>
             <br>
-            <div class="row justify-content-center">
+            <div class="mb-3">
+            <label for="gmail" class="form-label">Gmail:</label>
+            <input type="text" id="gmail" name="gmail" class="form-control">
+        </div>
+        <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
                     <button type="button" class="btn btn-primary w-100" onclick="submitForm()">Register</button>
                 </div>
@@ -64,7 +68,8 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const accesslevel = document.getElementById('accesslevel').value;
-            const modalErrorMessage = document.getElementById('modalErrorMessage');
+            const gmail = document.getElementById('gmail').value;
+        const modalErrorMessage = document.getElementById('modalErrorMessage');
 
             if (!validatePassword(password)) {
                 modalErrorMessage.textContent = 'Password must be 8+ characters, and have at least 1 capital and number';
@@ -81,7 +86,8 @@
                 body: JSON.stringify({
                     username: username,
                     password: password,
-                    accesslevel: accesslevel
+                    accesslevel: accesslevel,
+                    gmail: gmail
                 })
             })
             .then(response => {
