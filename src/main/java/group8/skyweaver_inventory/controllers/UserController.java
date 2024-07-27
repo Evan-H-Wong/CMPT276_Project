@@ -183,47 +183,46 @@ public class UserController {
 
     @GetMapping("/personalized/manager")
     public String personalizedManager(HttpSession session, Model model) {
+        User manager = (User) session.getAttribute("user");
+        if (manager == null || Objects.equals(manager.getAccesslevel(), "EMPLOYEE")) {
+            return "redirect:/";
+        }
         return "personalized/manager";
     }
 
     @GetMapping("/personalized/employee")
     public String personalizedEmployee(HttpSession session, Model model) {
+        User employee = (User) session.getAttribute("user");
+        if (employee == null || Objects.equals(employee.getAccesslevel(), "MANAGER")) {
+            return "redirect:/";
+        }
         return "personalized/employee";
     }
 
     @GetMapping("/manager/inbox")
     public String managerInbox(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
-            model.addAttribute("messages", fullyLoadedUser.getMessages());
+        if (user == null || Objects.equals(user.getAccesslevel(), "EMPLOYEE")) {
+            return "redirect:/";
         }
+
+        User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
+        model.addAttribute("messages", fullyLoadedUser.getMessages());
+
         return "manager/managerinbox";
     }
 
     @GetMapping("/employee/inbox")
     public String employeeInbox(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user != null) {
-            User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
-            model.addAttribute("messages", fullyLoadedUser.getMessages());
+        if (user == null || Objects.equals(user.getAccesslevel(), "MANAGER")) {
+            return "redirect:/";
         }
-        return "employee/employeeinbox";
-    }
 
-    @GetMapping("/getNumberMessages")
-    public ResponseEntity<String> getNumberMessages(HttpSession session) {
-        System.out.println("Entered getNumberMessages method");
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
-            System.out.println("User found: " + fullyLoadedUser.getUsername());
-            System.out.println("Number of Messages: " + fullyLoadedUser.numberMessages());
-            return ResponseEntity.ok("Number of Messages: " + fullyLoadedUser.numberMessages());
-        } else {
-            System.out.println("User not found in session");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found in session");
-        }
+        User fullyLoadedUser = userService.getUserWithMessages(user.getUid());
+        model.addAttribute("messages", fullyLoadedUser.getMessages());
+
+        return "employee/employeeinbox";
     }
 
     @GetMapping("/messages/{id}")
@@ -235,7 +234,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
 
     @PostMapping("/sendMessage")
     public ResponseEntity<Map<String, String>> sendMessage(
@@ -282,7 +280,12 @@ public class UserController {
 
 
     @GetMapping("/messageform")
-    public String showMessageForm(Model model) {
+    public String showMessageForm(HttpSession session, Model model) {
+        User manager = (User) session.getAttribute("user");
+        if (manager == null) {
+            return "redirect:/";
+        }
+
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
         return "personalized/messageform";
@@ -406,5 +409,36 @@ public class UserController {
             return user.getUsername();
         }
         return "";
+    }
+
+    @GetMapping("/personalized/equipment")
+    public String personalizedEquipment(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        }
+        return "personalized/equipment";
+    }
+
+    @GetMapping("/returnfromequipment")
+    public String personalizedEquipmentReturn(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        }
+        if (user.getAccesslevel().equals("MANAGER")) {
+            return "personalized/manager";
+        } else {
+            return "personalized/employee";
+        }
+    }
+
+    @GetMapping("/equipmentform")
+    public String showEquipmentForm(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/";
+        }
+        return "personalized/equipmentform";
     }
 }
