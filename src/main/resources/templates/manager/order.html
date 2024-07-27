@@ -15,7 +15,7 @@
 $(function(){
     $("#header").load("header.html");
     $("#aside").load("aside.html");
-    $("#footer").load("footer.html");
+    // $("#footer").load("footer.html");
 });
 </script> 
 <body>
@@ -52,7 +52,7 @@ $(function(){
                     </tr>
             </table>
         </section>
-        <section class="inventory-overview">
+        <section class="ordered-inventory-overview">
             <h2>Active Product Orders List</h2>
             <form id = "deleteOrder" th:name = "deleteOrder" action = "/order/delete/" method = "post">
             </form>
@@ -85,6 +85,77 @@ $(function(){
                     </tr>
             </table>
         </section>
+        <section class="financial-overview">
+            <h2>Products For Today</h2>
+                <table>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                    <tr id="bodies" th:each="orderedProduct:${o}">
+                        <td th:text="${orderedProduct.productName}"></td>
+                        <td><input type="number" name="quantity" min="0" value="0"></td>
+                    </tr>
+                </table>
+                <button type="submit" onclick="calculateProfit()">Calculate</button>
+        </section>
+        <script>
+            function calculateProfit() {
+                let table = document.querySelector('.financial-overview table');
+                let rows = table.querySelectorAll('tr');
+                let totalProfit = 0;
+        
+                let orderedProductPrices = [];
+                let ProductPrices = [];
+                rows.forEach((row, index) => {
+                    if (index === 0) return; // Skip header row
+        
+                    let productName = row.cells[0].innerText;
+                    let quantity = row.cells[1].querySelector('input').value;
+                    console.log(productName, quantity);
+        
+                    // Find the product row in the inventory list
+                    let productRow = Array.from(document.querySelectorAll('.ordered-inventory-overview tr')).find(r => r.cells[0].innerText === productName);
+                    
+                    if (productRow) {
+                        let orderedProductPrice = parseFloat(productRow.querySelector('td:nth-child(3) p').innerText);
+                        orderedProductPrice *= quantity;
+                        orderedProductPrices.push(orderedProductPrice);
+                        // console.log(orderedProductPrice);
+                    }
+                });
+                rows.forEach((row, index) => {
+                    if (index === 0) return; // Skip header row
+        
+                    let productName = row.cells[0].innerText;
+                    let quantity = row.cells[1].querySelector('input').value;
+                    console.log(productName, quantity);
+        
+                    // Find the product row in the inventory list
+                    let productRow = Array.from(document.querySelectorAll('.inventory-overview tr')).find(r => r.cells[0].innerText === productName);
+                    
+                    if (productRow) {
+                        let ProductPrice = parseFloat(productRow.querySelector('td:nth-child(3) p').innerText);
+                        ProductPrice *= quantity;
+                        ProductPrices.push(ProductPrice);
+                        console.log(ProductPrice);
+                    }
+                });
+
+                // Calculate profit for ordered products
+                orderedProductPrices.forEach(price => {
+                    totalProfit += price;
+                });
+
+                // Calculate profit for available products
+                ProductPrices.forEach(price => {
+                    totalProfit -= price;
+                });
+
+        
+                alert('Total Profit: $' + totalProfit.toFixed(2));
+            }
+        </script>
         <script>
             var temp = document.getElementsByClassName("randomDate");
             var numberOfOrders = temp.length;
