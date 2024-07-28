@@ -246,7 +246,7 @@ public class ProductControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/manager/orderConfirmed")
                 .param("productName", pName)
                 .param("productQuantity", Integer.toString(pQuantity))
-                .param("productPrice", Float.toString(pPrice))
+                .param("orderPrice", Float.toString(pPrice))
                 .param("productCategory", pCategory)
                 .param("orderQuantity", Integer.toString(oQuantity)).session(session))
                 .andExpect(MockMvcResultMatchers.status().isFound());
@@ -335,4 +335,49 @@ public class ProductControllerTest {
                     .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/discountError.html"));
             verify(productRepository, times(0)).save(any(Product.class));
         }
+
+    //Testing discounting several products
+    @Test
+    public void testMultipleProductDiscountSuccess() throws Exception {
+        String username = "Fred";
+        String password = "password";
+        String accesslevel = "MANAGER";
+        User user = new User(username, password, accesslevel);
+        session.setAttribute("user", user);
+
+        List<Product> products = new ArrayList<>();
+        List<Float> productPrices = new ArrayList<>();
+        float pPrice = 4.99f;
+        Integer discount = 10;
+        float discountFloat = 10;
+        for (int i = 0; i < 2; i++)
+        {
+            float oldPrice = pPrice + i;
+            float fullNewPrice = oldPrice * (1 - (discountFloat / 100));
+            String newPriceString = String.format("%.2f", fullNewPrice);
+            float newProductPrice = Float.parseFloat(newPriceString);
+            productPrices.add(newProductPrice);
+            
+            Product newProduct = new Product("Product" + i, 11, newProductPrice, "Fruits");
+            products.add(newProduct);
+
+            when(productRepository.findById(anyInt())).thenReturn(Optional.of(newProduct));
+            when(productRepository.save(any(Product.class))).thenReturn(newProduct);
+        }
+        
+        for (int i = 0; i < 2; i ++)
+        {
+            mockMvc.perform(MockMvcRequestBuilders.post("/manager/applyProductDiscount")
+                    .param("pid", String.valueOf(i + 1))
+                    .param("discountPercent", Integer.toString(discount))
+                    .param("productName", "Product" + i)
+                    .param("productCategory", "Fruits")
+                    .param("productPrice", Float.toString(productPrices.get(i)))
+                    .param("productQuantity", "11").session(session))
+                    .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                    .andExpect(MockMvcResultMatchers.redirectedUrl("/manager/discount"));
+            verify(productRepository, times(1)).findById(i + 1);
+        }
+        verify(productRepository, times(2)).save(any(Product.class));
+    }
 }
