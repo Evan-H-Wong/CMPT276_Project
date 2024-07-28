@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skyweaver Product Editor</title>
-    <link rel="stylesheet" href="../css/homepageStyle.css">
+    <link rel="stylesheet" href="../../css/homepageStyle.css">
 </head>
 <script
     src="https://code.jquery.com/jquery-3.3.1.js"
@@ -13,26 +13,17 @@
 </script>
 <script> 
 $(function(){
-    $("#header").load("header.html");
-    $("#aside").load("aside.html");
-    $("#footer").load("footer.html");
+    $("#header").load("../header.html");
+    $("#aside").load("../aside.html");
+    $("#footer").load("../footer.html");
 });
 </script> 
 </head>
-<!-- NOTE: This page can only be accessed via adding a new product, if you refresh the page,
-it resubmits the form and duplicates the item you added -->
 <body>
 <div id="header"></div>
 <div class="container">
     <div id="aside"></div>
     <main>
-        <h1>Product successfully added to inventory</h1> 
-        <section class="quick-actions">
-            <h2>Would you like to:</h2>
-            <a href="../manager/add.html"><button>Add New Product</button></a>
-            <a href="/manager/order"><button>Create New Order</button></a>
-            <!--button>Generate Report</button-->
-        </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
             <table>
@@ -41,20 +32,31 @@ it resubmits the form and duplicates the item you added -->
                         <th>Category</th>
                         <th>Price</th>
                         <th>Stock Level</th>
-                        <th>Status</th>
+                        <th>Discount [in %]</th>
                     </tr>
                     <tr id="bodies" th:each="product:${p}">
                         <td th:text="${product.productName}"></td>
                         <td th:text="${product.productCategory}"></td>
                         <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" style="display:inline"></p></td>
                         <td th:text="${product.productQuantity}"></td>
-                        <td th:switch="${product.productQuantity}">
-                            <span th:case="0">Out of Stock</span>
-                            <span th:case="*">In Stock</span>
+                        <td>
+                            <form action = "../applyProductDiscount" method = "post">
+                                <input type="hidden" name="pid" th:value = "${product.pid}">
+                                <input type = "hidden" name = "productName" th:value="${product.productName}">
+                                <input type = "hidden" name = "productCategory" th:value="${product.productCategory}">
+                                <input type = "hidden" name = "productPrice" th:value="${product.productPrice}">
+                                <input type = "hidden" name = "productQuantity" th:value="${product.productQuantity}">
+                                <input type = "number" th:name = "discountPercent" th:id = "discountPercent">
                         </td>
                     </tr>
             </table>
         </section>
+        <section class = "quick-actions">
+            <div>
+                <button type = "submit">Confirm Product Discount</button>
+            </div>        
+        </section>
+        </form>
     </main>
 </div>
 <div id="footer"></div>
