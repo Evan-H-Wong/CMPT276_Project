@@ -24,6 +24,12 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 
 
@@ -58,9 +64,6 @@ public class ProductController {
         return "manager/productAdded";
     }   
     
-// This page can only be accessed via adding a new product, if you refresh the page,
-// it resubmits the form and duplicates the item you added, and writing manager/productAdded
-// in the url will break the css (the header, aside, footer)
     @GetMapping("manager/productAdded")
     public String productAddedRedirect(HttpSession session, Model model) {
         User usercheck = (User) session.getAttribute("user");
@@ -120,7 +123,7 @@ public class ProductController {
         String productName = newOrder.get("productName");
         String productCategory = newOrder.get("productCategory");
         int productQuantity = Integer.parseInt(newOrder.get("productQuantity"));
-        float productPrice = Float.parseFloat(newOrder.get("productPrice"));
+        float productPrice = Float.parseFloat(newOrder.get("orderPrice"));
         if (orderedProductRepository.findByProductName(productName) != null) {
             return "redirect:/auth/orderError.html";
         }
@@ -177,9 +180,51 @@ public class ProductController {
         return "redirect:/manager/order";
     }
 
-
-
+    @GetMapping("manager/discount")
+    public String discountRedirect(HttpSession session, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+        List<Product> products = productRepository.findByOrderByProductNameAsc();
+        model.addAttribute("p", products);
+        return "manager/discountStock.html";
+    }
     
+    @GetMapping("manager/discount/{pid}")
+    public String productDiscountRedirect(HttpSession session, @PathVariable ("pid") int id, Model model) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+        Product product = productRepository.findByPid(id);
+
+        model.addAttribute("p", product);
+        return "manager/discountProduct.html";
+    }
+
+    @PostMapping("manager/applyProductDiscount")
+    public String productDiscount(HttpSession session, @RequestParam Map<String, String> discountProduct) {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+        Product product = productRepository.findById(Integer.parseInt(discountProduct.get("pid"))).get();
+        float discount = Integer.parseInt(discountProduct.get("discountPercent"));
+        if (discount > 100)
+        {
+            return "redirect:/auth/discountError.html";
+        }
+        float oldPrice = Float.parseFloat(discountProduct.get("productPrice"));
+        float fullNewPrice = oldPrice * (1 - (discount / 100));
+        String newPrice = String.format("%.2f", fullNewPrice);
+        product.setProductName(discountProduct.get("productName"));
+        product.setProductCategory(discountProduct.get("productCategory"));
+        product.setProductQuantity(Integer.parseInt(discountProduct.get("productQuantity")));
+        product.setProductPrice(Float.parseFloat(newPrice));
+        productRepository.save(product);
+        return "redirect:/manager/discount";
+    }
 
     @GetMapping("manager/managestock")
     public String stockRedirect(HttpSession session, Model model) {
