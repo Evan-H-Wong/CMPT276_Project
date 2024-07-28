@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script> 
+    $(function(){
+        $("#header").load("header.html");
+        $("#aside").load("aside.html");
+    });
+    </script>
+    <style>
+        .title {
+            padding: 0 0 0 40px;
+            font-size: 20px;
+        }
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 600px;
+            margin: 80px auto;
+        }
+
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .name, .email {
+            flex: 1;
+            font-size: 25px;
+        }
+
+        .name {
+            text-align: left;
+        }
+
+        .email {
+            text-align: right;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <span class="title">Technical Support</span>
+        <div class="contact-list">
+            <div class="contact-item">
+                <span class="name">Alex Bezbocov</span>
+                <span class="email">a.bezbocov@gmail.com</span>
+            </div>
+            <div class="contact-item">
+                <span class="name">Brandon Yang</span>
+                <span class="email">bjxyang@gmail.com</span>
+            </div>
+            <div class="contact-item">
+                <span class="name">Evan Wong</span>
+                <span class="email">zomwashroomz@gmail.com</span>
+            </div>
+            <div class="contact-item">
+                <span class="name">Tristan Liu</span>
+                <span class="email">urumky1@gmail.com</span>
+            </div>
+            <div class="contact-item">
+                <span class="name">Marcus Mao</span>
+                <span class="email">marcusmao123@gmail.com</span>
+            </div>
+        </div>
+    </main>
+</div>
+<footer>
+    &copy; 2024 Skyweaver Inventory. All rights reserved.
+</footer>
+</body>
+</html>
