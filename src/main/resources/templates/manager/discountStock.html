@@ -48,7 +48,6 @@ $(function(){
                         <td th:text="${product.productName}"></td>
                         <td th:text="${product.productCategory}"></td>
                         <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" class = "productPrice" style="display:inline"></p>
-                            <!-- <input type="hidden" class = "price" th:value = "${#numbers.formatDecimal(product.productPrice, 1, 2)}"> -->
                             </td>
     
                             <td th:text="${product.productQuantity}"></td>
@@ -63,7 +62,6 @@ $(function(){
                 </table>
             </section>
             <label for="discount">Discount % for all products: </label>
-            <!-- <input type = "number" class = "discountPercent" th:name = "discountPercent" th:id = "discountPercent"> -->
             <input type = "number" th:name = "discount" th:id = "discount">
             <button onclick="discountAll()">Discount All Products</button>
             </section>
@@ -76,14 +74,12 @@ $(function(){
         function discountAll()
             {
             var discount = parseFloat(document.getElementById("discount").value);
-            console.log(discount);
             var hiddenDiscount = document.getElementsByClassName("discountPercent");
             var discountForm = document.getElementsByClassName("discountAll");
             var tableRows = document.getElementById("productsTable").rows;
             for (let i = 0; i < discountForm.length; i++)
             {
                 hiddenDiscount[i].value = discount;
-                // discountForm[i].submit();
             }
             var forms = Array.from(discountForm).map(function(form) {
                 return $(form);
@@ -115,49 +111,5 @@ $(function(){
                 
             });
         }
-        
-        // function discountAll (forms)
-        // {
-        //     if (forms.length === 0) return;
-
-        //     var form = forms.shift();
-        //     $.ajax({
-
-        //     })
-        // }
-        // function discountAll() //use a for loop to iterate through each product and submit them indivudually 
-        // {
-        //     $(document).ready(function() {
-        //     $('form').on('submit', function(event) {
-        //         event.preventDefault();
-        //     });
-
-        //     var discount = parseFloat(document.getElementById("discount").value);
-        //     var hiddenDiscount = document.getElementsByClassName("discountPercent");
-        //     var discountForm = document.getElementsByClassName("discountAll");
-        //     var tableRows = document.getElementById("productsTable").rows;
-        //     for (let i = 0; i < 9; i++)
-        //     {
-        //         hiddenDiscount[i].value = discount;
-        //         discountForm[i].submit();
-        //     }
-        //     // var discount = parseFloat(document.getElementById("discountProducts").value);
-        //     // var prices = document.getElementsByClassName("price");
-        //     // var displayPrices = document.getElementsByClassName("productPrice");
-    
-        //     // for (let i = 0; i < prices.length; i++)
-        //     // {
-        //     //     let oldPrice = parseFloat(prices[i].value);
-        //     //     let newPrice = oldPrice * (1 - (discount / 100));
-        //     //     console.log (oldPrice);
-        //     //     console.log (newPrice);
-        //     //     let display = displayPrices[i];
-        //     //     console.log(display);
-        //     //     display.innerHTML = newPrice.toFixed(2);
-        //     //     prices[i].value = newPrice.toFixed(2);
-        //     //     console.log (prices[i]);
-        //     // }
-        // });
-        // }
     </script>
 </html>
