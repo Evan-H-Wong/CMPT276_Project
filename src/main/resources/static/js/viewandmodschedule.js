@@ -65,6 +65,10 @@ document.addEventListener("DOMContentLoaded", function() {
         var endminutelist = document.getElementsByClassName("endminute");
         var dayweeklist = document.getElementsByClassName("dayweek");
         var weeklylist = document.getElementsByClassName("weekly");
+
+        var profitdatelist = document.getElementsByClassName("profitdate");
+        var profitlist = document.getElementsByClassName("profit");
+
         console.log(datelist[0]);
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         var days = document.getElementsByClassName("calendar-square");
@@ -90,6 +94,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     eventElement.textContent = starthourlist[i].innerHTML + ":" + startminutelist[i].innerHTML + " - " +
                     endhourlist[i].innerHTML + ":" + endminutelist[i].innerHTML;
                     days[x].innerHTML = days[x].innerHTML + "<br>Shift:";
+                    days[x].appendChild(eventElement);
+                }
+            }
+
+            for (let y = 0; y < profitdatelist.length; y++)
+            {
+                if (profitdatelist[y].innerHTML.substring(0, 10) == String(currentYear) + "-" + String(currentMonth+1).padStart(2, '0') + "-" + days[x].innerHTML.padStart(2, '0'))
+                {
+                    const eventElement = document.createElement("div");
+                    eventElement.classList.add("profitblock");
+                    eventElement.textContent = "Profits: $" + profitlist[y].innerHTML;
                     days[x].appendChild(eventElement);
                 }
             }
