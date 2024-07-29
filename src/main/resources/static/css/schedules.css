@@ -94,3 +94,14 @@ input[type="checkbox"] {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.profitblock {
+    background-color: #9af8ba;
+    border-radius: 3px;
+    margin-bottom: 3px;
+    padding: 2px 5px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

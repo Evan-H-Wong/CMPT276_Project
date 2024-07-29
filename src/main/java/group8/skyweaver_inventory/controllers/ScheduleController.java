@@ -30,6 +30,9 @@ import group8.skyweaver_inventory.models.ScheduleRepository;
 import group8.skyweaver_inventory.models.User;
 import group8.skyweaver_inventory.models.UserRepository;
 import group8.skyweaver_inventory.services.CalendarService;
+import group8.skyweaver_inventory.models.Profit;
+import group8.skyweaver_inventory.models.ProfitRepository;
+
 import jakarta.servlet.http.HttpSession;
 
 
@@ -44,6 +47,9 @@ public class ScheduleController {
 
     @Autowired
     private CalendarService calendarService;
+
+    @Autowired
+    private ProfitRepository profitRepository;
 
     @GetMapping("/employee/schedule")
     public String getSchedule(HttpSession session, Model model) throws IOException {
@@ -125,6 +131,11 @@ public class ScheduleController {
         model.addAttribute("weekly", Weekly);
         model.addAttribute("username", user);
         model.addAttribute("id", IDList);
+
+        // Loading Profit data
+        model.addAttribute("profitdate", profitRepository.findAllDates());
+        model.addAttribute("profit", profitRepository.findAllProfits());
+
         return "manager/manageschedule";
     }
 
@@ -253,5 +264,12 @@ public class ScheduleController {
         }
 
         return "redirect:/manager/schedule?user=" + user;
+    }
+
+    @PostMapping("/manager/profits")
+    public String addProfit(HttpSession session, @RequestParam String profit) throws GeneralSecurityException {
+        Profit newprofit = new Profit(LocalDateTime.now(), Double.parseDouble(profit));
+        profitRepository.save(newprofit);
+        return "redirect:/manager/order";
     }
 }

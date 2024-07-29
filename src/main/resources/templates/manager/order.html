@@ -28,6 +28,9 @@ $(function(){
 <div class="container">
     <div id="aside"></div>
     <main>
+        <form id = "profitform" th:name = "profitform" action = "/manager/profits" method = "post" value = "">
+            <input type = "hidden" id = "profit" name = "profit" value = "">
+        </form>
         <section class="dashboard-overview">
             <h1>Overview</h1>
         </section>
@@ -157,8 +160,9 @@ $(function(){
                     totalProfit -= price;
                 });
 
-        
-                alert('Total Profit: $' + totalProfit.toFixed(2));
+                document.getElementById("profit").value = totalProfit.toFixed(2);
+                document.getElementById("profitform").submit();
+                // alert('Total Profit: $' + totalProfit.toFixed(2));
             }
         </script>
         <script>
