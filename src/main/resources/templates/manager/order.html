@@ -99,70 +99,39 @@ $(function(){
                     <tr>
                         <th>Product Name</th>
                         <th>Quantity</th>
+                        <th>Selling Price</th>
+                        <th>Purchase Price</th>
                     </tr>
                     <tr id="bodies" th:each="orderedProduct:${o}">
                         <td th:text="${orderedProduct.productName}"></td>
                         <td><input type="number" name="quantity" min="0" value="0"></td>
+                        <td><input type="number" name="SellingPrice" min="0" step="0.01" value="0"></td>
+                        <td><input type="number" name="PurchasePrice" min="0" step="0.01" value="0"></td>
                     </tr>
                 </table>
-                <button type="submit" onclick="calculateProfit()">Calculate</button>
+            <button type="submit" onclick="calculateProfit()">Calculate</button>
         </section>
         <script>
             function calculateProfit() {
                 let table = document.querySelector('.financial-overview table');
                 let rows = table.querySelectorAll('tr');
                 let totalProfit = 0;
-        
-                let orderedProductPrices = [];
-                let ProductPrices = [];
+
                 rows.forEach((row, index) => {
                     if (index === 0) return; // Skip header row
-        
+
                     let productName = row.cells[0].innerText;
                     let quantity = row.cells[1].querySelector('input').value;
-                    console.log(productName, quantity);
-        
-                    // Find the product row in the inventory list
-                    let productRow = Array.from(document.querySelectorAll('.ordered-inventory-overview tr')).find(r => r.cells[0].innerText === productName);
-                    
-                    if (productRow) {
-                        let orderedProductPrice = parseFloat(productRow.querySelector('td:nth-child(3) p').innerText);
-                        orderedProductPrice *= quantity;
-                        orderedProductPrices.push(orderedProductPrice);
-                        // console.log(orderedProductPrice);
-                    }
-                });
-                rows.forEach((row, index) => {
-                    if (index === 0) return; // Skip header row
-        
-                    let productName = row.cells[0].innerText;
-                    let quantity = row.cells[1].querySelector('input').value;
-                    console.log(productName, quantity);
-        
-                    // Find the product row in the inventory list
-                    let productRow = Array.from(document.querySelectorAll('.inventory-overview tr')).find(r => r.cells[0].innerText === productName);
-                    
-                    if (productRow) {
-                        let ProductPrice = parseFloat(productRow.querySelector('td:nth-child(3) p').innerText);
-                        ProductPrice *= quantity;
-                        ProductPrices.push(ProductPrice);
-                        console.log(ProductPrice);
-                    }
+                    let sellingPrice = row.cells[2].querySelector('input').value;
+                    let purchasePrice = row.cells[3].querySelector('input').value;
+
+                    let profit = (parseFloat(sellingPrice) - parseFloat(purchasePrice)) * parseInt(quantity);
+                    totalProfit += profit;
                 });
 
-                // Calculate profit for ordered products
-                orderedProductPrices.forEach(price => {
-                    totalProfit += price;
-                });
-
-                // Calculate profit for available products
-                ProductPrices.forEach(price => {
-                    totalProfit -= price;
-                });
-
+                console.log(totalProfit);
                 document.getElementById("profit").value = totalProfit.toFixed(2);
                 document.getElementById("profitform").submit();
-                // alert('Total Profit: $' + totalProfit.toFixed(2));
             }
         </script>
         <script>
