@@ -268,8 +268,26 @@ public class ScheduleController {
 
     @PostMapping("/manager/profits")
     public String addProfit(HttpSession session, @RequestParam String profit) throws GeneralSecurityException {
-        Profit newprofit = new Profit(LocalDateTime.now(), Double.parseDouble(profit));
-        profitRepository.save(newprofit);
+        Boolean found = false;
+        List<LocalDateTime> profitlist = profitRepository.findAllDates();
+        for (int i = 0; i < profitlist.size(); i++)
+        {
+            if (profitlist.get(i).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).substring(0, 10).equals
+                (LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).substring(0, 10)))
+            {
+                Profit newprofit = profitRepository.findByDate(profitlist.get(i));
+                newprofit.setDate(LocalDateTime.now());
+                newprofit.setProfit(Double.parseDouble(profit));
+                profitRepository.save(newprofit);
+                found = true;
+            }
+        }
+        
+        if (!found)
+        {
+            Profit newprofit = new Profit(LocalDateTime.now(), Double.parseDouble(profit));
+            profitRepository.save(newprofit);
+        }
         return "redirect:/manager/order";
     }
 }

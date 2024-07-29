@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ProfitRepository extends JpaRepository<Profit, Long> {
+    Profit findByDate(LocalDateTime date);
 
     @Query("SELECT p.profit FROM Profit p")
     List<Double> findAllProfits();
