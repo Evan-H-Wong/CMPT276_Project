@@ -1,0 +1,154 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e0f2f1;
+}
+
+.background {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../image/background_image.png'); 
+    background-size: cover; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    z-index: -1; 
+}
+
+header {
+    position: absolute;
+    top: 5px; 
+    left: 2px;
+}
+
+header .logo img {
+    height: 150px; 
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background-color: white;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+    position: relative;
+}
+
+.welcome_info {
+    font-size: 50px;
+    padding: 0 0 150px 30px;
+}
+
+form {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+form .mb-3 {
+    margin-bottom: 1rem;
+}
+
+form .form-control {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+form .form-label {
+    margin-bottom: .5rem;
+    text-align: left;
+    display: block;
+    font-weight: bold;
+}
+
+form .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+form .btn-primary {
+    background-color: #007bff;
+    border: none;
+}
+
+form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+form .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+
+form .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+form .btn-info {
+    background-color: #17a2b8;
+    border: none;
+}
+
+form .btn-info:hover {
+    background-color: #138496;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1050; 
+}
+
+.modal-header, .modal-footer {
+    border-bottom: none;
+    border-top: none;
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.modal-body {
+    font-size: 16px;
+    padding: 20px;
+}
+
+.modal-footer .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+a.text-decoration-none {
+    font-size: 18px;
+    color: #007bff;
+}
+
+a.text-decoration-none:hover {
+    color: #0056b3;
+}

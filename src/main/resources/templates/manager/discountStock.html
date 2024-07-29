@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skyweaver Product Editor</title>
+    <link rel="stylesheet" href="../css/homepageStyle.css">
+</head>
+<script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous">
+</script>
+<script> 
+$(function(){
+    $("#header").load("header.html");
+    $("#aside").load("aside.html");
+    $("#footer").load("footer.html");
+});
+</script> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div id="header"></div>
+<div class="container">
+    <div id="aside"></div>
+    <main>
+        <section class="inventory-overview">
+            <h2>Inventory List</h2>
+            <table id = productsTable>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock Level</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tr id="bodies" th:each="product:${p}">
+                        <form class = discountAll id = discountAll action="applyProductDiscount" method = "post">
+                        <input type="hidden" name="pid" th:value = "${product.pid}">
+                        <input type = "hidden" name = "productName" th:value="${product.productName}">
+                        <input type = "hidden" name = "productCategory" th:value="${product.productCategory}">
+                        <input type = "hidden" name = "productPrice" th:value="${product.productPrice}">
+                        <input type = "hidden" name = "productQuantity" th:value="${product.productQuantity}">
+                        <input type = "hidden" class = "discountPercent" th:name = "discountPercent" th:id = "discountPercent">
+                        </form>
+                        <td th:text="${product.productName}"></td>
+                        <td th:text="${product.productCategory}"></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(product.productPrice, 1, 2)}" class = "productPrice" style="display:inline"></p>
+                            </td>
+    
+                            <td th:text="${product.productQuantity}"></td>
+                            <td th:switch="${product.productQuantity}">
+                                <span th:case="0">Out of Stock</span>
+                                <span th:case="*">In Stock</span>
+                            </td>
+                            <td>
+                                <a th:href = "@{'/manager/discount/' + ${product.pid}}" style="display:inline">Discount</a>
+                            </td>
+                        </tr>
+                </table>
+            </section>
+            <label for="discount">Discount % for all products: </label>
+            <input type = "number" th:name = "discount" th:id = "discount">
+            <button onclick="discountAll()">Discount All Products</button>
+            </section>
+        
+        </main>
+    </div>
+    <div id="footer"></div>
+    </body>
+    <script>
+        function discountAll()
+            {
+            var discount = parseFloat(document.getElementById("discount").value);
+            var hiddenDiscount = document.getElementsByClassName("discountPercent");
+            var discountForm = document.getElementsByClassName("discountAll");
+            var tableRows = document.getElementById("productsTable").rows;
+            for (let i = 0; i < discountForm.length; i++)
+            {
+                hiddenDiscount[i].value = discount;
+            }
+            var forms = Array.from(discountForm).map(function(form) {
+                return $(form);
+            });
+
+            // Start the sequential form submission
+            submitFormsSequentially(forms);
+            }
+            // Function to submit forms sequentially
+            function submitFormsSequentially(forms) {
+                if (forms.length === 0)
+                {
+                    window.location.reload();
+                    return;
+                } 
+
+                var form = forms.shift();
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: form.serialize(),
+                    
+                    success: function(response) {
+                    submitFormsSequentially(forms);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Form submission failed:', form.attr('id'), error);
+                }
+                
+            });
+        }
+    </script>
+</html>
