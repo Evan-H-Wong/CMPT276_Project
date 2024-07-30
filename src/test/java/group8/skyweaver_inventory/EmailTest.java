@@ -48,32 +48,36 @@ public class EmailTest {
     private MockMvc mockMvc;
 
     @Test
-    public void testSendEmail() throws Exception {
+    public void testSendTestEmail() throws Exception {
         User fred = new User("Fred", "password", "MANAGER");
         User bob = new User("Bob", "password", "EMPLOYEE");
+
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", fred);
 
         when(userRepository.findByUsername("Bob")).thenReturn(bob);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/sendMessage").session(session)
+        mockMvc.perform(MockMvcRequestBuilders.post("/sendTestMessage")
+                        .session(session)
                         .param("recipient", "Bob")
                         .param("messageName", "Schedule Change")
                         .param("messageContent", "Your schedule has been changed"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        List<Message> bobMessages = new ArrayList<>();
         Message message = new Message("Schedule Change", "Your schedule has been changed", "now", "Fred", bob);
+
+        List<Message> bobMessages = new ArrayList<>();
         bobMessages.add(message);
         bob.setMessages(bobMessages);
-        when(userRepository.save(bob)).thenReturn(bob);
 
-        when(messageRepository.findById(1)).thenReturn(Optional.of(message));
+        when(messageRepository.findById(message.getId())).thenReturn(Optional.of(message));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/messages/1").session(session))
+        mockMvc.perform(MockMvcRequestBuilders.get("/messages/" + message.getId())
+                        .session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.messageContent", Matchers.is("Your schedule has been changed")));
     }
+
 
     @Test
     public void testManagerInbox() throws Exception {
@@ -149,7 +153,7 @@ public class EmailTest {
                 .session(session)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/manager/inbox"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/manager/homepage.html"));
 
         verify(gmailService, times(1)).sendEmail(
                 eq("george@gmail.com"),
@@ -180,7 +184,7 @@ public class EmailTest {
                 .session(session)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/employee/inbox"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/employee/homepage.html"));
 
         verify(gmailService, times(1)).sendEmail(
                 eq("daniel@gmail.com"),

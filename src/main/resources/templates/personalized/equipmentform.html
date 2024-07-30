@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Equipment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #e0f2f1;
+        }
+        .top-bar {
+            background-color: blue;
+            width: 100%;
+            padding: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <h1>Create Equipment</h1>
+    <a href="/equipment" class="btn btn-light">Back to Inventory</a>
+</div>
+<div class="form-container">
+    <form action="/equipment/add" method="post">
+        <div class="form-group">
+            <label for="equipmentName">Equipment Name:</label>
+            <input type="text" id="equipmentName" name="equipmentName" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="equipmentDescription">Description:</label>
+            <textarea id="equipmentDescription" name="equipmentDescription" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="equipmentStatus">Status:</label>
+            <select id="equipmentStatus" name="equipmentStatus" class="form-control" required>
+                <option value="Available">Available</option>
+                <option value="Defective">Defective</option>
+                <option value="Expired">Expired</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="expirationDate">Expiration Date:</label>
+            <input type="text" id="expirationDate" name="expirationDate" class="form-control" placeholder="DD/MM/YYYY" required>
+            <small class="form-text text-muted">Enter in the form DD/MM/YYYY please</small>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Add Equipment</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
