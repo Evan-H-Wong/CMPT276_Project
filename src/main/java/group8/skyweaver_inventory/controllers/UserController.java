@@ -61,6 +61,10 @@ public class UserController {
             return ResponseEntity.badRequest().body("Username already exists.");
         }
 
+        if (userRepository.findByGmail(gmail) != null) {
+            return ResponseEntity.badRequest().body("Account with the same gmail already exists.");
+        }
+
         // Validate password
         if (!isValidPassword(password)) {
             return ResponseEntity.badRequest().body("Password must be 8+ characters, and have at least 1 capital and number.");
