@@ -40,25 +40,32 @@ public class EmailTest {
     public void testSendEmail() throws Exception {
         User fred = new User("Fred", "password", "MANAGER");
         User bob = new User("Bob", "password", "EMPLOYEE");
+
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("user", fred);
 
         when(userRepository.findByUsername("Bob")).thenReturn(bob);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/sendMessage").session(session)
+        // Perform the POST request to send the email
+        mockMvc.perform(MockMvcRequestBuilders.post("/sendMessage")
+                        .session(session)
                         .param("recipient", "Bob")
                         .param("messageName", "Schedule Change")
                         .param("messageContent", "Your schedule has been changed"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        List<Message> bobMessages = new ArrayList<>();
+        // Create the message and check the contents
         Message message = new Message("Schedule Change", "Your schedule has been changed", "now", "Fred", bob);
+
+        // Ensure message is properly associated
+        List<Message> bobMessages = new ArrayList<>();
         bobMessages.add(message);
         bob.setMessages(bobMessages);
-        when(userRepository.save(bob)).thenReturn(bob);
 
+        // Mock the repository calls
         when(messageRepository.findById(1)).thenReturn(Optional.of(message));
 
+        // Perform a GET request to retrieve the message and verify its content
         mockMvc.perform(MockMvcRequestBuilders.get("/messages/1").session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.messageContent", Matchers.is("Your schedule has been changed")));

@@ -88,19 +88,21 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String getLogin(HttpSession session, Model model) {
+    public String getLogin(HttpSession session) {
         User user = (User) session.getAttribute("user");
 
         if (user != null) {
             if (user.getAccesslevel().equals("MANAGER")) {
-                return "redirect:/personalized/manager.html";
+                return "redirect:/manager/homepage.html";
             } else if (user.getAccesslevel().equals("EMPLOYEE")) {
-                return "redirect:/personalized/employee.html";
+                return "redirect:/employee/homepage.html";
             }
         }
 
         return "redirect:/auth/login.html";
     }
+
+
 
     @PostMapping("/login")
     public String login(@RequestParam Map<String, String> login, HttpSession session, Model model) {
@@ -120,9 +122,9 @@ public class UserController {
             }
 
             if (accesslevel.equals("MANAGER")) {
-                return "personalized/manager";
+                return "redirect:/manager/homepage.html";
             } else if (accesslevel.equals("EMPLOYEE")) {
-                return "personalized/employee";
+                return "redirect:/employee/homepage.html";
             }
         }
 
@@ -187,24 +189,6 @@ public class UserController {
         return "employee/homepage";
     }
 
-    @GetMapping("/personalized/manager")
-    public String personalizedManager(HttpSession session, Model model) {
-        User manager = (User) session.getAttribute("user");
-        if (manager == null || Objects.equals(manager.getAccesslevel(), "EMPLOYEE")) {
-            return "redirect:/";
-        }
-        return "personalized/manager";
-    }
-
-    @GetMapping("/personalized/employee")
-    public String personalizedEmployee(HttpSession session, Model model) {
-        User employee = (User) session.getAttribute("user");
-        if (employee == null || Objects.equals(employee.getAccesslevel(), "MANAGER")) {
-            return "redirect:/";
-        }
-        return "personalized/employee";
-    }
-
     @GetMapping("/manager/inbox")
     public String managerInbox(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
@@ -250,16 +234,8 @@ public class UserController {
         System.out.println("Received sendMessage request");
 
         User sender = (User) session.getAttribute("user");
-        if (sender == null) {
-            System.out.println("User not authenticated");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated"));
-        }
-
         User recipient = userRepository.findByUsername(recipientUsername);
-        if (recipient == null) {
-            System.out.println("Recipient not found");
-            return ResponseEntity.badRequest().body(Map.of("error", "Recipient not found"));
-        }
+
 
         Message message = new Message();
         message.setMessageName(messageName);
@@ -272,19 +248,17 @@ public class UserController {
         userRepository.save(recipient);
 
         // Send email through Gmail API
-        gmailService.sendEmail(sender.getGmail(), recipient.getGmail(),messageName, messageContent);
+        gmailService.sendEmail(sender.getGmail(), recipient.getGmail(), messageName, messageContent);
 
         // Determine redirect URL based on user access level
-        String redirectUrl;
-        if ("Manager".equalsIgnoreCase(sender.getAccesslevel())) {
-            redirectUrl = "/manager/inbox"; // Redirect to the manager inbox
-        } else if ("Employee".equalsIgnoreCase(sender.getAccesslevel())) {
-            redirectUrl = "/employee/inbox"; // Redirect to the employee inbox
-        } else {
-            redirectUrl = "/";
+        String redirectUrl = "redirect:/";
+        if ("MANAGER".equalsIgnoreCase(sender.getAccesslevel())) {
+            redirectUrl = "/manager/homepage.html";
+        } else if ("EMPLOYEE".equalsIgnoreCase(sender.getAccesslevel())) {
+            redirectUrl = "/employee/homepage.html";
         }
 
-        return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
+        return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl, "message", "Message sent successfully"));
     }
 
 
@@ -298,6 +272,22 @@ public class UserController {
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
         return "personalized/messageform";
+    }
+
+    @GetMapping("/returnfrommessage")
+    public RedirectView returnFromMessage(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            // Redirect to the login page if the user is not authenticated
+            return new RedirectView("/");
+        }
+        if (user.getAccesslevel().equalsIgnoreCase("MANAGER")) {
+            return new RedirectView("/manager/inbox");
+        } else if (user.getAccesslevel().equalsIgnoreCase("EMPLOYEE")) {
+            return new RedirectView("/employee/inbox");
+        } else {
+            return new RedirectView("/");
+        }
     }
 
     @GetMapping("/manager/viewMyEmployees.html")
@@ -420,34 +410,4 @@ public class UserController {
         return "";
     }
 
-    @GetMapping("/personalized/equipment")
-    public String personalizedEquipment(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/";
-        }
-        return "personalized/equipment";
-    }
-
-    @GetMapping("/returnfromequipment")
-    public String personalizedEquipmentReturn(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/";
-        }
-        if (user.getAccesslevel().equals("MANAGER")) {
-            return "personalized/manager";
-        } else {
-            return "personalized/employee";
-        }
-    }
-
-    @GetMapping("/equipmentform")
-    public String showEquipmentForm(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/";
-        }
-        return "personalized/equipmentform";
-    }
 }

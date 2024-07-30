@@ -39,13 +39,16 @@
             display: block;
         }
         .equipment-item.available {
-            color: black;
+            background-color: grey;
+            color: white;
         }
         .equipment-item.defective {
-            color: red;
+            background-color: red;
+            color: white;
         }
         .equipment-item.expired {
-            color: orange;
+            background-color: yellow;
+            color: black;
         }
         .container {
             text-align: center;
@@ -59,13 +62,21 @@
             display: flex;
             flex: 1;
         }
+        .btn-mark-defective {
+            background-color: grey;
+            color: white;
+        }
+        .btn-mark-defective + .btn {
+            margin-left: 10px; /* Add space between buttons */
+        }
     </style>
 </head>
 <body>
 <div class="top-bar">
     <h1>Equipment</h1>
-    <a href="/equipmentform" class="btn btn-light">Add Equipment</a>
-    <a href="/returnfromequipment" class="btn btn-light">Back</a>
+    <a href="/equipment/equipmentform" class="btn btn-light">Add Equipment</a>
+    <a href="/equipment/returnfromequipment" class="btn btn-light">Back</a>
+    <button class="btn btn-secondary" onclick="updateEquipmentStatus()">Update Equipment Status</button>
 </div>
 <div class="main-content">
     <div class="left-bar">
@@ -78,15 +89,19 @@
     </div>
     <div class="container" id="contentContainer">
         <div id="equipmentDetails"></div>
-        <button class="btn btn-secondary" onclick="updateEquipmentStatus()">Update Equipment Status</button>
+        <button class="btn btn-secondary btn-mark-defective" onclick="updateStatus(currentEquipmentId, 'Defective')">Mark as Defective</button>
+        <button class="btn btn-secondary" onclick="updateExpirationDate(currentEquipmentId)">Update Expiration Date</button>
+        <button class="btn btn-danger" onclick="removeEquipment(currentEquipmentId)">Remove Equipment</button>
     </div>
 </div>
 
 <script>
-    function displayEquipment(element) {
-        var equipmentId = element.getAttribute('data-id');
+    let currentEquipmentId = null;
 
-        fetch('/equipment/' + equipmentId)
+    function displayEquipment(element) {
+        currentEquipmentId = element.getAttribute('data-id');
+
+        fetch('/equipment/' + currentEquipmentId)
             .then(response => response.json())
             .then(equipment => {
                 var container = document.getElementById('equipmentDetails');
@@ -109,21 +124,6 @@
                 var expirationDate = document.createElement('p');
                 expirationDate.textContent = 'Expiration Date: ' + (equipment.expirationDate || 'N/A');
                 container.appendChild(expirationDate);
-
-                var markDefectiveBtn = document.createElement('button');
-                markDefectiveBtn.textContent = 'Mark as Defective';
-                markDefectiveBtn.onclick = () => updateStatus(equipment.eid, 'Defective');
-                container.appendChild(markDefectiveBtn);
-
-                var updateExpirationBtn = document.createElement('button');
-                updateExpirationBtn.textContent = 'Update Expiration Date';
-                updateExpirationBtn.onclick = () => updateExpirationDate(equipment.eid);
-                container.appendChild(updateExpirationBtn);
-
-                var removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Remove Equipment';
-                removeBtn.onclick = () => removeEquipment(equipment.eid);
-                container.appendChild(removeBtn);
             })
             .catch(error => console.error('Error fetching equipment:', error));
     }

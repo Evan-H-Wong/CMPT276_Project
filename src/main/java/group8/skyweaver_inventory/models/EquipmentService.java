@@ -5,6 +5,8 @@ import group8.skyweaver_inventory.models.EquipmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -39,5 +41,36 @@ public class EquipmentService {
 
     public void deleteEquipment(int id) {
         equipmentRepository.deleteById(id);
+    }
+
+    public void updateEquipmentStatus() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate today = LocalDate.now();
+
+        // Fetch all equipment
+        List<Equipment> equipmentList = equipmentRepository.findAll();
+
+        for (Equipment equipment : equipmentList) {
+            // Check if equipment is not defective and if its expiration date is passed
+            if (!equipment.getEquipmentStatus().equals("Defective")) {
+                LocalDate expirationDate;
+                try {
+                    expirationDate = LocalDate.parse(equipment.getExpirationDate(), formatter);
+                } catch (Exception e) {
+                    continue; // Skip if the expiration date is invalid
+                }
+
+                if (today.isAfter(expirationDate)) {
+                    equipment.setEquipmentStatus("Expired");
+                    equipmentRepository.save(equipment);
+                } else {
+                    // If expiration date is updated to a future date, reset status to "Available"
+                    if (equipment.getEquipmentStatus().equals("Expired")) {
+                        equipment.setEquipmentStatus("Available");
+                        equipmentRepository.save(equipment);
+                    }
+                }
+            }
+        }
     }
 }
