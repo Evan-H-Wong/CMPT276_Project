@@ -153,7 +153,7 @@ public class EmailTest {
                 .session(session)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/manager/inbox"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/manager/homepage.html"));
 
         verify(gmailService, times(1)).sendEmail(
                 eq("george@gmail.com"),
@@ -184,7 +184,7 @@ public class EmailTest {
                 .session(session)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/employee/inbox"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/employee/homepage.html"));
 
         verify(gmailService, times(1)).sendEmail(
                 eq("daniel@gmail.com"),

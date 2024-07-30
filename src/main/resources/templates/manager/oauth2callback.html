@@ -32,7 +32,7 @@
         <h1 th:text="${message}" class="display-4"></h1>
         <div class="row justify-content-center">
             <div th:if="${message.contains('successful')}" class="center">
-                <a class="display-6" th:href="${access.contains('MANAGER') ? '/personalized/manager' : '/personalized/employee'}">Go to Welcome Page</a>
+                <a class="display-6" th:href="${access.contains('MANAGER') ? '/manager/homepage.html' : '/employee/homepage.html'}">Go to Homepage</a>
             </div>
             <div th:if="${message.contains('failed')}" class="center">
                 <a class="display-6" th:href="@{/logout}">Logout</a>
