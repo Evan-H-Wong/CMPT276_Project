@@ -106,6 +106,7 @@ public class UserController {
         return "redirect:/auth/login.html";
     }
 
+
     @PostMapping("/login")
     public String login(@RequestParam Map<String, String> login, HttpSession session, Model model) {
         String username = login.get("username");
