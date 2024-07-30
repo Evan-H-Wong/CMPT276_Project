@@ -291,6 +291,7 @@ public class UserController {
         recipient.getMessages().add(message);
         userRepository.save(recipient);
 
+
         // Determine redirect URL based on user access level
         String redirectUrl = "redirect:/";
         if ("MANAGER".equalsIgnoreCase(sender.getAccesslevel())) {
