@@ -19,35 +19,20 @@ public class Ship24Service {
 
     public Map<String, Object> getTrackerResultsByTrackingNumber(String trackingNumber) {
 
-
-
-        // System.out.println("createTrackerAndGetResults, " + trackingNumber);
-
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + apiKey);
 
-        // headers.forEach((key, value) -> {
-        //     System.out.println("Header Key: " + key + "\t Header Value: " + value);
-        // });
-
         Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
-        // requestBody.forEach((key, value) -> {
-        //     System.out.println("Body Key: " + key + "\t Body Value: " + value);
-        // });
-
         String url = BASE_URL + "/trackers/search/" + trackingNumber + "/results";
-        // System.out.println("URL: \t" + url);
+        
         try {
             @SuppressWarnings("rawtypes")
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-            // response.getBody().forEach((key, value) -> {
-            //     System.out.println("Key: " + key + "\t Value: " + value);
-            // });
             return response.getBody();
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,76 +40,33 @@ public class Ship24Service {
         }
     }
 
-    //     public Map<String, Object> getTrackingResultByTrackingNumber(Map<String, String> requestBody) {
+    // public Map<String, Object> getTrackingResultsByTrackingNumber(
+    //         String trackingNumber,
+    //         String originCountryCode,
+    //         String destinationPostCode,
+    //         String shippingDate,
+    //         String courierCode) {
 
-    
-    //         RestTemplate restTemplate = new RestTemplate();
-    
-    //         HttpHeaders headers = new HttpHeaders();
-    //         headers.setContentType(MediaType.APPLICATION_JSON);
-    //         headers.set("Authorization", "Bearer " + apiKey);
-    //         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    
-    //         // Map<String, String> requestBody = Map.of("trackingNumber", trackingNumber);
-    //         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
-    
-    //         // requestBody.forEach((key, value) -> {
-    //         //     System.out.println("Body Key: " + key + "\t Body Value: " + value);
-    //         // });
-    
-    //         String url = BASE_URL + "/search/";
-    //         // System.out.println("URL: \t" + url);
-    //         try {
-    //             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-    //             response.getBody().forEach((key, value) -> {
-    //                 System.out.println("Key: " + key + "\t Value: " + value);
-    //             });
-    //             return response.getBody();
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //             return Map.of("error", "An error occurred while fetching tracking information.");
-    //             // catch (Exception e) {
-    //             //     e.printStackTrace();
-    //             //     ModelAndView errorModelAndView = new ModelAndView("error");
-    //             //     errorModelAndView.addObject("errorMessage", "An error occurred while fetching tracking information.");
-    //             //     return errorModelAndView;
-    //             // }
-    //         }
-    // }
-
-
-
-    // public Map<String, Object> getTrackerResultsById(String trackerId) {
     //     RestTemplate restTemplate = new RestTemplate();
 
     //     HttpHeaders headers = new HttpHeaders();
+    //     headers.setContentType(MediaType.APPLICATION_JSON);
     //     headers.set("Authorization", "Bearer " + apiKey);
 
-    //     HttpEntity<String> entity = new HttpEntity<>(headers);
+    //     Map<String, Object> requestBody = Map.of(
+    //             "trackingNumber", trackingNumber,
+    //             "originCountryCode", originCountryCode,
+    //             "destinationPostCode", destinationPostCode,
+    //             "shippingDate", shippingDate,
+    //             "courierCode", new String[] {courierCode}
+    //     );
 
-    //     String url = BASE_URL + "/" + trackerId + "/results";
+    //     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-    //     try {
-    //         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-    //         return response.getBody();
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //         return Map.of("error", "An error occurred while fetching tracking information.");
-    //     }
-    // }
-
-    // public Map<String, Object> getTrackerResultsByTrackingNumber(String trackingNumber) {
-    //     RestTemplate restTemplate = new RestTemplate();
-
-    //     HttpHeaders headers = new HttpHeaders();
-    //     headers.set("Authorization", "Bearer " + apiKey);
-
-    //     HttpEntity<String> entity = new HttpEntity<>(headers);
-
-    //     String url = BASE_URL + "/search/" + trackingNumber + "/results";
+    //     String url = BASE_URL + "/tracking/search";
 
     //     try {
-    //         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+    //         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
     //         return response.getBody();
     //     } catch (Exception e) {
     //         e.printStackTrace();
