@@ -14,13 +14,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import jakarta.servlet.http.HttpSession;
 
-//import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Comparator;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+//import java.util.ArrayList;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +35,9 @@ public class UserController {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private OrderedProductRepository orderedProductRepository;
 
     @Autowired
     private UserService userService;
@@ -59,6 +59,10 @@ public class UserController {
 
         if (userRepository.findByUsername(username) != null) {
             return ResponseEntity.badRequest().body("Username already exists.");
+        }
+
+        if (userRepository.findByGmail(gmail) != null) {
+            return ResponseEntity.badRequest().body("Account with the same gmail already exists.");
         }
 
         // Validate password
@@ -164,6 +168,10 @@ public class UserController {
         model.addAttribute("lowstock", lowstock.size());
         model.addAttribute("restock", lowstock);
         model.addAttribute("username", user.getUsername());
+
+        List<OrderedProduct> orders = orderedProductRepository.findByOrderByProductNameAsc();
+        model.addAttribute("ordersCount", orders.size());
+        model.addAttribute("o", orders);
         return "manager/homepage";
     }
 

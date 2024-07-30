@@ -31,8 +31,8 @@ $(function(){
                 <div><p style="display:inline">Total Products: </p><p style="display:inline" th:text="${rowCount}"></p></div>
                 <div><p style="display:inline">Out of Stock: </p><p style="display:inline" th:text="${outofstock}"></p></div>
                 <div><p style="display:inline">Low Stock (Less than 12 in Stock): </p><p style="display:inline" th:text="${lowstock}"></p></div>
-                <div>Recent Orders: X</div>
-                <div>Total Suppliers: X</div>
+                <div><p style="display:inline">Recent Orders: </p><p style="display:inline" th:text="${ordersCount}"></p></div>
+                <!-- <div>Total Suppliers: X</div> -->
             </div>
         </section>
         <section class="quick-actions">
@@ -40,7 +40,6 @@ $(function(){
             <a href="/manager/add.html"><button>Add New Product</button></a>
             <a href="/manager/order"><button>Create New Order</button></a>
             <a href="/manager/addMyEmployees.html"><button>Add New Employees</button></a>
-            <!-- <button>Generate Report</button> -->
         </section>
         <section class="inventory-overview">
             <h2>No/Low Stock</h2>
@@ -70,27 +69,35 @@ $(function(){
         </section>
         <section class="recent-orders">
             <h2>Recent Orders</h2>
+            <form id = "deleteOrder" th:name = "deleteOrder" action = "/manager/delete/" method = "post">
+            </form>
             <table>
-                <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>Order Date</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Purchase Price</th>
+                        <th>Stock Level</th>
                         <th>Status</th>
-                        <th>Total Amount</th>
+                        <th>Ordered Quantity</th>
+                        <th>Estimated Arrival time</th>
                         <th>Actions</th>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
-                        <td>X</td>
+                    <tr id="bodies" th:each="orderedProduct:${o}">
+                        <td th:text="${orderedProduct.productName}"></td>
+                        <td th:text="${orderedProduct.productCategory}"></td>
+                        <td>$ <p th:text="${#numbers.formatDecimal(orderedProduct.productPrice, 1, 2)}" style="display:inline"></p></td>
+                        <td th:text="${orderedProduct.productQuantity}"></td>
+                        <td th:switch="${orderedProduct.productQuantity}">
+                            <span th:case="0">Out of Stock</span>
+                            <span th:case="*">In Stock</span>
+                        </td>
+                        <td th:text="${orderedProduct.orderQuantity}"></td>
+                        <td><p id = "timer" class = "timer"></p></td>
+                        <td>
+                            <a th:id="${orderedProduct.pid}" style="display:inline" href="#" onclick="DeleteOrder(this)">Delete</a>
+                        </td>
+                        <input type = "hidden" id = "randomDate" class = "randomDate" th:value = "${orderedProduct.arrivalDate}">
                     </tr>
-                </tbody>
             </table>
         </section>
         <h2>Track Your Shipment</h2>
@@ -99,6 +106,33 @@ $(function(){
             <input type="text" id="trackingNumber" name="trackingNumber" required>
             <button type="submit">Track</button>
         </form>
+        <script>
+            var temp = document.getElementsByClassName("randomDate");
+            var numberOfOrders = temp.length;
+            var x = setInterval(function() {
+        
+                var now = new Date().getTime();
+                for (let i = 0; i < numberOfOrders; i++)
+                {
+                    var arrivalDate = new Date(document.getElementsByClassName("randomDate")[i].value).getTime();
+                        
+                    var distance = arrivalDate - now;
+        
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    
+                    if (distance > 0)
+                    {
+                        document.getElementsByClassName("timer")[i].innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                    }
+                    else if (distance <= 0) {
+                        document.getElementsByClassName("timer")[i].innerHTML = "Order has arrived";
+                    }
+                }
+        }, 1000);
+        </script>
         <!-- <h3>or</h3>
         <form action="/api/ship24/track" method="post">
             <table>
@@ -134,4 +168,11 @@ $(function(){
 <div id="footer"></div>
 
 </body>
+<script>
+    function DeleteOrder(DeleteButton)
+    {
+        document.getElementById("deleteOrder").action = ("/manager/delete/" + (DeleteButton.id).toString());
+        document.getElementById("deleteOrder").submit();
+    }
+</script>
 </html>

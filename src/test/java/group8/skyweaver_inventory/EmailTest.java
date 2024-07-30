@@ -4,12 +4,15 @@ import group8.skyweaver_inventory.models.Message;
 import group8.skyweaver_inventory.models.MessageRepository;
 import group8.skyweaver_inventory.models.User;
 import group8.skyweaver_inventory.models.UserRepository;
+import group8.skyweaver_inventory.services.GmailService;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -20,6 +23,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 //import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +40,9 @@ public class EmailTest {
 
     @MockBean
     private MessageRepository messageRepository;
+
+    @MockBean
+    private GmailService gmailService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -115,5 +126,67 @@ public class EmailTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/messages/1").session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.messageContent", Matchers.is("There is a meeting tomorrow")));
+    }
+
+    @Test
+    public void testManagerGmailService() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User george = new User("George", "password", "MANAGER");
+        george.setGmail("george@gmail.com");
+        session.setAttribute("user", george);
+
+        User mike = new User("Mike", "password", "EMPLOYEE");
+        mike.setGmail("mike@gmail.com");
+        when(userRepository.findByUsername("George")).thenReturn(george);
+        when(userRepository.findByUsername("Mike")).thenReturn(mike);
+
+        doNothing().when(gmailService).sendEmail(anyString(), anyString(), anyString(), anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/sendMessage")
+                .param("recipient", "Mike")
+                .param("messageName", "Next Shift")
+                .param("messageContent", "Review items and check for consistency")
+                .session(session)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/manager/inbox"));
+
+        verify(gmailService, times(1)).sendEmail(
+                eq("george@gmail.com"),
+                eq("mike@gmail.com"),
+                eq("Next Shift"),
+                eq("Review items and check for consistency")
+        );
+    }
+    
+    @Test
+    public void testEmployeeGmailService() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        User daniel = new User("Daniel", "password", "EMPLOYEE");
+        daniel.setGmail("daniel@gmail.com");
+        session.setAttribute("user", daniel);
+
+        User jeff = new User("Jeff", "password", "MANAGER");
+        jeff.setGmail("jeff@gmail.com");
+        when(userRepository.findByUsername("Daniel")).thenReturn(daniel);
+        when(userRepository.findByUsername("Jeff")).thenReturn(jeff);
+
+        doNothing().when(gmailService).sendEmail(anyString(), anyString(), anyString(), anyString());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/sendMessage")
+                .param("recipient", "Jeff")
+                .param("messageName", "New Shift")
+                .param("messageContent", "Can my shift be pushed back by an hour for the following year?")
+                .session(session)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.redirectUrl").value("/employee/inbox"));
+
+        verify(gmailService, times(1)).sendEmail(
+                eq("daniel@gmail.com"),
+                eq("jeff@gmail.com"),
+                eq("New Shift"),
+                eq("Can my shift be pushed back by an hour for the following year?")
+        );
     }
 }

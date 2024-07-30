@@ -76,7 +76,7 @@ public class ScheduleControllerTest {
 
         mockMvc.perform(get("/employee/schedule").session(session))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/auth/login.html"));
+                .andExpect(redirectedUrl("/"));
     }
 
     // Test session with accesslevel 'Employee' to employee/schedule endpoint
@@ -97,7 +97,7 @@ public class ScheduleControllerTest {
 
         mockMvc.perform(get("/manager/schedule").param("user", "user1").session(session))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/auth/login.html"));
+                .andExpect(redirectedUrl("/"));
     }
 
     // Test session with accesslevel 'Employee' to manager/schedule endpoint
@@ -109,7 +109,7 @@ public class ScheduleControllerTest {
 
         mockMvc.perform(get("/manager/schedule").param("user", "user1").session(session))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/auth/login.html"));
+                .andExpect(redirectedUrl("/"));
     }
 
     // Test session with accesslevel 'Manager' to manager/schedule endpoint

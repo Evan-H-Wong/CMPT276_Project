@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 //import static org.mockito.ArgumentMatchers.any;
 //import static org.mockito.Mockito.never;
 //import static org.mockito.Mockito.times;
@@ -26,6 +28,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 //import java.util.Optional;
+import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,18 +42,26 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
     public void testRegisterSuccess() throws Exception {
         String username = "Fred";
-        String password = "password";
+        String password = "Password1";
         String accesslevel = "MANAGER";
+        String gmail = "gmail@gmail.com";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/register")
-                .param("username", username)
-                .param("password", password)
-                .param("accesslevel", accesslevel))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())  
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/auth/login.html"));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(Map.of(
+                        "username", username,
+                        "password", password,
+                        "accesslevel", accesslevel,
+                        "gmail", gmail
+                ))))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("User registered successfully."));
     }
 
     @Test

@@ -31,9 +31,6 @@ $(function(){
         <form id = "profitform" th:name = "profitform" action = "/manager/profits" method = "post" value = "">
             <input type = "hidden" id = "profit" name = "profit" value = "">
         </form>
-        <section class="dashboard-overview">
-            <h1>Overview</h1>
-        </section>
         <section class="inventory-overview">
             <h2>Inventory List</h2>
             <table>
@@ -61,14 +58,14 @@ $(function(){
             </table>
         </section>
         <section class="ordered-inventory-overview">
-            <h2>Active Product Orders List</h2>
+            <h2>Product Orders List</h2>
             <form id = "deleteOrder" th:name = "deleteOrder" action = "/order/delete/" method = "post">
             </form>
             <table>
                     <tr>
                         <th>Product Name</th>
                         <th>Category</th>
-                        <th>Price</th>
+                        <th>Purchase Price</th>
                         <th>Stock Level</th>
                         <th>Status</th>
                         <th>Ordered Quantity</th>
@@ -151,11 +148,11 @@ $(function(){
                     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
                     
-                    document.getElementsByClassName("timer")[i].innerHTML = days + "d " + hours + "h "
-                    + minutes + "m " + seconds + "s ";
-        
-                    if (distance < 0) {
-                        clearInterval(x);
+                    if (distance > 0)
+                    {
+                        document.getElementsByClassName("timer")[i].innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                    }
+                    else if (distance <= 0) {
                         document.getElementsByClassName("timer")[i].innerHTML = "Order has arrived";
                     }
                 }

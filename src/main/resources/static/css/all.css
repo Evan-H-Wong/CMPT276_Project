@@ -25,7 +25,9 @@ header {
 }
 
 header .logo img {
-    height: 100px; 
+    height: 15vh; 
+    max-height: 100px; 
+    width: auto;
 }
 
 .container {
