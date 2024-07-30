@@ -134,7 +134,7 @@ public class ProductController {
         int minute = calendar.get(Calendar.MINUTE);
 
         int randomDay = (int) (Math.random() * (31 - day) + day);
-        int randomHour = (int) (Math.random() * (24 - hour) + hour);
+        int randomHour = (int) (Math.random() * (24 - hour) + (hour + 5));
         int randomMinute = (int) (Math.random() * (60 - minute) + minute);
 
         calendar.set(Calendar.DAY_OF_MONTH, randomDay);
@@ -178,6 +178,17 @@ public class ProductController {
         }
         orderedProductRepository.deleteById(id);
         return "redirect:/manager/order";
+    }
+
+    @PostMapping("/manager/delete/{pid}")
+    public String deleteHomepageOrder(HttpSession session, @PathVariable ("pid") int id) 
+    {
+        User usercheck = (User) session.getAttribute("user");
+        if (usercheck == null || usercheck.getAccesslevel() == "EMPLOYEE") {
+            return "redirect:/";
+        }
+        orderedProductRepository.deleteById(id);
+        return "redirect:/manager/homepage.html";
     }
 
     @GetMapping("manager/discount")
