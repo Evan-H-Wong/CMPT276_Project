@@ -102,8 +102,6 @@ public class UserController {
         return "redirect:/auth/login.html";
     }
 
-
-
     @PostMapping("/login")
     public String login(@RequestParam Map<String, String> login, HttpSession session, Model model) {
         String username = login.get("username");
@@ -261,6 +259,42 @@ public class UserController {
         return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl, "message", "Message sent successfully"));
     }
 
+    // endpoint only for testing, since tests don't like gmail part
+    @PostMapping("/sendTestMessage")
+    public ResponseEntity<Map<String, String>> sendTestMessage(
+            @RequestParam("recipient") String recipientUsername,
+            @RequestParam("messageName") String messageName,
+            @RequestParam("messageContent") String messageContent,
+            HttpSession session) {
+
+        System.out.println("Received sendTestMessage request");
+
+        User sender = (User) session.getAttribute("user");
+        User recipient = userRepository.findByUsername(recipientUsername);
+
+        Message message = new Message();
+        message.setMessageName(messageName);
+        message.setMessageContent(messageContent);
+        message.setTimeSent(LocalDateTime.now().toString());
+        message.setMessageSender(sender.getUsername());
+        message.setUser(recipient);
+
+        recipient.getMessages().add(message);
+        userRepository.save(recipient);
+
+        // Skipping Gmail sending part
+        // gmailService.sendEmail(sender.getGmail(), recipient.getGmail(), messageName, messageContent);
+
+        // Determine redirect URL based on user access level
+        String redirectUrl = "redirect:/";
+        if ("MANAGER".equalsIgnoreCase(sender.getAccesslevel())) {
+            redirectUrl = "/manager/homepage.html";
+        } else if ("EMPLOYEE".equalsIgnoreCase(sender.getAccesslevel())) {
+            redirectUrl = "/employee/homepage.html";
+        }
+
+        return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl, "message", "Message sent successfully"));
+    }
 
     @GetMapping("/messageform")
     public String showMessageForm(HttpSession session, Model model) {

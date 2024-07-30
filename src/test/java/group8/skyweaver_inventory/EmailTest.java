@@ -37,7 +37,7 @@ public class EmailTest {
     private MockMvc mockMvc;
 
     @Test
-    public void testSendEmail() throws Exception {
+    public void testSendTestEmail() throws Exception {
         User fred = new User("Fred", "password", "MANAGER");
         User bob = new User("Bob", "password", "EMPLOYEE");
 
@@ -46,30 +46,27 @@ public class EmailTest {
 
         when(userRepository.findByUsername("Bob")).thenReturn(bob);
 
-        // Perform the POST request to send the email
-        mockMvc.perform(MockMvcRequestBuilders.post("/sendMessage")
+        mockMvc.perform(MockMvcRequestBuilders.post("/sendTestMessage")
                         .session(session)
                         .param("recipient", "Bob")
                         .param("messageName", "Schedule Change")
                         .param("messageContent", "Your schedule has been changed"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        // Create the message and check the contents
         Message message = new Message("Schedule Change", "Your schedule has been changed", "now", "Fred", bob);
 
-        // Ensure message is properly associated
         List<Message> bobMessages = new ArrayList<>();
         bobMessages.add(message);
         bob.setMessages(bobMessages);
 
-        // Mock the repository calls
-        when(messageRepository.findById(1)).thenReturn(Optional.of(message));
+        when(messageRepository.findById(message.getId())).thenReturn(Optional.of(message));
 
-        // Perform a GET request to retrieve the message and verify its content
-        mockMvc.perform(MockMvcRequestBuilders.get("/messages/1").session(session))
+        mockMvc.perform(MockMvcRequestBuilders.get("/messages/" + message.getId())
+                        .session(session))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.messageContent", Matchers.is("Your schedule has been changed")));
     }
+
 
     @Test
     public void testManagerInbox() throws Exception {
