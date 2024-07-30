@@ -36,6 +36,7 @@
             <textarea class="form-control" id="messageContent" name="messageContent" rows="3"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Send</button>
+        <a href="/manager/inbox" class="btn btn-primary">Back to Email</a>
     </form>
 </div>
 <script>
@@ -49,9 +50,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.redirectUrl) {
-                window.location.href = data.redirectUrl; // Redirect to the appropriate inbox
+                alert(data.message); // Show the success message
+                window.location.href = data.redirectUrl; // Redirect to the appropriate page
             } else {
-                console.log(data); // Log any non-redirect responses (e.g., errors)
+                console.log('No redirect URL returned', data); // Log any non-redirect responses (e.g., errors)
             }
         })
         .catch(error => console.error('Error:', error));

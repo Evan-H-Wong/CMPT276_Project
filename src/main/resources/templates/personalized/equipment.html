@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #e0f2f1;
+        }
+        .top-bar {
+            background-color: blue;
+            width: 100%;
+            padding: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .left-bar {
+            background-color: lightblue;
+            width: 25%;
+            height: 100%;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        .equipment-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            display: block;
+        }
+        .equipment-item.available {
+            background-color: grey;
+            color: white;
+        }
+        .equipment-item.defective {
+            background-color: red;
+            color: white;
+        }
+        .equipment-item.expired {
+            background-color: yellow;
+            color: black;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 75%;
+        }
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+        .btn-mark-defective {
+            background-color: grey;
+            color: white;
+        }
+        .btn-mark-defective + .btn {
+            margin-left: 10px; /* Add space between buttons */
+        }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <h1>Equipment</h1>
+    <a href="/equipment/equipmentform" class="btn btn-light">Add Equipment</a>
+    <a href="/equipment/returnfromequipment" class="btn btn-light">Back</a>
+    <button class="btn btn-secondary" onclick="updateEquipmentStatus()">Update Equipment Status</button>
+</div>
+<div class="main-content">
+    <div class="left-bar">
+        <div th:each="equipment : ${equipments}" class="equipment-item"
+             th:text="${equipment.equipmentName}"
+             th:classappend="${' ' + equipment.equipmentStatus.toLowerCase()}"
+             th:data-id="${equipment.eid}"
+             onclick="displayEquipment(this)">
+        </div>
+    </div>
+    <div class="container" id="contentContainer">
+        <div id="equipmentDetails"></div>
+        <button class="btn btn-secondary btn-mark-defective" onclick="updateStatus(currentEquipmentId, 'Defective')">Mark as Defective</button>
+        <button class="btn btn-secondary" onclick="updateExpirationDate(currentEquipmentId)">Update Expiration Date</button>
+        <button class="btn btn-danger" onclick="removeEquipment(currentEquipmentId)">Remove Equipment</button>
+    </div>
+</div>
+
+<script>
+    let currentEquipmentId = null;
+
+    function displayEquipment(element) {
+        currentEquipmentId = element.getAttribute('data-id');
+
+        fetch('/equipment/' + currentEquipmentId)
+            .then(response => response.json())
+            .then(equipment => {
+                var container = document.getElementById('equipmentDetails');
+                container.innerHTML = '';
+
+                var equipmentName = document.createElement('h2');
+                equipmentName.textContent = equipment.equipmentName;
+                container.appendChild(equipmentName);
+
+                var equipmentDescription = document.createElement('p');
+                equipmentDescription.textContent = 'Description: ' + equipment.equipmentDescription;
+                container.appendChild(equipmentDescription);
+
+                var equipmentStatus = document.createElement('p');
+                equipmentStatus.textContent = 'Status: ' + equipment.equipmentStatus;
+                equipmentStatus.style.color = equipment.equipmentStatus === 'Defective' ? 'red' :
+                                              equipment.equipmentStatus === 'Expired' ? 'orange' : 'black';
+                container.appendChild(equipmentStatus);
+
+                var expirationDate = document.createElement('p');
+                expirationDate.textContent = 'Expiration Date: ' + (equipment.expirationDate || 'N/A');
+                container.appendChild(expirationDate);
+            })
+            .catch(error => console.error('Error fetching equipment:', error));
+    }
+
+    function updateStatus(id, status) {
+        fetch('/equipment/mark-defective/' + id, { method: 'POST' })
+            .then(() => location.reload())
+            .catch(error => console.error('Error updating status:', error));
+    }
+
+    function updateExpirationDate(id) {
+        var newExpirationDate = prompt('Enter new expiration date (DD/MM/YYYY):');
+        if (newExpirationDate) {
+            fetch('/equipment/update-expiration/' + id + '?expirationDate=' + newExpirationDate, { method: 'POST' })
+                .then(() => location.reload())
+                .catch(error => console.error('Error updating expiration date:', error));
+        }
+    }
+
+    function removeEquipment(id) {
+        if (confirm('Are you sure you want to remove this equipment?')) {
+            fetch('/equipment/remove/' + id, { method: 'POST' })
+                .then(() => location.reload())
+                .catch(error => console.error('Error removing equipment:', error));
+        }
+    }
+
+    function updateEquipmentStatus() {
+        fetch('/equipment/update-status', { method: 'POST' })
+            .then(() => location.reload())
+            .catch(error => console.error('Error updating equipment status:', error));
+    }
+</script>
+</body>
+</html>
