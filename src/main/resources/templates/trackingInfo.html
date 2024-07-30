@@ -1,14 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Tracking Information</title>
-</head>
-<body>
-    
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -38,8 +27,8 @@ $(function(){
 
         <h2>Tracking Results:</h2>
         <div th:if="${results['data'] != null}"> 
+            <h3>Tracking Details</h3>
             <div th:each="tracking : ${results['data']['trackings']}">
-                <h3>Tracking Details</h3>
                 <table>
                     <thead>
                         <tr>

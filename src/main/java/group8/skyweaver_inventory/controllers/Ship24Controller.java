@@ -23,29 +23,24 @@ public class Ship24Controller {
     public String trackShipment(@RequestParam String trackingNumber, Model model) {
 
         Map<String, Object> results = ship24Service.getTrackerResultsByTrackingNumber(trackingNumber);
-        // results.forEach((key, value) -> {
-        //     System.out.println("Key: " + key + "\t Value: " + value);
-        // });
 
         model.addAttribute("results", results);
         return "trackingInfo";
     }
 
-    // @PostMapping("/track/PerCall")
-    // public String getTrackingResult(@RequestBody String entity) {
-    //     //TODO: process POST request
-        
-    //     return entity;
-    // }
-    
+    // @PostMapping("/track")
+    // public String trackShipment(
+    //         @RequestParam String trackingNumber,
+    //         @RequestParam String originCountryCode,
+    //         @RequestParam String destinationPostCode,
+    //         @RequestParam String shippingDate,
+    //         @RequestParam String courierCode,
+    //         Model model) {
 
-    // @GetMapping("/trackers/{trackerId}/results")
-    // public Map<String, Object> getTrackerResultsById(@PathVariable String trackerId) {
-    //     return ship24Service.getTrackerResultsById(trackerId);
-    // }
+    //     Map<String, Object> results = ship24Service.getTrackingResultsByTrackingNumber(
+    //             trackingNumber, originCountryCode, destinationPostCode, shippingDate, courierCode);
 
-    // @GetMapping("/trackers/search/{trackingNumber}/results")
-    // public Map<String, Object> getTrackerResultsByTrackingNumber(@PathVariable String trackingNumber) {
-    //     return ship24Service.getTrackerResultsByTrackingNumber(trackingNumber);
+    //     model.addAttribute("results", results);
+    //     return "trackingInfo";
     // }
 }

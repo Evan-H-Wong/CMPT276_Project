@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skyweaver Schedule Viewer</title>
+    <title>Skyweaver Calendar Viewer</title>
     <link rel="stylesheet" href="../css/homepageStyle.css">
     <link rel="stylesheet" href="../css/schedules.css">
 </head>
@@ -48,6 +48,15 @@ $(function(){
             </tr>
             <tr th:each="weekly:${weekly}">
                 <p class="weekly" th:text="${weekly}"></p>
+            </tr>
+        </div>
+
+        <div id="ProfitList" style="display:none">
+            <tr th:each="profitdate:${profitdate}">
+                <p class="profitdate" th:text="${profitdate}"></p>
+            </tr>
+            <tr th:each="profit:${profit}">
+                <p class="profit" th:text="${profit}"></p>
             </tr>
         </div>
 
