@@ -31,11 +31,11 @@ header .logout a {
     border: 2px solid #fff;
     border-radius: 5px;
     display: inline-block;
-    background-color: #333; /* Same as header background */
+    background-color: #333; 
 }
 
 header .logout a:hover {
-    background-color: #444; /* Slightly lighter on hover */
+    background-color: #444;
 }
 
 header nav ul {
@@ -84,6 +84,7 @@ main {
     flex-grow: 1;
     padding: 20px;
     background-color: #ecf0f1;
+    margin-bottom: 60px;
 }
 
 .greeting {
@@ -154,7 +155,7 @@ footer {
     color: #fff;
     text-align: center;
     padding: 10px 0;
-    position: fixed;
+    position: relative;
     width: 100%;
     bottom: 0;
 }
