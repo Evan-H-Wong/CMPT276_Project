@@ -14,7 +14,7 @@
             background-color: #e0f2f1;
         }
         .top-bar {
-            background-color: blue;
+            background-color: #333333;
             width: 100%;
             padding: 10px;
             color: white;
@@ -23,7 +23,7 @@
             align-items: center;
         }
         .left-bar {
-            background-color: lightblue;
+            background-color: #2C3E50;
             width: 25%;
             height: 100%;
             padding: 20px;
@@ -67,7 +67,15 @@
             color: white;
         }
         .btn-mark-defective + .btn {
-            margin-left: 10px; /* Add space between buttons */
+            margin-left: 10px;
+        }
+        .btn-update-status {
+            background-color: white;
+            color: #333333;
+            border: 1px solid #333333;
+        }
+        .btn-update-status:hover {
+            background-color: #f1f1f1;
         }
     </style>
 </head>
@@ -75,8 +83,8 @@
 <div class="top-bar">
     <h1>Equipment</h1>
     <a href="/equipment/equipmentform" class="btn btn-light">Add Equipment</a>
+    <button class="btn btn-update-status" onclick="updateEquipmentStatus()">Update Equipment Status</button>
     <a href="/equipment/returnfromequipment" class="btn btn-light">Back</a>
-    <button class="btn btn-secondary" onclick="updateEquipmentStatus()">Update Equipment Status</button>
 </div>
 <div class="main-content">
     <div class="left-bar">
@@ -94,6 +102,7 @@
         <button class="btn btn-danger" onclick="removeEquipment(currentEquipmentId)">Remove Equipment</button>
     </div>
 </div>
+
 <script>
     let currentEquipmentId = null;
 
