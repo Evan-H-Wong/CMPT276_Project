@@ -14,7 +14,7 @@
             background-color: #e0f2f1;
         }
         .top-bar {
-            background-color: blue;
+            background-color: #333333;
             width: 100%;
             padding: 10px;
             color: white;
@@ -23,7 +23,7 @@
             align-items: center;
         }
         .left-bar {
-            background-color: lightblue;
+            background-color: #2C3E50;
             width: 25%;
             height: 100%;
             padding: 20px;
@@ -76,14 +76,12 @@
         fetch('/messages/' + messageId)
             .then(response => response.json())
             .then(message => {
-                console.log("Received message:", message); // Log the raw JSON response
+                console.log("Received message:", message);
 
                 var container = document.getElementById('messageDetails');
 
-                // Clear the container
                 container.innerHTML = '';
 
-                // Add message details
                 var messageName = document.createElement('h2');
                 messageName.textContent = message.messageName;
                 container.appendChild(messageName);
@@ -100,7 +98,7 @@
                 content.textContent = message.messageContent;
                 container.appendChild(content);
             })
-            .catch(error => console.error('Error parsing JSON:', error)); // Log any parsing errors
+            .catch(error => console.error('Error parsing JSON:', error));
     }
 </script>
 </body>
