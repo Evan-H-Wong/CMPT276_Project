@@ -111,7 +111,7 @@
             <h1 th:text="${message}" class="display-4"></h1>
         </div>
         <div class="button-container">
-            <a th:if="${message.contains('successful')}" class="btn btn-primary" th:href="${access.contains('MANAGER') ? '/personalized/manager' : '/personalized/employee'}">Go to Welcome Page</a>
+            <a th:if="${message.contains('successful')}" class="btn btn-primary" th:href="${access.contains('MANAGER') ? '/manager/homepage.html' : '/employee/homepage.html'}">Go to Welcome Page</a>
             <a th:if="${message.contains('failed')}" class="btn btn-secondary" th:href="@{/logout}">Logout</a>
         </div>
     </div>
